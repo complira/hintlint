@@ -20,6 +20,21 @@ test("CLI emits JSON report", async () => {
   assert.equal(report.findings.length, 2);
 });
 
+test("CLI emits SARIF report", async () => {
+  const { stdout } = await execFileAsync("node", [
+    "src/cli.js",
+    "fixtures/ts-basic",
+    "--format",
+    "sarif"
+  ]);
+  const report = JSON.parse(stdout);
+  assert.equal(report.version, "2.1.0");
+  assert.equal(report.runs.length, 1);
+  assert.equal(report.runs[0].tool.driver.name, "HintLint");
+  assert.ok(report.runs[0].tool.driver.rules.some((rule) => rule.id === "HINTLINT-READONLY-001"));
+  assert.ok(report.runs[0].results.some((result) => result.ruleId === "HINTLINT-READONLY-001"));
+});
+
 test("CLI emits terminal report", async () => {
   const { stdout } = await execFileAsync("node", ["src/cli.js", "fixtures/py-basic"]);
   assert.match(stdout, /HintLint Report/);

@@ -28,12 +28,16 @@
 | Unsafe-flow repair contract | M3 HL-044 | Pass | `npm run scan:fixtures` shows source parameter, sink, validator status, and repair guidance in terminal output |
 | Terminal report snapshot | M3 HL-050 | Pass | `test/snapshots/m3-ts-evidence.terminal.txt` |
 | JSON report snapshot | M3 HL-051 | Pass | `test/snapshots/m3-py-taint.findings.json` |
+| SARIF output | M4 HL-052 | Pass | `node src/cli.js fixtures/ts-basic --format sarif --output /private/tmp/hintlint-ts-basic.sarif` emitted parseable SARIF 2.1.0; `npm test` checks rules/results |
+| Conservative CI threshold | M4 HL-053 | Pass | `test/policy.test.js`; `fixtures/tools-list --ci --fail-on high` exits `0`, `fixtures/py-basic --ci --fail-on high` exits `1` |
+| GitHub Action metadata | M4 HL-054 | Pass with environment note | `test/action.test.js` checks setup-node, SARIF, upload, PR comment, and CI gate paths; YAML parse succeeded |
+| Standalone Semgrep rule-pack docs | M4 HL-060 | Pass with environment constraint | `rules/semgrep/README.md` documents direct Semgrep invocation; live Semgrep execution remains deferred |
 
 ## Execution Results
 
 ```text
 npm test
-pass: 12
+pass: 15
 fail: 0
 ```
 
@@ -50,6 +54,11 @@ pass: 2 metadata-only tools, 0 findings
 ```text
 semgrep --version
 zsh:1: command not found: semgrep
+```
+
+```text
+ruby -e 'require "yaml"; YAML.load_file("action.yml"); YAML.load_file(".github/workflows/ci.yml"); puts "yaml ok"'
+pass
 ```
 
 ## Waivers

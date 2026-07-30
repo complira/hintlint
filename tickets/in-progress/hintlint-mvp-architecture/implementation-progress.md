@@ -18,14 +18,19 @@
 | 2026-07-30 | Added M2 rule pack and fixtures | `rules/semgrep/*`, `fixtures/py-taint/*`, `fixtures/ts-evidence/*`, `test/evidence.test.js` | Covered filesystem, database, HTTP, process, external-send, cloud, query, URL, connection-string, and validation asymmetry taxonomy | `npm test`; Semgrep binary unavailable locally |
 | 2026-07-30 | Completed M3 annotation verifier contract | `src/evidence/behavior.js`, `src/evidence/static-detector.js`, `schemas/finding.schema.json`, `src/reporters/terminal.js` | Findings now include declared annotations, verified behavior, confidence tier, structured flow details, repair guidance, and suggested annotation patches | `npm test`, `npm run scan:fixtures` |
 | 2026-07-30 | Added stable report snapshots | `test/report-snapshots.test.js`, `test/snapshots/*` | Snapshot-tested compact JSON finding contract and normalized terminal report output | `npm test` |
+| 2026-07-30 | Implemented M4 CI and distribution surface | `src/reporters/sarif.js`, `src/policy.js`, `src/cli.js`, `action.yml`, `.github/workflows/ci.yml`, tests | Added SARIF output, conservative CI fail policy module, composite GitHub Action, CI workflow, and local/Action docs | `npm test`, `npm run scan:fixtures`, SARIF generation, YAML parse, `git diff --check` |
 
 ## Test Results
 
-- `npm test`: pass, 12/12 tests.
+- `npm test`: pass, 15/15 tests.
 - `npm run scan:fixtures`: pass.
 - `node src/cli.js --version`: `0.1.0`.
 - `env npm_config_cache=/private/tmp/hintlint-npm-cache npm exec -- hintlint --version`: `0.1.0`.
 - `node src/cli.js fixtures/py-basic --ci --fail-on high`: exits `1` as expected because source-backed high/critical fixture findings exist.
+- `node src/cli.js fixtures/tools-list --ci --fail-on high`: exits `0` because metadata-only input has no source-backed findings.
+- `node src/cli.js fixtures/ts-basic --format sarif --output /private/tmp/hintlint-ts-basic.sarif`: pass.
+- `ruby -e 'require "yaml"; YAML.load_file("action.yml"); YAML.load_file(".github/workflows/ci.yml"); puts "yaml ok"'`: pass.
+- `git diff --check`: pass.
 - `node src/cli.js fixtures/tools-list/tools-list.json --format json`: emits two metadata-only tools and zero findings.
 - `semgrep --version`: command not found. Rule-pack shape and Semgrep JSON normalization are tested, but live Semgrep execution is not validated in this environment.
 
@@ -37,4 +42,4 @@
 - M3 finding contracts are snapshot-tested, but report schema validation still needs a JSON Schema engine.
 - TypeScript overload support is still limited to the fixture-backed SDK patterns.
 - Copied TrainLens skills contain TrainLens/InferLens-specific wording and should be reviewed before treating them as project-native HintLint skills.
-- No SARIF reporter or GitHub Action yet.
+- GitHub Action metadata is static-tested and YAML-parse-tested locally, but it has not run inside GitHub Actions yet.

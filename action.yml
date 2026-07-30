@@ -1,0 +1,151 @@
+name: HintLint
+description: Verify MCP tool hints against source evidence.
+
+inputs:
+  target:
+    description: Path to the MCP server source or saved tools/list JSON.
+    required: false
+    default: "."
+  fail-on:
+    description: Minimum source-backed finding severity that fails the action.
+    required: false
+    default: high
+  config:
+    description: Optional HintLint config path.
+    required: false
+    default: ""
+  semgrep-json:
+    description: Optional Semgrep JSON results to import.
+    required: false
+    default: ""
+  sarif-output:
+    description: SARIF output path.
+    required: false
+    default: hintlint.sarif
+  text-output:
+    description: Human-readable summary output path.
+    required: false
+    default: hintlint.txt
+  upload-sarif:
+    description: Upload SARIF with github/codeql-action/upload-sarif.
+    required: false
+    default: "false"
+  pr-comment:
+    description: Comment on pull requests with the HintLint text summary.
+    required: false
+    default: "false"
+  github-token:
+    description: GitHub token used for PR comments.
+    required: false
+    default: ""
+  node-version:
+    description: Node.js version used to run HintLint.
+    required: false
+    default: "20"
+
+outputs:
+  sarif:
+    description: SARIF report path.
+    value: ${{ steps.scan.outputs.sarif }}
+  summary:
+    description: Text summary path.
+    value: ${{ steps.scan.outputs.summary }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - id: scan
+      name: Generate HintLint reports
+      shell: bash
+      env:
+        HINTLINT_TARGET: ${{ inputs.target }}
+        HINTLINT_CONFIG: ${{ inputs.config }}
+        HINTLINT_SEMGREP_JSON: ${{ inputs.semgrep-json }}
+        HINTLINT_SARIF_OUTPUT: ${{ inputs.sarif-output }}
+        HINTLINT_TEXT_OUTPUT: ${{ inputs.text-output }}
+      run: |
+        set -euo pipefail
+
+        base_args=("$HINTLINT_TARGET")
+        if [ -n "$HINTLINT_CONFIG" ]; then
+          base_args+=("--config" "$HINTLINT_CONFIG")
+        fi
+        if [ -n "$HINTLINT_SEMGREP_JSON" ]; then
+          base_args+=("--semgrep-json" "$HINTLINT_SEMGREP_JSON")
+        fi
+
+        node "$GITHUB_ACTION_PATH/src/cli.js" "${base_args[@]}" --format sarif --output "$HINTLINT_SARIF_OUTPUT"
+        node "$GITHUB_ACTION_PATH/src/cli.js" "${base_args[@]}" --format text --output "$HINTLINT_TEXT_OUTPUT"
+
+        echo "sarif=$HINTLINT_SARIF_OUTPUT" >> "$GITHUB_OUTPUT"
+        echo "summary=$HINTLINT_TEXT_OUTPUT" >> "$GITHUB_OUTPUT"
+
+    - name: Upload HintLint SARIF
+      if: ${{ inputs.upload-sarif == 'true' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-output }}
+
+    - name: Comment on pull request
+      if: ${{ inputs.pr-comment == 'true' && github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
+      env:
+        HINTLINT_TEXT_OUTPUT: ${{ inputs.text-output }}
+      with:
+        github-token: ${{ inputs.github-token || github.token }}
+        script: |
+          const fs = require("node:fs");
+          const marker = "<!-- hintlint-report -->";
+          const text = fs.readFileSync(process.env.HINTLINT_TEXT_OUTPUT, "utf8").slice(0, 60000);
+          const body = `${marker}\n### HintLint\n\n\`\`\`text\n${text}\n\`\`\``;
+          const { owner, repo } = context.repo;
+          const issue_number = context.payload.pull_request.number;
+          const comments = await github.rest.issues.listComments({
+            owner,
+            repo,
+            issue_number,
+            per_page: 100
+          });
+          const existing = comments.data.find((comment) =>
+            comment.user?.type === "Bot" && comment.body?.startsWith(marker)
+          );
+          if (existing) {
+            await github.rest.issues.updateComment({
+              owner,
+              repo,
+              comment_id: existing.id,
+              body
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body
+            });
+          }
+
+    - name: Apply HintLint CI threshold
+      shell: bash
+      env:
+        HINTLINT_TARGET: ${{ inputs.target }}
+        HINTLINT_CONFIG: ${{ inputs.config }}
+        HINTLINT_SEMGREP_JSON: ${{ inputs.semgrep-json }}
+        HINTLINT_FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        set -euo pipefail
+
+        gate_args=("$HINTLINT_TARGET")
+        if [ -n "$HINTLINT_CONFIG" ]; then
+          gate_args+=("--config" "$HINTLINT_CONFIG")
+        fi
+        if [ -n "$HINTLINT_SEMGREP_JSON" ]; then
+          gate_args+=("--semgrep-json" "$HINTLINT_SEMGREP_JSON")
+        fi
+
+        node "$GITHUB_ACTION_PATH/src/cli.js" "${gate_args[@]}" --format json --output hintlint-gate.json --ci --fail-on "$HINTLINT_FAIL_ON"

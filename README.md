@@ -9,9 +9,44 @@ HintLint is starting as a local CLI for MCP server authors. The first implementa
 ```bash
 node src/cli.js fixtures/ts-basic
 node src/cli.js fixtures/py-basic --format json
+node src/cli.js fixtures/ts-basic --format sarif --output hintlint.sarif
 node src/cli.js fixtures/tools-list
 node src/cli.js fixtures/py-taint
 ```
+
+CI mode fails only on source-backed findings at or above the configured threshold:
+
+```bash
+node src/cli.js ./server --ci --fail-on high
+```
+
+## GitHub Action
+
+```yaml
+name: HintLint
+
+on:
+  pull_request:
+
+jobs:
+  hintlint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hintlint/hintlint@v0
+        with:
+          target: .
+          node-version: "20"
+          fail-on: high
+          upload-sarif: "true"
+          pr-comment: "true"
+```
+
+For local development in this repository, replace `hintlint/hintlint@v0` with `./`.
 
 ## Current Scope
 
@@ -24,14 +59,15 @@ node src/cli.js fixtures/py-taint
 - Optional Semgrep JSON import with `--semgrep-json <path>`.
 - Annotation drift findings include declared hints, verified behavior, source evidence, confidence tier, and suggested annotation patches.
 - Unsafe-flow findings include source parameter, dangerous sink, validator status, and repair guidance.
-- Terminal and JSON reports.
+- Terminal, JSON, and SARIF reports.
+- Composite GitHub Action that generates SARIF/text reports, can upload SARIF, can comment on pull requests, and applies the conservative CI threshold.
 - No-source and unsupported patterns are reported honestly instead of treated as proof.
 
 Planned next:
 
 - Real Semgrep subprocess execution.
 - Deeper handler-to-sink reachability.
-- SARIF and GitHub Action integration.
+- Public benchmark schema and reproducible scan scripts.
 
 ## Local Skills
 

@@ -63,6 +63,11 @@
 | 2026-07-30 | Stage 7 | Stage 8 | M3 tests and fixture scans passed | `api-e2e-testing.md` |
 | 2026-07-30 | Stage 8 | Stage 9 | M3 code review recorded with comparator-module cleanup follow-up | `code-review.md` |
 | 2026-07-30 | Stage 9 | Stage 10 | M3 gate recorded and next milestone identified | `m3-gate.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User deferred local Semgrep install; proceed into M4 CI/developer distribution without live Semgrep dependency | `milestones.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | M4 SARIF reporter, CI policy module, composite Action, CI workflow, and docs implemented | `src/reporters/sarif.js`, `action.yml`, `.github/workflows/ci.yml` |
+| 2026-07-30 | Stage 7 | Stage 8 | M4 unit, fixture, SARIF, CI policy, and YAML checks passed | `api-e2e-testing.md` |
+| 2026-07-30 | Stage 8 | Stage 9 | M4 code review recorded with live GitHub Action and Semgrep execution constraints | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | M4 gate recorded and next milestone identified | `m4-gate.md` |
 
 ## Waivers / Violations
 

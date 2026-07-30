@@ -3,7 +3,9 @@
 import { writeFile } from "node:fs/promises";
 import { applyConfig, loadConfig } from "./config.js";
 import { runScan } from "./index.js";
+import { shouldFail } from "./policy.js";
 import { renderJson } from "./reporters/json.js";
+import { renderSarif } from "./reporters/sarif.js";
 import { renderTerminal } from "./reporters/terminal.js";
 
 const VERSION = "0.1.0";
@@ -15,7 +17,8 @@ function usage() {
     "Options:",
     "  --config <path>       Read hintlint config from a JSON or flat YAML file",
     "  --semgrep-json <path> Import Semgrep JSON and normalize it into evidence records",
-    "  --format <text|json>   Output format. Default: text",
+    "  --format <text|json|sarif>",
+    "                        Output format. Default: text",
     "  --output <path>        Write report to a file",
     "  --ci                  Use CI exit-code behavior",
     "  --fail-on <severity>  Fail on findings at or above severity. Default: high",
@@ -90,27 +93,12 @@ function parseArgs(argv) {
 }
 
 function validateArgs(args) {
-  if (!["text", "json"].includes(args.format)) {
+  if (!["text", "json", "sarif"].includes(args.format)) {
     throw new Error(`Unsupported format: ${args.format}`);
   }
   if (!["info", "low", "medium", "high", "critical"].includes(args.failOn)) {
     throw new Error(`Unsupported fail-on severity: ${args.failOn}`);
   }
-}
-
-function shouldFail(report, failOn) {
-  const severityRank = {
-    info: 0,
-    low: 1,
-    medium: 2,
-    high: 3,
-    critical: 4
-  };
-  const threshold = severityRank[failOn] ?? severityRank.high;
-  return report.findings.some((finding) => {
-    const rank = severityRank[finding.severity] ?? 0;
-    return rank >= threshold && finding.confidence === "source-backed";
-  });
 }
 
 async function main() {
@@ -134,7 +122,11 @@ async function main() {
     failOn: effectiveArgs.failOn,
     semgrepJsonPath: effectiveArgs.semgrepJsonPath
   });
-  const rendered = effectiveArgs.format === "json" ? renderJson(report) : renderTerminal(report);
+  const rendered = {
+    json: () => renderJson(report),
+    sarif: () => renderSarif(report),
+    text: () => renderTerminal(report)
+  }[effectiveArgs.format]();
 
   if (effectiveArgs.output) {
     await writeFile(effectiveArgs.output, rendered, "utf8");
