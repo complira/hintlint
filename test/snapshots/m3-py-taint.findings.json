@@ -1,0 +1,223 @@
+{
+  "summary": {
+    "tools_scanned": 6,
+    "handlers_resolved": 6,
+    "annotations_present": 6,
+    "unsupported_patterns": 0,
+    "source_evidence": 6,
+    "project_evidence": 1,
+    "findings": 6
+  },
+  "findings": [
+    {
+      "id": "HINTLINT-FLOW-CONNECTION-001",
+      "severity": "high",
+      "type": "tool_input_to_connection_string",
+      "tool": "unsafe_connection_string",
+      "confidence_tier": "source-backed",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "unsafe_flows": [
+          "connection_string"
+        ],
+        "evidence_categories": [
+          "connection_string"
+        ]
+      },
+      "source_parameter": "database",
+      "dangerous_sink": {
+        "category": "connection_string",
+        "sink_kind": "credential_boundary",
+        "file": "server.py",
+        "line": 63,
+        "rule_id": "hintlint.connection-string.user-controlled"
+      },
+      "validator_status": "not_found",
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Use a connection-string builder or reject delimiter characters in caller-controlled fields."
+      },
+      "suggested_annotations": null
+    },
+    {
+      "id": "HINTLINT-READONLY-001",
+      "severity": "high",
+      "type": "false_readonly",
+      "tool": "unsafe_postgres_query",
+      "confidence_tier": "source-backed",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "unsafe_flows": [
+          "query"
+        ],
+        "evidence_categories": [
+          "query_execution"
+        ]
+      },
+      "source_parameter": null,
+      "dangerous_sink": null,
+      "validator_status": null,
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set readOnlyHint=false and align destructive/open-world hints with the verified behavior."
+      },
+      "suggested_annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "id": "HINTLINT-FLOW-QUERY-001",
+      "severity": "critical",
+      "type": "tool_input_to_query_execution",
+      "tool": "unsafe_postgres_query",
+      "confidence_tier": "source-backed",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "unsafe_flows": [
+          "query"
+        ],
+        "evidence_categories": [
+          "query_execution"
+        ]
+      },
+      "source_parameter": "query",
+      "dangerous_sink": {
+        "category": "query_execution",
+        "sink_kind": "query",
+        "file": "server.py",
+        "line": 21,
+        "rule_id": "hintlint.query.execution"
+      },
+      "validator_status": "not_found",
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Use parameter binding or a strict query allowlist before execution."
+      },
+      "suggested_annotations": null
+    },
+    {
+      "id": "HINTLINT-OPEN-WORLD-001",
+      "severity": "medium",
+      "type": "false_open_world",
+      "tool": "unsafe_storage_account",
+      "confidence_tier": "source-backed",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "url_construction"
+        ]
+      },
+      "source_parameter": null,
+      "dangerous_sink": null,
+      "validator_status": null,
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set openWorldHint=true because the handler crosses a network or external boundary."
+      },
+      "suggested_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "id": "HINTLINT-FLOW-URL-001",
+      "severity": "high",
+      "type": "tool_input_to_url_construction",
+      "tool": "unsafe_storage_account",
+      "confidence_tier": "source-backed",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "url_construction"
+        ]
+      },
+      "source_parameter": "account_name",
+      "dangerous_sink": {
+        "category": "url_construction",
+        "sink_kind": "external_boundary",
+        "file": "server.py",
+        "line": 40,
+        "rule_id": "hintlint.url.user-controlled"
+      },
+      "validator_status": "not_found",
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Validate host/resource names with a strict allowlist before constructing outbound URLs."
+      },
+      "suggested_annotations": null
+    },
+    {
+      "id": "HINTLINT-VALIDATION-ASYMMETRY-001",
+      "severity": "medium",
+      "type": "validation_asymmetry",
+      "tool": "unsafe_postgres_query",
+      "confidence_tier": "source-backed",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "unsafe_flows": [
+          "query"
+        ],
+        "evidence_categories": [
+          "query_execution"
+        ]
+      },
+      "source_parameter": "query",
+      "dangerous_sink": {
+        "category": "query_execution",
+        "sink_kind": "query",
+        "file": "server.py",
+        "line": 21,
+        "rule_id": "hintlint.query.execution"
+      },
+      "validator_status": "not_found",
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Port the validation pattern from sibling tool 'safe_mysql_query' or document why it is not applicable."
+      },
+      "suggested_annotations": null
+    }
+  ]
+}

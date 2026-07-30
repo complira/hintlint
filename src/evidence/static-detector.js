@@ -1,4 +1,5 @@
 import { readSourceFile } from "../extractors/common.js";
+import { inferVerifiedBehavior, suggestedAnnotationsFor } from "./behavior.js";
 import { normalizeFilePath, resolvedToolForLocation } from "./tool-location.js";
 
 const READONLY_FINDING = "HINTLINT-READONLY-001";
@@ -284,47 +285,90 @@ function publicTool(tool) {
   return rest;
 }
 
-function verifiedBehavior(sinkEvidence) {
-  const categories = new Set(sinkEvidence.map((item) => item.category));
-  const sinkKinds = new Set(sinkEvidence.map((item) => item.sink_kind));
-  const unsafeQuery = sinkEvidence.some((item) => item.category === "query_execution" && item.sanitizer?.status !== "found");
+function firstEvidence(findingEvidence) {
+  return findingEvidence[0] ?? null;
+}
 
+function dangerousSink(findingEvidence) {
+  const evidence = firstEvidence(findingEvidence);
+  if (!evidence) {
+    return undefined;
+  }
   return {
-    readOnlyHint: !(
-      categories.has("database_mutation") ||
-      categories.has("filesystem_mutation") ||
-      categories.has("http_mutation") ||
-      categories.has("external_send") ||
-      categories.has("cloud_mutation") ||
-      categories.has("process_execution") ||
-      unsafeQuery
-    ),
-    destructiveHint: sinkKinds.has("destructive") || categories.has("process_execution"),
-    openWorldHint: (
-      categories.has("http_mutation") ||
-      categories.has("external_send") ||
-      categories.has("cloud_mutation") ||
-      categories.has("process_execution") ||
-      categories.has("url_construction")
-    ),
-    writes: categories.has("database_mutation") || categories.has("filesystem_mutation") || categories.has("http_mutation"),
-    processExecution: categories.has("process_execution"),
-    pathControlledFilesystem: categories.has("filesystem_mutation")
+    category: evidence.category,
+    sink_kind: evidence.sink_kind,
+    sink: evidence.sink,
+    file: evidence.file,
+    line: evidence.line,
+    rule_id: evidence.rule_id
   };
 }
 
-function finding({ id, severity, type, tool, message, evidence: findingEvidence, suggestedAnnotations = undefined, cweId = undefined }) {
+function firstSourceParameter(findingEvidence) {
+  return findingEvidence.find((item) => item.source_parameter)?.source_parameter;
+}
+
+function validatorStatus(findingEvidence) {
+  const evidence = firstEvidence(findingEvidence);
+  return evidence?.sanitizer
+    ? {
+        status: evidence.sanitizer.status,
+        expected: evidence.sanitizer.expected
+      }
+    : undefined;
+}
+
+function annotationRepair(summary, suggestedAnnotations) {
+  return {
+    type: "annotation_patch",
+    summary,
+    suggested_annotations: suggestedAnnotations
+  };
+}
+
+function validationRepair(summary, guidance) {
+  return {
+    type: "server_side_validation",
+    summary,
+    guidance
+  };
+}
+
+function finding({
+  id,
+  severity,
+  type,
+  tool,
+  message,
+  evidence: findingEvidence,
+  behavior,
+  repair,
+  suggestedAnnotations = undefined,
+  cweId = undefined,
+  includeFlowDetails = false
+}) {
   const result = {
     id,
     severity,
     type,
     tool: tool.name,
     confidence: "source-backed",
+    confidence_tier: "source-backed",
     message,
+    declared_annotations: tool.declared_annotations,
+    verified_behavior: behavior ?? inferVerifiedBehavior(findingEvidence),
     evidence: findingEvidence
   };
   if (cweId) {
     result.cwe_id = cweId;
+  }
+  if (includeFlowDetails) {
+    result.source_parameter = firstSourceParameter(findingEvidence);
+    result.dangerous_sink = dangerousSink(findingEvidence);
+    result.validator_status = validatorStatus(findingEvidence);
+  }
+  if (repair) {
+    result.repair = repair;
   }
   if (suggestedAnnotations) {
     result.suggested_annotations = suggestedAnnotations;
@@ -334,20 +378,11 @@ function finding({ id, severity, type, tool, message, evidence: findingEvidence,
 
 function compareAnnotations(tool, sinkEvidence) {
   const findings = [];
-  const behavior = verifiedBehavior(sinkEvidence);
+  const behavior = inferVerifiedBehavior(sinkEvidence);
   const declared = tool.declared_annotations;
 
   if (declared.readOnlyHint === true && behavior.readOnlyHint === false) {
-    const suggestedAnnotations = {
-      ...declared,
-      readOnlyHint: false
-    };
-    if (behavior.destructiveHint) {
-      suggestedAnnotations.destructiveHint = true;
-    }
-    if (behavior.openWorldHint) {
-      suggestedAnnotations.openWorldHint = true;
-    }
+    const suggestedAnnotations = suggestedAnnotationsFor(declared, behavior);
     findings.push(finding({
       id: READONLY_FINDING,
       severity: "high",
@@ -355,6 +390,8 @@ function compareAnnotations(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' declares readOnlyHint=true but source evidence shows state mutation, external side effect, or process execution.`,
       evidence: sinkEvidence,
+      behavior,
+      repair: annotationRepair("Set readOnlyHint=false and align destructive/open-world hints with the verified behavior.", suggestedAnnotations),
       suggestedAnnotations
     }));
   }
@@ -367,11 +404,9 @@ function compareAnnotations(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' reaches destructive or process-execution evidence but does not declare destructiveHint=true.`,
       evidence: sinkEvidence.filter((item) => item.sink_kind === "destructive" || item.category === "process_execution"),
-      suggestedAnnotations: {
-        ...declared,
-        readOnlyHint: false,
-        destructiveHint: true
-      }
+      behavior,
+      repair: annotationRepair("Set destructiveHint=true and require approval before automatic invocation.", suggestedAnnotationsFor(declared, behavior)),
+      suggestedAnnotations: suggestedAnnotationsFor(declared, behavior)
     }));
   }
 
@@ -383,10 +418,9 @@ function compareAnnotations(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.`,
       evidence: sinkEvidence.filter((item) => ["external_send", "http_mutation", "cloud_mutation", "process_execution", "url_construction"].includes(item.category)),
-      suggestedAnnotations: {
-        ...declared,
-        openWorldHint: true
-      }
+      behavior,
+      repair: annotationRepair("Set openWorldHint=true because the handler crosses a network or external boundary.", suggestedAnnotationsFor(declared, behavior)),
+      suggestedAnnotations: suggestedAnnotationsFor(declared, behavior)
     }));
   }
 
@@ -399,6 +433,7 @@ function unsafeFlowEvidence(sinkEvidence, flow) {
 
 function detectUnsafeFlows(tool, sinkEvidence) {
   const findings = [];
+  const behavior = inferVerifiedBehavior(sinkEvidence);
 
   const processEvidence = unsafeFlowEvidence(sinkEvidence, "process");
   if (processEvidence.length > 0) {
@@ -409,7 +444,13 @@ function detectUnsafeFlows(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.`,
       evidence: processEvidence,
-      cweId: "CWE-78"
+      behavior,
+      cweId: "CWE-78",
+      includeFlowDetails: true,
+      repair: validationRepair(
+        "Add a server-side command allowlist before invoking process execution.",
+        "Accept a fixed command enum or map caller intent to approved subcommands; never pass raw tool input to exec/spawn."
+      )
     }));
   }
 
@@ -422,7 +463,13 @@ function detectUnsafeFlows(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' has path-like MCP parameters and reaches filesystem write/path operations. Validate containment under an allowed root before writing.`,
       evidence: pathEvidence,
-      cweId: "CWE-22"
+      behavior,
+      cweId: "CWE-22",
+      includeFlowDetails: true,
+      repair: validationRepair(
+        "Resolve destination paths under an allowed root and reject traversal before writing.",
+        "Join caller paths to a configured base directory, normalize, then verify containment before mkdir/open/write."
+      )
     }));
   }
 
@@ -435,7 +482,13 @@ function detectUnsafeFlows(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' has query-like MCP parameters and reaches query execution without recognized binding or allowlist validation.`,
       evidence: queryEvidence,
-      cweId: "CWE-89"
+      behavior,
+      cweId: "CWE-89",
+      includeFlowDetails: true,
+      repair: validationRepair(
+        "Use parameter binding or a strict query allowlist before execution.",
+        "Do not execute caller-provided SQL/KQL directly. Bind values or map requests to reviewed query templates."
+      )
     }));
   }
 
@@ -448,7 +501,13 @@ function detectUnsafeFlows(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.`,
       evidence: urlEvidence,
-      cweId: "CWE-918"
+      behavior,
+      cweId: "CWE-918",
+      includeFlowDetails: true,
+      repair: validationRepair(
+        "Validate host/resource names with a strict allowlist before constructing outbound URLs.",
+        "For cloud resource names, enforce provider-specific regexes and reject full URLs unless the endpoint is pre-approved."
+      )
     }));
   }
 
@@ -461,7 +520,13 @@ function detectUnsafeFlows(tool, sinkEvidence) {
       tool,
       message: `Tool '${tool.name}' has connection-string-relevant MCP parameters and builds a structured connection string without recognized delimiter protection.`,
       evidence: connectionEvidence,
-      cweId: "CWE-88"
+      behavior,
+      cweId: "CWE-88",
+      includeFlowDetails: true,
+      repair: validationRepair(
+        "Use a connection-string builder or reject delimiter characters in caller-controlled fields.",
+        "Reject semicolons and equals signs in structured connection-string fields so later parameters cannot override earlier values."
+      )
     }));
   }
 
@@ -474,6 +539,7 @@ function detectValidationAsymmetry(tools, evidenceByTool) {
     .filter((tool) => tool.handler?.confidence === "resolved")
     .map((tool) => ({
       tool,
+      evidence: evidenceByTool.get(tool.name) ?? [],
       queryEvidence: (evidenceByTool.get(tool.name) ?? []).filter((item) => item.flow === "query")
     }))
     .filter((entry) => entry.queryEvidence.length > 0);
@@ -500,7 +566,13 @@ function detectValidationAsymmetry(tools, evidenceByTool) {
       tool: unsafe.tool,
       message: `Tool '${unsafe.tool.name}' reaches query execution without recognized validation, while sibling tool '${sibling.tool.name}' validates the same query-shaped input.`,
       evidence: unsafe.queryEvidence.filter((item) => item.sanitizer?.status !== "found"),
-      cweId: "CWE-89"
+      behavior: inferVerifiedBehavior(unsafe.evidence),
+      cweId: "CWE-89",
+      includeFlowDetails: true,
+      repair: validationRepair(
+        `Port the validation pattern from sibling tool '${sibling.tool.name}' or document why it is not applicable.`,
+        "When parallel MCP tools accept the same query-shaped input, validators should be consistently applied across sibling implementations."
+      )
     }));
   }
 

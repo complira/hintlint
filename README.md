@@ -22,6 +22,8 @@ node src/cli.js fixtures/py-taint
 - Normalized source evidence records for filesystem, database, HTTP, process, external-send, cloud, query, URL, and connection-string sinks.
 - Semgrep-compatible rule pack in `rules/semgrep/hintlint-mcp.yml`.
 - Optional Semgrep JSON import with `--semgrep-json <path>`.
+- Annotation drift findings include declared hints, verified behavior, source evidence, confidence tier, and suggested annotation patches.
+- Unsafe-flow findings include source parameter, dangerous sink, validator status, and repair guidance.
 - Terminal and JSON reports.
 - No-source and unsupported patterns are reported honestly instead of treated as proof.
 

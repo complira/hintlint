@@ -9,6 +9,9 @@
     "type",
     "tool",
     "confidence",
+    "confidence_tier",
+    "declared_annotations",
+    "verified_behavior",
     "evidence",
     "message"
   ],
@@ -18,7 +21,41 @@
     "type": { "type": "string" },
     "tool": { "type": "string" },
     "confidence": { "enum": ["source-backed", "likely", "needs-review", "unknown"] },
+    "confidence_tier": { "enum": ["source-backed", "likely", "needs-review", "unknown"] },
     "message": { "type": "string" },
+    "declared_annotations": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "verified_behavior": {
+      "type": "object",
+      "required": ["readOnlyHint", "destructiveHint", "openWorldHint", "confidence"],
+      "properties": {
+        "readOnlyHint": { "type": "boolean" },
+        "destructiveHint": { "type": "boolean" },
+        "openWorldHint": { "type": "boolean" },
+        "writes_internal_state": { "type": "boolean" },
+        "external_side_effect": { "type": "boolean" },
+        "destructive_action": { "type": "boolean" },
+        "process_execution": { "type": "boolean" },
+        "filesystem_mutation": { "type": "boolean" },
+        "database_mutation": { "type": "boolean" },
+        "http_mutation": { "type": "boolean" },
+        "cloud_mutation": { "type": "boolean" },
+        "query_execution": { "type": "boolean" },
+        "url_construction": { "type": "boolean" },
+        "connection_string": { "type": "boolean" },
+        "unsafe_flows": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "evidence_categories": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "confidence": { "enum": ["source-backed", "likely", "needs-review", "unknown"] }
+      }
+    },
     "cwe_id": { "type": ["string", "null"] },
     "cvss_score": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
     "aivss_score": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
@@ -37,6 +74,46 @@
     "evidence": {
       "type": "array",
       "items": { "$ref": "./evidence.schema.json" }
+    },
+    "source_parameter": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "schema_path": { "type": "string" },
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "dangerous_sink": {
+      "type": "object",
+      "properties": {
+        "category": { "type": "string" },
+        "sink_kind": { "type": "string" },
+        "sink": { "type": "string" },
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "rule_id": { "type": "string" }
+      }
+    },
+    "validator_status": {
+      "type": "object",
+      "properties": {
+        "status": { "enum": ["found", "not_found", "not_applicable", "unknown"] },
+        "expected": { "type": "string" }
+      }
+    },
+    "repair": {
+      "type": "object",
+      "required": ["type", "summary"],
+      "properties": {
+        "type": { "type": "string" },
+        "summary": { "type": "string" },
+        "guidance": { "type": "string" },
+        "suggested_annotations": {
+          "type": "object",
+          "additionalProperties": { "type": "boolean" }
+        }
+      }
     },
     "suggested_annotations": {
       "type": "object",

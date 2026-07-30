@@ -1,0 +1,61 @@
+HintLint Report
+===============
+
+Target: <target>
+Languages: typescript
+Files scanned: 2
+Tools scanned: 3
+Handlers resolved: 3
+Annotations present: 3
+Source evidence: 4
+Project evidence: 1
+Findings: 4
+
+Tools:
+  - delete_branch (typescript) src/server.ts:30
+    handler: resolved
+    params: branch, owner, repo
+    annotations: readOnlyHint=false, destructiveHint=false, openWorldHint=true
+  - run_script (typescript) src/server.ts:51
+    handler: resolved
+    params: command
+    annotations: readOnlyHint=false, destructiveHint=true, openWorldHint=true
+  - update_issue (typescript) src/server.ts:7
+    handler: resolved
+    params: issue, owner, repo, title
+    annotations: readOnlyHint=false, destructiveHint=false, openWorldHint=false
+
+Project Evidence:
+  - process_execution src/server.ts:70
+
+Findings:
+  - HINTLINT-DESTRUCTIVE-001 [high] delete_branch
+    Tool 'delete_branch' reaches destructive or process-execution evidence but does not declare destructiveHint=true.
+    declared: readOnlyHint=false, destructiveHint=false, openWorldHint=true
+    verified: readOnlyHint=false, destructiveHint=true, openWorldHint=true
+    evidence: src/server.ts:46
+    repair: Set destructiveHint=true and require approval before automatic invocation.
+  - HINTLINT-FLOW-PROCESS-001 [critical] run_script
+    Tool 'run_script' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.
+    declared: readOnlyHint=false, destructiveHint=true, openWorldHint=true
+    verified: readOnlyHint=false, destructiveHint=true, openWorldHint=true
+    evidence: src/server.ts:65
+    source: command
+    sink: child_process.exec( (hintlint.process.execution)
+    validator: not_found
+    repair: Add a server-side command allowlist before invoking process execution.
+  - HINTLINT-OPEN-WORLD-001 [medium] update_issue
+    Tool 'update_issue' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.
+    declared: readOnlyHint=false, destructiveHint=false, openWorldHint=false
+    verified: readOnlyHint=false, destructiveHint=false, openWorldHint=true
+    evidence: src/server.ts:25
+    repair: Set openWorldHint=true because the handler crosses a network or external boundary.
+  - HINTLINT-FLOW-URL-001 [high] update_issue
+    Tool 'update_issue' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.
+    declared: readOnlyHint=false, destructiveHint=false, openWorldHint=false
+    verified: readOnlyHint=false, destructiveHint=false, openWorldHint=true
+    evidence: src/server.ts:24
+    source: owner
+    sink: https://api.github.com/repos/${owner}/${repo}/issues/${ (hintlint.url.user-controlled)
+    validator: not_found
+    repair: Validate host/resource names with a strict allowlist before constructing outbound URLs.

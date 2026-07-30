@@ -58,6 +58,11 @@
 | 2026-07-30 | Stage 7 | Stage 8 | M2 unit and fixture checks passed; Semgrep binary unavailable | `api-e2e-testing.md` |
 | 2026-07-30 | Stage 8 | Stage 9 | M2 code review recorded with Semgrep execution constraint | `code-review.md` |
 | 2026-07-30 | Stage 9 | Stage 10 | M2 gate recorded and next milestone identified | `m2-gate.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User asked to move to next step; Semgrep install postponed for later | `m3-gate.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | M3 finding contract and snapshots implemented | `src/evidence/behavior.js`, `test/report-snapshots.test.js` |
+| 2026-07-30 | Stage 7 | Stage 8 | M3 tests and fixture scans passed | `api-e2e-testing.md` |
+| 2026-07-30 | Stage 8 | Stage 9 | M3 code review recorded with comparator-module cleanup follow-up | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | M3 gate recorded and next milestone identified | `m3-gate.md` |
 
 ## Waivers / Violations
 

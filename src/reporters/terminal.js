@@ -6,6 +6,17 @@ function formatAnnotations(annotations) {
   return entries.map(([key, value]) => `${key}=${value}`).join(", ");
 }
 
+function formatBehavior(behavior) {
+  if (!behavior) {
+    return "unknown";
+  }
+  return [
+    `readOnlyHint=${behavior.readOnlyHint}`,
+    `destructiveHint=${behavior.destructiveHint}`,
+    `openWorldHint=${behavior.openWorldHint}`
+  ].join(", ");
+}
+
 export function renderTerminal(report) {
   const lines = [
     "HintLint Report",
@@ -60,8 +71,22 @@ export function renderTerminal(report) {
       lines.push(
         `  - ${finding.id} [${finding.severity}] ${finding.tool}`,
         `    ${finding.message}`,
+        `    declared: ${formatAnnotations(finding.declared_annotations ?? {})}`,
+        `    verified: ${formatBehavior(finding.verified_behavior)}`,
         `    evidence: ${location}`
       );
+      if (finding.source_parameter) {
+        lines.push(`    source: ${finding.source_parameter.name}`);
+      }
+      if (finding.dangerous_sink) {
+        lines.push(`    sink: ${finding.dangerous_sink.sink} (${finding.dangerous_sink.rule_id})`);
+      }
+      if (finding.validator_status) {
+        lines.push(`    validator: ${finding.validator_status.status}`);
+      }
+      if (finding.repair?.summary) {
+        lines.push(`    repair: ${finding.repair.summary}`);
+      }
     }
     lines.push("");
   }

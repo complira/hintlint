@@ -24,12 +24,16 @@
 | Validation asymmetry | M2 HL-038 | Pass | `unsafe_postgres_query` vs `safe_mysql_query` emits `HINTLINT-VALIDATION-ASYMMETRY-001` |
 | Semgrep JSON import | M2 HL-033, HL-034 | Pass | `npm test` imports sample Semgrep JSON and attaches one result to `run_script`; helper result remains `project_evidence` |
 | Semgrep rule pack live execution | M2 HL-031, HL-032 | Pass with environment constraint | `semgrep --version` returned command not found; rule-pack taxonomy inventory is tested but live Semgrep execution was not run |
+| Annotation drift finding enrichment | M3 HL-040, HL-041, HL-042, HL-043 | Pass | `npm test` verifies JSON finding snapshot with declared annotations, verified behavior, confidence tier, and suggested patches |
+| Unsafe-flow repair contract | M3 HL-044 | Pass | `npm run scan:fixtures` shows source parameter, sink, validator status, and repair guidance in terminal output |
+| Terminal report snapshot | M3 HL-050 | Pass | `test/snapshots/m3-ts-evidence.terminal.txt` |
+| JSON report snapshot | M3 HL-051 | Pass | `test/snapshots/m3-py-taint.findings.json` |
 
 ## Execution Results
 
 ```text
 npm test
-pass: 10
+pass: 12
 fail: 0
 ```
 

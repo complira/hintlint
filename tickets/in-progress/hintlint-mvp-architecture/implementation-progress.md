@@ -16,10 +16,12 @@
 | 2026-07-30 | Completed M1 extraction upgrades | `src/extractors/*`, `src/config.js`, `src/cli.js`, `schemas/tool.schema.json`, `fixtures/tools-list/*`, tests | Added metadata-only `tools/list` JSON import, flat config loading, schema source details, and explicit `unknown_handler`/`metadata_only` tiers | `npm test`, `npm run scan:fixtures`, direct JSON-file scan |
 | 2026-07-30 | Implemented M2 evidence engine contract | `src/evidence/*`, `schemas/*`, `src/index.js`, `src/cli.js`, `src/reporters/terminal.js` | Added normalized source evidence, project-level evidence, Semgrep JSON import, source parameter records, sanitizer status, and flow findings | `npm test`, `npm run scan:fixtures` |
 | 2026-07-30 | Added M2 rule pack and fixtures | `rules/semgrep/*`, `fixtures/py-taint/*`, `fixtures/ts-evidence/*`, `test/evidence.test.js` | Covered filesystem, database, HTTP, process, external-send, cloud, query, URL, connection-string, and validation asymmetry taxonomy | `npm test`; Semgrep binary unavailable locally |
+| 2026-07-30 | Completed M3 annotation verifier contract | `src/evidence/behavior.js`, `src/evidence/static-detector.js`, `schemas/finding.schema.json`, `src/reporters/terminal.js` | Findings now include declared annotations, verified behavior, confidence tier, structured flow details, repair guidance, and suggested annotation patches | `npm test`, `npm run scan:fixtures` |
+| 2026-07-30 | Added stable report snapshots | `test/report-snapshots.test.js`, `test/snapshots/*` | Snapshot-tested compact JSON finding contract and normalized terminal report output | `npm test` |
 
 ## Test Results
 
-- `npm test`: pass, 10/10 tests.
+- `npm test`: pass, 12/12 tests.
 - `npm run scan:fixtures`: pass.
 - `node src/cli.js --version`: `0.1.0`.
 - `env npm_config_cache=/private/tmp/hintlint-npm-cache npm exec -- hintlint --version`: `0.1.0`.
@@ -32,6 +34,7 @@
 - Current extractors are MVP text/regex extractors, not full AST parsers.
 - Built-in evidence detector is still shallow and line/snippet based; it now emits M2-normalized evidence but is not a replacement for real Semgrep/dataflow execution.
 - Semgrep rule pack has not been live-executed here because Semgrep is not installed.
+- M3 finding contracts are snapshot-tested, but report schema validation still needs a JSON Schema engine.
 - TypeScript overload support is still limited to the fixture-backed SDK patterns.
 - Copied TrainLens skills contain TrainLens/InferLens-specific wording and should be reviewed before treating them as project-native HintLint skills.
 - No SARIF reporter or GitHub Action yet.
