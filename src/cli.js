@@ -14,6 +14,7 @@ function usage() {
     "",
     "Options:",
     "  --config <path>       Read hintlint config from a JSON or flat YAML file",
+    "  --semgrep-json <path> Import Semgrep JSON and normalize it into evidence records",
     "  --format <text|json>   Output format. Default: text",
     "  --output <path>        Write report to a file",
     "  --ci                  Use CI exit-code behavior",
@@ -27,6 +28,7 @@ function parseArgs(argv) {
   const args = {
     target: null,
     config: null,
+    semgrepJsonPath: null,
     format: "text",
     output: null,
     ci: false,
@@ -54,6 +56,11 @@ function parseArgs(argv) {
     }
     if (arg === "--config") {
       args.config = argv[++i];
+      continue;
+    }
+    if (arg === "--semgrep-json") {
+      args.semgrepJsonPath = argv[++i];
+      args._explicit.add("semgrepJsonPath");
       continue;
     }
     if (arg === "--ci") {
@@ -124,7 +131,8 @@ async function main() {
   const report = await runScan(effectiveArgs.target, {
     config: loadedConfig.path,
     ci: effectiveArgs.ci,
-    failOn: effectiveArgs.failOn
+    failOn: effectiveArgs.failOn,
+    semgrepJsonPath: effectiveArgs.semgrepJsonPath
   });
   const rendered = effectiveArgs.format === "json" ? renderJson(report) : renderTerminal(report);
 

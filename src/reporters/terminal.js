@@ -17,6 +17,8 @@ export function renderTerminal(report) {
     `Tools scanned: ${report.summary.tools_scanned}`,
     `Handlers resolved: ${report.summary.handlers_resolved}`,
     `Annotations present: ${report.summary.annotations_present}`,
+    `Source evidence: ${report.summary.source_evidence ?? 0}`,
+    `Project evidence: ${report.summary.project_evidence ?? 0}`,
     `Findings: ${report.summary.findings}`,
     ""
   ];
@@ -38,6 +40,14 @@ export function renderTerminal(report) {
     lines.push("Unsupported:");
     for (const item of report.unsupported) {
       lines.push(`  - ${item.file}:${item.line} ${item.reason}`);
+    }
+    lines.push("");
+  }
+
+  if (report.project_evidence?.length > 0) {
+    lines.push("Project Evidence:");
+    for (const item of report.project_evidence) {
+      lines.push(`  - ${item.category} ${item.file}:${item.line}`);
     }
     lines.push("");
   }

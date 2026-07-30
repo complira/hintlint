@@ -1,0 +1,146 @@
+rules:
+  - id: hintlint.process.execution
+    languages: [typescript, javascript, python]
+    message: MCP tool input may reach process execution. Use a server-side allowlist.
+    severity: ERROR
+    metadata:
+      hintlint_category: process_execution
+      hintlint_sink_kind: execute
+      hintlint_flow: process
+      hintlint_sanitizer_expected: server-side command allowlist
+      cwe: "CWE-78"
+    pattern-either:
+      - pattern: subprocess.run(...)
+      - pattern: subprocess.Popen(...)
+      - pattern: child_process.exec(...)
+      - pattern: execSync(...)
+
+  - id: hintlint.filesystem.mutation
+    languages: [typescript, javascript, python]
+    message: MCP tool input may reach filesystem mutation. Enforce allowed-root containment.
+    severity: WARNING
+    metadata:
+      hintlint_category: filesystem_mutation
+      hintlint_sink_kind: write
+      hintlint_flow: filesystem
+      hintlint_sanitizer_expected: path root containment with an allowed base directory
+      cwe: "CWE-22"
+    pattern-either:
+      - pattern: open(...)
+      - pattern: createWriteStream(...)
+      - pattern: writeFile(...)
+      - pattern: mkdirSync(...)
+      - pattern: shutil.rmtree(...)
+
+  - id: hintlint.database.destructive
+    languages: [typescript, javascript, python]
+    message: MCP tool reaches a destructive database operation.
+    severity: ERROR
+    metadata:
+      hintlint_category: database_mutation
+      hintlint_sink_kind: destructive
+    pattern-either:
+      - pattern: $DB.$MODEL.delete(...)
+      - pattern: $DB.$MODEL.deleteMany(...)
+      - pattern: $CURSOR.execute("DELETE FROM" + ...)
+      - pattern: $CURSOR.execute("DROP TABLE" + ...)
+
+  - id: hintlint.database.write
+    languages: [typescript, javascript, python]
+    message: MCP tool reaches a database write operation.
+    severity: WARNING
+    metadata:
+      hintlint_category: database_mutation
+      hintlint_sink_kind: write
+    pattern-either:
+      - pattern: $DB.$MODEL.create(...)
+      - pattern: $DB.$MODEL.update(...)
+      - pattern: $DB.$MODEL.upsert(...)
+      - pattern: $CURSOR.execute("INSERT" + ...)
+      - pattern: $CURSOR.execute("UPDATE" + ...)
+
+  - id: hintlint.http.mutation
+    languages: [typescript, javascript, python]
+    message: MCP tool reaches HTTP mutation.
+    severity: WARNING
+    metadata:
+      hintlint_category: http_mutation
+      hintlint_sink_kind: external_mutation
+    pattern-either:
+      - pattern: fetch($URL, {method: "POST", ...})
+      - pattern: fetch($URL, {method: "PUT", ...})
+      - pattern: fetch($URL, {method: "PATCH", ...})
+      - pattern: fetch($URL, {method: "DELETE", ...})
+      - pattern: requests.post(...)
+      - pattern: requests.put(...)
+      - pattern: requests.patch(...)
+      - pattern: requests.delete(...)
+
+  - id: hintlint.external.send
+    languages: [typescript, javascript, python]
+    message: MCP tool reaches an external send or payment operation.
+    severity: WARNING
+    metadata:
+      hintlint_category: external_send
+      hintlint_sink_kind: external_mutation
+    pattern-either:
+      - pattern: sendgrid.send(...)
+      - pattern: stripe.$RESOURCE.create(...)
+      - pattern: mail.send(...)
+
+  - id: hintlint.cloud.mutation
+    languages: [typescript, javascript, python]
+    message: MCP tool reaches a cloud destructive or update operation.
+    severity: ERROR
+    metadata:
+      hintlint_category: cloud_mutation
+      hintlint_sink_kind: destructive
+    pattern-either:
+      - pattern: octokit.git.deleteRef(...)
+      - pattern: $CLIENT.delete(...)
+      - pattern: $CLIENT.terminate(...)
+
+  - id: hintlint.query.execution
+    languages: [typescript, javascript, python]
+    message: MCP tool input may reach query execution. Use binding or strict allowlists.
+    severity: ERROR
+    metadata:
+      hintlint_category: query_execution
+      hintlint_sink_kind: query
+      hintlint_flow: query
+      hintlint_sanitizer_expected: parameter binding or strict query allowlist
+      cwe: "CWE-89"
+    pattern-either:
+      - pattern: $CONN.execute($QUERY)
+      - pattern: $CURSOR.execute($QUERY)
+      - pattern: new NpgsqlCommand($QUERY, ...)
+
+  - id: hintlint.url.user-controlled
+    languages: [typescript, javascript, python]
+    message: MCP tool input may control an outbound URL or resource hostname.
+    severity: ERROR
+    metadata:
+      hintlint_category: url_construction
+      hintlint_sink_kind: external_boundary
+      hintlint_flow: url
+      hintlint_sanitizer_expected: strict host or resource-name allowlist
+      cwe: "CWE-918"
+    pattern-either:
+      - pattern: requests.get($URL)
+      - pattern: fetch($URL)
+      - pattern: $URL = f"...{$PARAM}..."
+      - pattern: $URL = `...${$PARAM}...`
+
+  - id: hintlint.connection-string.user-controlled
+    languages: [typescript, javascript, python]
+    message: MCP tool input may be interpolated into a connection string.
+    severity: ERROR
+    metadata:
+      hintlint_category: connection_string
+      hintlint_sink_kind: credential_boundary
+      hintlint_flow: connection_string
+      hintlint_sanitizer_expected: connection string builder or delimiter rejection
+      cwe: "CWE-88"
+    pattern-either:
+      - pattern: $CONNECTION = f"...Database={$DATABASE}..."
+      - pattern: $CONNECTION = `...Database=${$DATABASE}...`

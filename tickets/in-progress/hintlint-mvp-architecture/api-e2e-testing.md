@@ -18,12 +18,18 @@
 | Saved `tools/list` directory import | M1 HL-023 | Pass | `npm run scan:fixtures` reports two metadata-only tools from `fixtures/tools-list/tools-list.json` |
 | Saved `tools/list` direct file import | M1 HL-023 | Pass | `node src/cli.js fixtures/tools-list/tools-list.json --format json` emits two `metadata_only` tools and zero findings |
 | Config loading | M1 HL-012 | Pass | `npm test` verifies flat `hintlint.yaml` config controls JSON output |
+| M2 source evidence normalization | M2 HL-030, HL-033 | Pass | `npm test` verifies normalized evidence records include scope, category, rule id, engine, source parameter, and sanitizer status |
+| Python source-to-sink fixture | M2 HL-032, HL-035, HL-036, HL-037 | Pass | `fixtures/py-taint` produces query, URL, connection-string, filesystem, safe-validator, and project-level evidence |
+| TypeScript source evidence fixture | M2 HL-031, HL-035, HL-036 | Pass | `fixtures/ts-evidence` produces HTTP, cloud, process, URL, and project-level evidence |
+| Validation asymmetry | M2 HL-038 | Pass | `unsafe_postgres_query` vs `safe_mysql_query` emits `HINTLINT-VALIDATION-ASYMMETRY-001` |
+| Semgrep JSON import | M2 HL-033, HL-034 | Pass | `npm test` imports sample Semgrep JSON and attaches one result to `run_script`; helper result remains `project_evidence` |
+| Semgrep rule pack live execution | M2 HL-031, HL-032 | Pass with environment constraint | `semgrep --version` returned command not found; rule-pack taxonomy inventory is tested but live Semgrep execution was not run |
 
 ## Execution Results
 
 ```text
 npm test
-pass: 6
+pass: 10
 fail: 0
 ```
 
@@ -35,6 +41,11 @@ pass
 ```text
 node src/cli.js fixtures/tools-list/tools-list.json --format json
 pass: 2 metadata-only tools, 0 findings
+```
+
+```text
+semgrep --version
+zsh:1: command not found: semgrep
 ```
 
 ## Waivers

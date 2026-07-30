@@ -5,19 +5,28 @@
   "type": "object",
   "required": [
     "tool",
+    "scope",
     "category",
     "file",
     "line",
     "source",
+    "engine",
+    "rule_id",
     "confidence"
   ],
   "properties": {
-    "tool": { "type": "string" },
+    "tool": { "type": ["string", "null"] },
+    "scope": { "enum": ["tool", "project"] },
     "category": { "type": "string" },
+    "sink_kind": { "type": "string" },
     "sink": { "type": "string" },
     "file": { "type": "string" },
     "line": { "type": "integer", "minimum": 1 },
     "source": { "type": "string" },
+    "engine": { "type": "string" },
+    "rule_id": { "type": "string" },
+    "flow": { "type": "string" },
+    "cwe_id": { "type": ["string", "null"] },
     "confidence": {
       "enum": ["source-backed", "likely", "needs-review", "unknown"]
     },

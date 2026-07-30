@@ -1,6 +1,8 @@
 import { resolve } from "node:path";
+import { readFile } from "node:fs/promises";
 import { discoverProject } from "./project-discovery.js";
 import { analyzeTools } from "./evidence/static-detector.js";
+import { normalizeSemgrepJson } from "./evidence/semgrep-normalizer.js";
 import { scanPython } from "./extractors/python.js";
 import { scanToolsListJson } from "./extractors/tools-list-json.js";
 import { scanTypeScript } from "./extractors/typescript.js";
@@ -15,7 +17,10 @@ export async function runScan(targetPath, options = {}) {
   const extractedTools = [...tsResult.tools, ...pyResult.tools, ...toolsListResult.tools].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
-  const analysis = analyzeTools(extractedTools);
+  const semgrepEvidence = options.semgrepJsonPath
+    ? normalizeSemgrepJson(project, extractedTools, JSON.parse(await readFile(resolve(options.semgrepJsonPath), "utf8")))
+    : [];
+  const analysis = await analyzeTools(project, extractedTools, { semgrepEvidence });
   const tools = analysis.tools;
   const unsupported = [...tsResult.unsupported, ...pyResult.unsupported, ...toolsListResult.unsupported];
   const endedAt = new Date();
@@ -34,9 +39,13 @@ export async function runScan(targetPath, options = {}) {
       handlers_resolved: tools.filter((tool) => tool.handler?.confidence === "resolved").length,
       annotations_present: tools.filter((tool) => Object.keys(tool.declared_annotations).length > 0).length,
       unsupported_patterns: unsupported.length,
+      source_evidence: analysis.evidence.length,
+      project_evidence: analysis.projectEvidence.length,
       findings: analysis.findings.length
     },
     tools,
+    evidence: analysis.evidence,
+    project_evidence: analysis.projectEvidence,
     findings: analysis.findings,
     unsupported,
     options

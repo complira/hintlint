@@ -11,6 +11,8 @@
     "project",
     "summary",
     "tools",
+    "evidence",
+    "project_evidence",
     "findings",
     "unsupported"
   ],
@@ -37,6 +39,8 @@
         "handlers_resolved",
         "annotations_present",
         "unsupported_patterns",
+        "source_evidence",
+        "project_evidence",
         "findings"
       ],
       "properties": {
@@ -44,6 +48,8 @@
         "handlers_resolved": { "type": "integer", "minimum": 0 },
         "annotations_present": { "type": "integer", "minimum": 0 },
         "unsupported_patterns": { "type": "integer", "minimum": 0 },
+        "source_evidence": { "type": "integer", "minimum": 0 },
+        "project_evidence": { "type": "integer", "minimum": 0 },
         "findings": { "type": "integer", "minimum": 0 }
       }
     },
@@ -54,6 +60,14 @@
     "findings": {
       "type": "array",
       "items": { "$ref": "./finding.schema.json" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "./evidence.schema.json" }
+    },
+    "project_evidence": {
+      "type": "array",
+      "items": { "$ref": "./evidence.schema.json" }
     },
     "unsupported": {
       "type": "array",

@@ -144,7 +144,8 @@ function parseToolBlock(project, filePath, sourceFile, block) {
     },
     _analysis: {
       text: block.text,
-      start_line: line
+      start_line: line,
+      end_line: line + block.text.split("\n").length - 1
     }
   };
 }

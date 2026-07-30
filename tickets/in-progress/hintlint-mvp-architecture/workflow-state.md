@@ -53,6 +53,11 @@
 | 2026-07-30 | Stage 7 | Stage 8 | M1 unit, fixture, and direct JSON-file checks passed | `api-e2e-testing.md` |
 | 2026-07-30 | Stage 8 | Stage 9 | M1 code review recorded with non-blocking constraints | `code-review.md` |
 | 2026-07-30 | Stage 9 | Stage 10 | M1 gate recorded and next milestone identified | `m1-gate.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User said "ok move", interpreted as proceed into M2 | `milestones.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | M2 evidence engine, rule pack, fixtures, and tests implemented | `implementation-progress.md`, `test/evidence.test.js` |
+| 2026-07-30 | Stage 7 | Stage 8 | M2 unit and fixture checks passed; Semgrep binary unavailable | `api-e2e-testing.md` |
+| 2026-07-30 | Stage 8 | Stage 9 | M2 code review recorded with Semgrep execution constraint | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | M2 gate recorded and next milestone identified | `m2-gate.md` |
 
 ## Waivers / Violations
 

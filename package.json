@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "node --test",
-    "scan:fixtures": "node src/cli.js fixtures/ts-basic && node src/cli.js fixtures/py-basic && node src/cli.js fixtures/tools-list"
+    "scan:fixtures": "node src/cli.js fixtures/ts-basic && node src/cli.js fixtures/py-basic && node src/cli.js fixtures/tools-list && node src/cli.js fixtures/py-taint && node src/cli.js fixtures/ts-evidence"
   },
   "engines": {
     "node": ">=20"

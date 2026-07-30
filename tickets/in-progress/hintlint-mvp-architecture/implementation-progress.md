@@ -14,20 +14,24 @@
 | 2026-07-30 | Completed CSA methodology alignment | `csa-mcpserver-audit-alignment.md`, `skill-usage.md` | Classified CSA repo as methodology/check framework and mapped useful checks into roadmap | GitHub API metadata and checks/prompts inventory |
 | 2026-07-30 | Committed M0 foundation | repository | Created checkpoint commit `13db164` | `git commit -m "feat: establish hintlint mvp foundation"` |
 | 2026-07-30 | Completed M1 extraction upgrades | `src/extractors/*`, `src/config.js`, `src/cli.js`, `schemas/tool.schema.json`, `fixtures/tools-list/*`, tests | Added metadata-only `tools/list` JSON import, flat config loading, schema source details, and explicit `unknown_handler`/`metadata_only` tiers | `npm test`, `npm run scan:fixtures`, direct JSON-file scan |
+| 2026-07-30 | Implemented M2 evidence engine contract | `src/evidence/*`, `schemas/*`, `src/index.js`, `src/cli.js`, `src/reporters/terminal.js` | Added normalized source evidence, project-level evidence, Semgrep JSON import, source parameter records, sanitizer status, and flow findings | `npm test`, `npm run scan:fixtures` |
+| 2026-07-30 | Added M2 rule pack and fixtures | `rules/semgrep/*`, `fixtures/py-taint/*`, `fixtures/ts-evidence/*`, `test/evidence.test.js` | Covered filesystem, database, HTTP, process, external-send, cloud, query, URL, connection-string, and validation asymmetry taxonomy | `npm test`; Semgrep binary unavailable locally |
 
 ## Test Results
 
-- `npm test`: pass, 6/6 tests.
+- `npm test`: pass, 10/10 tests.
 - `npm run scan:fixtures`: pass.
 - `node src/cli.js --version`: `0.1.0`.
 - `env npm_config_cache=/private/tmp/hintlint-npm-cache npm exec -- hintlint --version`: `0.1.0`.
 - `node src/cli.js fixtures/py-basic --ci --fail-on high`: exits `1` as expected because source-backed high/critical fixture findings exist.
 - `node src/cli.js fixtures/tools-list/tools-list.json --format json`: emits two metadata-only tools and zero findings.
+- `semgrep --version`: command not found. Rule-pack shape and Semgrep JSON normalization are tested, but live Semgrep execution is not validated in this environment.
 
 ## Residual Risks
 
 - Current extractors are MVP text/regex extractors, not full AST parsers.
-- Built-in evidence detector is intentionally shallow; Semgrep/dataflow remains the next engine.
+- Built-in evidence detector is still shallow and line/snippet based; it now emits M2-normalized evidence but is not a replacement for real Semgrep/dataflow execution.
+- Semgrep rule pack has not been live-executed here because Semgrep is not installed.
 - TypeScript overload support is still limited to the fixture-backed SDK patterns.
 - Copied TrainLens skills contain TrainLens/InferLens-specific wording and should be reviewed before treating them as project-native HintLint skills.
 - No SARIF reporter or GitHub Action yet.

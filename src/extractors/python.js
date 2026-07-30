@@ -107,6 +107,7 @@ export async function scanPython(project) {
       const name = parseKeywordString(args, "name") ?? functionName;
       const description = parseKeywordString(args, "description") ?? "";
 
+      const analysisText = `${decorator.text}\n${collectFunctionText(lines, defIndex)}`;
       tools.push({
         name,
         description,
@@ -130,8 +131,9 @@ export async function scanPython(project) {
           pattern: "@tool"
         },
         _analysis: {
-          text: `${decorator.text}\n${collectFunctionText(lines, defIndex)}`,
-          start_line: index + 1
+          text: analysisText,
+          start_line: index + 1,
+          end_line: index + analysisText.split("\n").length
         }
       });
     }

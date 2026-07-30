@@ -10,6 +10,7 @@ HintLint is starting as a local CLI for MCP server authors. The first implementa
 node src/cli.js fixtures/ts-basic
 node src/cli.js fixtures/py-basic --format json
 node src/cli.js fixtures/tools-list
+node src/cli.js fixtures/py-taint
 ```
 
 ## Current Scope
@@ -18,14 +19,16 @@ node src/cli.js fixtures/tools-list
 - Python FastMCP-style `@mcp.tool(...)` extraction.
 - Saved `tools/list` JSON import as metadata-only evidence.
 - Flat `hintlint.yaml`/JSON config for local defaults.
+- Normalized source evidence records for filesystem, database, HTTP, process, external-send, cloud, query, URL, and connection-string sinks.
+- Semgrep-compatible rule pack in `rules/semgrep/hintlint-mcp.yml`.
+- Optional Semgrep JSON import with `--semgrep-json <path>`.
 - Terminal and JSON reports.
 - No-source and unsupported patterns are reported honestly instead of treated as proof.
 
 Planned next:
 
-- Semgrep rule pack.
-- Source-backed annotation drift findings.
-- MCP tool parameter to dangerous sink analysis.
+- Real Semgrep subprocess execution.
+- Deeper handler-to-sink reachability.
 - SARIF and GitHub Action integration.
 
 ## Local Skills
