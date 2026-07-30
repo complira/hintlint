@@ -1,6 +1,6 @@
 {
   "artifact_version": "hintlint.benchmark-summary.v1",
-  "generated_at": "2026-07-30T06:27:00.477Z",
+  "generated_at": "2026-07-30T06:35:50.808Z",
   "manifest": {
     "name": "hintlint-m5-fixture-benchmark",
     "path": "benchmark/manifest.json",

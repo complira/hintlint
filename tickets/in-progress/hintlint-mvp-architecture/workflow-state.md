@@ -73,6 +73,11 @@
 | 2026-07-30 | Stage 7 | Stage 8 | M5 unit, fixture, and benchmark checks passed | `api-e2e-testing.md`, `benchmark/results/summary.json` |
 | 2026-07-30 | Stage 8 | Stage 9 | M5 code review recorded with public-scan and maintainer-PR constraints | `code-review.md` |
 | 2026-07-30 | Stage 9 | Stage 10 | M5 gate recorded and next milestone identified | `m5-gate.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User asked to continue into M6; implement advisory JS/Python ML bridge under scientific-validation constraints | `scientific-validation.md`, `docs/ml-bridge.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | M6 feature export, advisory merge, Python sidecar, Action opt-in ML path, and ML docs implemented | `src/ml/*`, `python/hintlint_ml/*`, `ml/*` |
+| 2026-07-30 | Stage 7 | Stage 8 | M6 unit and Python sidecar bridge checks passed | `api-e2e-testing.md`, `test/ml-bridge.test.js` |
+| 2026-07-30 | Stage 8 | Stage 9 | M6 code review recorded with dataset/model/PyPI constraints | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | M6 gate recorded and next milestone identified | `m6-gate.md` |
 
 ## Waivers / Violations
 

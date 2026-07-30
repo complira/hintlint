@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/ml-feature.schema.json",
+  "title": "HintLint ML Feature Record",
+  "type": "object",
+  "required": ["record_version", "tool", "declared_annotations", "evidence", "text"],
+  "properties": {
+    "record_version": { "const": "hintlint.ml-feature.v1" },
+    "tool": {
+      "type": "object",
+      "required": ["name", "language", "handler_confidence", "parameters"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "language": { "type": "string" },
+        "handler_confidence": { "type": "string" },
+        "parameters": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "source": { "type": "object" }
+      }
+    },
+    "declared_annotations": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["categories", "sink_kinds", "unsafe_flows", "source_backed"],
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "sink_kinds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "unsafe_flows": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "source_backed": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "severity", "confidence"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "severity": { "type": "string" },
+          "confidence": { "type": "string" }
+        }
+      }
+    },
+    "text": { "type": "string" }
+  }
+}

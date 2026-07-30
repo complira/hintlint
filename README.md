@@ -11,6 +11,7 @@ node src/cli.js fixtures/ts-basic
 node src/cli.js fixtures/py-basic --format json
 node src/cli.js fixtures/ts-basic --format sarif --output hintlint.sarif
 node src/cli.js fixtures/ts-basic --format registry --output hintlint.registry.json
+node src/cli.js fixtures/tools-list --format features --output features.jsonl
 node src/cli.js fixtures/tools-list
 node src/cli.js fixtures/py-taint
 npm run benchmark
@@ -46,6 +47,7 @@ jobs:
           fail-on: high
           upload-sarif: "true"
           pr-comment: "true"
+          enable-ml: "false"
 ```
 
 For local development in this repository, replace `hintlint/hintlint@v0` with `./`.
@@ -65,6 +67,7 @@ For local development in this repository, replace `hintlint/hintlint@v0` with `.
 - Registry artifact output for registries, gateways, and governance platforms.
 - Composite GitHub Action that generates SARIF/text reports, can upload SARIF, can comment on pull requests, and applies the conservative CI threshold.
 - Benchmark harness that writes raw reports, registry artifacts, aggregate stats, and an annotation drift report.
+- ML feature export and advisory ML advice merge. Python ML remains optional and advisory-only.
 - No-source and unsupported patterns are reported honestly instead of treated as proof.
 
 Planned next:
@@ -72,7 +75,7 @@ Planned next:
 - Real Semgrep subprocess execution.
 - Deeper handler-to-sink reachability.
 - Public source-available MCP server scan manifest and maintainer PR workflow.
-- Optional Python ML bridge for M6 advisory labels.
+- Real Python model training/evaluation after a manually labeled, package-held-out dataset exists.
 
 ## Local Skills
 
@@ -82,4 +85,5 @@ See also:
 
 - `docs/registry-artifact.md`
 - `docs/ml-bridge.md`
+- `ml/README.md`
 - `benchmark/README.md`

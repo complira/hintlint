@@ -1,0 +1,7 @@
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+hintlint.sarif
+features.jsonl
+ml-advice.jsonl

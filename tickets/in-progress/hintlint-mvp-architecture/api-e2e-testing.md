@@ -39,12 +39,18 @@
 | Maintainer PR workflow | M5 HL-063 | Not executed | Public upstream targets and GitHub remote workflow are not configured in this environment |
 | Partner evidence artifacts | M5 HL-064 | Partial | Fixture-backed registry artifacts exist; external partner artifacts require public source scan manifest |
 | Python ML bridge boundary | M6 prep | Pass | `docs/ml-bridge.md` defines optional Python sidecar boundary and advisory-only confidence tiers |
+| ML feature export | M6 HL-070, HL-071 | Pass | `node src/cli.js fixtures/tools-list --format features` emits `hintlint.ml-feature.v1` JSONL |
+| Python advisory sidecar | M6 HL-072 | Pass with constraints | `test/ml-bridge.test.js` runs `PYTHONPATH=python/hintlint_ml python3 -m hintlint_ml.classify`; output is keyword baseline advice, not trained ML |
+| ML advice merge | M6 HL-075 | Pass | `--ml-advice` attaches advisory records to tools and report metadata |
+| ML cannot create source-backed or CI-failing findings | M6 HL-075 | Pass | Test downgrades malformed `source-backed` ML confidence to `needs_review`; metadata-only target with ML advice exits `0` under `--ci --fail-on info` |
+| Action opt-in ML path | M6 packaging | Pass with environment note | `action.yml` exposes `enable-ml`, setup-python, pip install, feature export, sidecar classify, and merge path; not run in live GitHub Actions |
+| Encoder/cross-encoder validation | M6 HL-073, HL-074 | Not executed | No labeled dataset or model dependencies are present; gate remains pass with constraints |
 
 ## Execution Results
 
 ```text
 npm test
-pass: 17
+pass: 21
 fail: 0
 ```
 

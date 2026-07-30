@@ -3,6 +3,8 @@
 import { writeFile } from "node:fs/promises";
 import { applyConfig, loadConfig } from "./config.js";
 import { runScan } from "./index.js";
+import { mergeMlAdvice, readMlAdvice } from "./ml/advice.js";
+import { renderMlFeatures } from "./ml/features.js";
 import { shouldFail } from "./policy.js";
 import { renderJson } from "./reporters/json.js";
 import { renderRegistryArtifact } from "./reporters/registry-artifact.js";
@@ -18,7 +20,8 @@ function usage() {
     "Options:",
     "  --config <path>       Read hintlint config from a JSON or flat YAML file",
     "  --semgrep-json <path> Import Semgrep JSON and normalize it into evidence records",
-    "  --format <text|json|sarif|registry>",
+    "  --ml-advice <path>    Merge advisory ML JSONL output into the report",
+    "  --format <text|json|sarif|registry|features>",
     "                        Output format. Default: text",
     "  --output <path>        Write report to a file",
     "  --ci                  Use CI exit-code behavior",
@@ -33,6 +36,7 @@ function parseArgs(argv) {
     target: null,
     config: null,
     semgrepJsonPath: null,
+    mlAdvicePath: null,
     format: "text",
     output: null,
     ci: false,
@@ -67,6 +71,11 @@ function parseArgs(argv) {
       args._explicit.add("semgrepJsonPath");
       continue;
     }
+    if (arg === "--ml-advice") {
+      args.mlAdvicePath = argv[++i];
+      args._explicit.add("mlAdvicePath");
+      continue;
+    }
     if (arg === "--ci") {
       args.ci = true;
       args._explicit.add("ci");
@@ -94,7 +103,7 @@ function parseArgs(argv) {
 }
 
 function validateArgs(args) {
-  if (!["text", "json", "sarif", "registry"].includes(args.format)) {
+  if (!["text", "json", "sarif", "registry", "features"].includes(args.format)) {
     throw new Error(`Unsupported format: ${args.format}`);
   }
   if (!["info", "low", "medium", "high", "critical"].includes(args.failOn)) {
@@ -117,13 +126,17 @@ async function main() {
   const effectiveArgs = applyConfig(args, loadedConfig.config);
   validateArgs(effectiveArgs);
 
-  const report = await runScan(effectiveArgs.target, {
+  let report = await runScan(effectiveArgs.target, {
     config: loadedConfig.path,
     ci: effectiveArgs.ci,
     failOn: effectiveArgs.failOn,
     semgrepJsonPath: effectiveArgs.semgrepJsonPath
   });
+  if (effectiveArgs.mlAdvicePath) {
+    report = mergeMlAdvice(report, await readMlAdvice(effectiveArgs.mlAdvicePath));
+  }
   const rendered = {
+    features: () => renderMlFeatures(report),
     json: () => renderJson(report),
     registry: () => renderRegistryArtifact(report),
     sarif: () => renderSarif(report),

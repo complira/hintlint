@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/ml-advice.schema.json",
+  "title": "HintLint ML Advice Record",
+  "type": "object",
+  "required": ["record_version", "tool", "confidence", "labels", "reason", "model"],
+  "properties": {
+    "record_version": { "const": "hintlint.ml-advice.v1" },
+    "tool": { "type": "string" },
+    "confidence": { "enum": ["likely", "needs_review", "unknown"] },
+    "labels": {
+      "type": "object",
+      "properties": {
+        "read_only": { "type": "boolean" },
+        "writes_internal_state": { "type": "boolean" },
+        "external_side_effect": { "type": "boolean" },
+        "destructive": { "type": "boolean" },
+        "open_world": { "type": "boolean" },
+        "requires_human_approval": { "type": "boolean" }
+      }
+    },
+    "reason": { "type": "string" },
+    "model": {
+      "type": "object",
+      "required": ["name", "version", "kind"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "kind": { "type": "string" }
+      }
+    },
+    "features": { "type": "object" }
+  }
+}

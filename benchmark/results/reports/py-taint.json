@@ -1,6 +1,6 @@
 {
   "hintlint_version": "0.1.0",
-  "scan_started_at": "2026-07-30T06:27:00.489Z",
+  "scan_started_at": "2026-07-30T06:35:50.822Z",
   "scan_duration_ms": 2,
   "target": "fixtures/py-taint",
   "project": {

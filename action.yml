@@ -42,6 +42,18 @@ inputs:
     description: Node.js version used to run HintLint.
     required: false
     default: "20"
+  enable-ml:
+    description: Run optional advisory ML sidecar and merge ML advice into reports.
+    required: false
+    default: "false"
+  python-version:
+    description: Python version used when enable-ml is true.
+    required: false
+    default: "3.12"
+  ml-package:
+    description: PyPI package spec for the optional ML sidecar.
+    required: false
+    default: "hintlint-ml==0.1.0"
 
 outputs:
   sarif:
@@ -59,6 +71,21 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
+    - name: Set up Python
+      if: ${{ inputs.enable-ml == 'true' }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install HintLint ML sidecar
+      if: ${{ inputs.enable-ml == 'true' }}
+      shell: bash
+      env:
+        HINTLINT_ML_PACKAGE: ${{ inputs.ml-package }}
+      run: |
+        set -euo pipefail
+        python -m pip install "$HINTLINT_ML_PACKAGE"
+
     - id: scan
       name: Generate HintLint reports
       shell: bash
@@ -68,6 +95,7 @@ runs:
         HINTLINT_SEMGREP_JSON: ${{ inputs.semgrep-json }}
         HINTLINT_SARIF_OUTPUT: ${{ inputs.sarif-output }}
         HINTLINT_TEXT_OUTPUT: ${{ inputs.text-output }}
+        HINTLINT_ENABLE_ML: ${{ inputs.enable-ml }}
       run: |
         set -euo pipefail
 
@@ -79,8 +107,15 @@ runs:
           base_args+=("--semgrep-json" "$HINTLINT_SEMGREP_JSON")
         fi
 
-        node "$GITHUB_ACTION_PATH/src/cli.js" "${base_args[@]}" --format sarif --output "$HINTLINT_SARIF_OUTPUT"
-        node "$GITHUB_ACTION_PATH/src/cli.js" "${base_args[@]}" --format text --output "$HINTLINT_TEXT_OUTPUT"
+        ml_args=()
+        if [ "$HINTLINT_ENABLE_ML" = "true" ]; then
+          node "$GITHUB_ACTION_PATH/src/cli.js" "${base_args[@]}" --format features --output hintlint-features.jsonl
+          python -m hintlint_ml.classify --input hintlint-features.jsonl --output hintlint-ml-advice.jsonl
+          ml_args=("--ml-advice" "hintlint-ml-advice.jsonl")
+        fi
+
+        node "$GITHUB_ACTION_PATH/src/cli.js" "${base_args[@]}" "${ml_args[@]}" --format sarif --output "$HINTLINT_SARIF_OUTPUT"
+        node "$GITHUB_ACTION_PATH/src/cli.js" "${base_args[@]}" "${ml_args[@]}" --format text --output "$HINTLINT_TEXT_OUTPUT"
 
         echo "sarif=$HINTLINT_SARIF_OUTPUT" >> "$GITHUB_OUTPUT"
         echo "summary=$HINTLINT_TEXT_OUTPUT" >> "$GITHUB_OUTPUT"
@@ -137,6 +172,7 @@ runs:
         HINTLINT_CONFIG: ${{ inputs.config }}
         HINTLINT_SEMGREP_JSON: ${{ inputs.semgrep-json }}
         HINTLINT_FAIL_ON: ${{ inputs.fail-on }}
+        HINTLINT_ENABLE_ML: ${{ inputs.enable-ml }}
       run: |
         set -euo pipefail
 
@@ -148,4 +184,9 @@ runs:
           gate_args+=("--semgrep-json" "$HINTLINT_SEMGREP_JSON")
         fi
 
-        node "$GITHUB_ACTION_PATH/src/cli.js" "${gate_args[@]}" --format json --output hintlint-gate.json --ci --fail-on "$HINTLINT_FAIL_ON"
+        ml_args=()
+        if [ "$HINTLINT_ENABLE_ML" = "true" ] && [ -f hintlint-ml-advice.jsonl ]; then
+          ml_args=("--ml-advice" "hintlint-ml-advice.jsonl")
+        fi
+
+        node "$GITHUB_ACTION_PATH/src/cli.js" "${gate_args[@]}" "${ml_args[@]}" --format json --output hintlint-gate.json --ci --fail-on "$HINTLINT_FAIL_ON"

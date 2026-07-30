@@ -20,12 +20,17 @@
 | 2026-07-30 | Added stable report snapshots | `test/report-snapshots.test.js`, `test/snapshots/*` | Snapshot-tested compact JSON finding contract and normalized terminal report output | `npm test` |
 | 2026-07-30 | Implemented M4 CI and distribution surface | `src/reporters/sarif.js`, `src/policy.js`, `src/cli.js`, `action.yml`, `.github/workflows/ci.yml`, tests | Added SARIF output, conservative CI fail policy module, composite GitHub Action, CI workflow, and local/Action docs | `npm test`, `npm run scan:fixtures`, SARIF generation, YAML parse, `git diff --check` |
 | 2026-07-30 | Implemented M5 evidence/adoption harness | `benchmark/*`, `scripts/scan-benchmark.js`, `src/reporters/registry-artifact.js`, `docs/*`, schemas, tests | Added benchmark manifest/schema, registry artifact schema/reporter/CLI format, reproducible benchmark scan script, generated drift report, and JS/Python ML bridge docs | `npm test`, `npm run scan:fixtures`, `npm run benchmark` |
+| 2026-07-30 | Implemented M6 advisory ML bridge | `src/ml/*`, `python/hintlint_ml/*`, `ml/*`, `schemas/ml-*.schema.json`, `action.yml`, tests | Added JS feature export, advisory ML advice merge, Python sidecar keyword baseline, labeling rubric, evaluation plan, and Action opt-in ML path | `npm test`, Python sidecar smoke, YAML parse |
 
 ## Test Results
 
-- `npm test`: pass, 17/17 tests.
+- `npm test`: pass, 21/21 tests.
 - `npm run scan:fixtures`: pass.
 - `npm run benchmark`: pass; generated fixture benchmark report with 4 servers, 17 tools, 14 source-backed findings, 6 annotation drift findings, 7 unsafe-flow findings.
+- `node src/cli.js fixtures/tools-list --format features`: emits `hintlint.ml-feature.v1` JSONL.
+- `PYTHONPATH=python/hintlint_ml python3 -m hintlint_ml.classify --input <features> --output <advice>`: pass in tests.
+- `node src/cli.js fixtures/tools-list --ml-advice <advice> --format json`: merges advisory-only ML output.
+- ML-only advice cannot fail CI; malformed `source-backed` ML confidence is downgraded to `needs_review`.
 - `node src/cli.js --version`: `0.1.0`.
 - `env npm_config_cache=/private/tmp/hintlint-npm-cache npm exec -- hintlint --version`: `0.1.0`.
 - `node src/cli.js fixtures/py-basic --ci --fail-on high`: exits `1` as expected because source-backed high/critical fixture findings exist.
@@ -48,3 +53,5 @@
 - GitHub Action metadata is static-tested and YAML-parse-tested locally, but it has not run inside GitHub Actions yet.
 - M5 generated report is fixture-backed and explicitly not a public ecosystem prevalence claim.
 - No upstream maintainer PRs or partner conversations have been opened from this environment.
+- M6 Python sidecar is a local scaffold, not a published PyPI package.
+- M6 keyword baseline is not a validated ML model and must not be used for product claims.

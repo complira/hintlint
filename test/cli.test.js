@@ -49,6 +49,18 @@ test("CLI emits registry artifact", async () => {
   assert.ok(artifact.tools.some((tool) => tool.name === "delete_customer" && tool.finding_count === 1));
 });
 
+test("CLI emits ML feature JSONL", async () => {
+  const { stdout } = await execFileAsync("node", [
+    "src/cli.js",
+    "fixtures/tools-list",
+    "--format",
+    "features"
+  ]);
+  const records = stdout.trim().split("\n").map((line) => JSON.parse(line));
+  assert.equal(records.length, 2);
+  assert.equal(records[0].record_version, "hintlint.ml-feature.v1");
+});
+
 test("CLI emits terminal report", async () => {
   const { stdout } = await execFileAsync("node", ["src/cli.js", "fixtures/py-basic"]);
   assert.match(stdout, /HintLint Report/);

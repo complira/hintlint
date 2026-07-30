@@ -9,7 +9,8 @@
   "scripts": {
     "test": "node --test",
     "scan:fixtures": "node src/cli.js fixtures/ts-basic && node src/cli.js fixtures/py-basic && node src/cli.js fixtures/tools-list && node src/cli.js fixtures/py-taint && node src/cli.js fixtures/ts-evidence",
-    "benchmark": "node scripts/scan-benchmark.js"
+    "benchmark": "node scripts/scan-benchmark.js",
+    "ml:features": "node src/cli.js fixtures/tools-list --format features"
   },
   "engines": {
     "node": ">=20"

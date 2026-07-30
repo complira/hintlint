@@ -37,18 +37,19 @@ ML output must never create `source-backed` findings. It can only emit:
 
 CI failure must remain deterministic and source-backed by default.
 
-## First Implementation Shape
+## Current Implementation Shape
 
-Future M6 package:
+Local bridge:
 
 ```bash
-node src/cli.js ./server --format json --output hintlint.json
-python -m hintlint_ml.features --input hintlint.json --output features.jsonl
-python -m hintlint_ml.classify --input features.jsonl --output ml-advice.jsonl
+node src/cli.js ./server --format features --output features.jsonl
+PYTHONPATH=python/hintlint_ml python3 -m hintlint_ml.classify --input features.jsonl --output ml-advice.jsonl
 node src/cli.js ./server --ml-advice ml-advice.jsonl
 ```
 
 Training and evaluation stay in Python. If inference distribution later becomes painful, export the calibrated model to ONNX or a service interface. That should be a later optimization after the model proves value.
+
+The current Python sidecar is a dependency-free keyword baseline. It exists to prove packaging and safety boundaries, not to claim model performance.
 
 ## GitHub Actions Packaging
 

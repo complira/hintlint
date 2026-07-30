@@ -137,3 +137,24 @@ Required:
 ## Decision Rationale
 
 Proceed with ML research and dataset collection, but do not ship ML-backed enforcement in MVP. The first public version should be deterministic and evidence-first. ML becomes useful after the benchmark exists and only as an advisory/ranking layer.
+
+## M6 Implementation Gate
+
+Implemented scope:
+
+- JS feature export through `--format features`.
+- JS advisory merge through `--ml-advice`.
+- Python `hintlint-ml` sidecar scaffold with dependency-free keyword baseline.
+- GitHub Action opt-in inputs for future Python sidecar execution.
+- Labeling rubric and evaluation plan.
+
+Constraints:
+
+- No encoder or cross-encoder model is trained.
+- No 500-tool labeled dataset exists yet.
+- No package-held-out ML validation is claimed.
+- Keyword baseline output is advisory only.
+- ML advice cannot create `source-backed` findings.
+- ML advice cannot fail CI by default.
+
+Gate remains `Pass with constraints`.
