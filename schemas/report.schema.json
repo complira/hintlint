@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/report.schema.json",
+  "title": "HintLint Report",
+  "type": "object",
+  "required": [
+    "hintlint_version",
+    "scan_started_at",
+    "scan_duration_ms",
+    "target",
+    "project",
+    "summary",
+    "tools",
+    "findings",
+    "unsupported"
+  ],
+  "properties": {
+    "hintlint_version": { "type": "string" },
+    "scan_started_at": { "type": "string" },
+    "scan_duration_ms": { "type": "integer", "minimum": 0 },
+    "target": { "type": "string" },
+    "project": {
+      "type": "object",
+      "required": ["languages", "files_scanned"],
+      "properties": {
+        "languages": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "files_scanned": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "tools_scanned",
+        "handlers_resolved",
+        "annotations_present",
+        "unsupported_patterns",
+        "findings"
+      ],
+      "properties": {
+        "tools_scanned": { "type": "integer", "minimum": 0 },
+        "handlers_resolved": { "type": "integer", "minimum": 0 },
+        "annotations_present": { "type": "integer", "minimum": 0 },
+        "unsupported_patterns": { "type": "integer", "minimum": 0 },
+        "findings": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "./tool.schema.json" }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "./finding.schema.json" }
+    },
+    "unsupported": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "line", "reason"],
+        "properties": {
+          "file": { "type": "string" },
+          "line": { "type": "integer", "minimum": 1 },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

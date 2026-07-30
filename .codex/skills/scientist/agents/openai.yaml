@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scientist"
+  short_description: "Review plans, code, and benchmarks for scientific rigor."
+  default_prompt: "Use the scientist skill to evaluate this plan or implementation for hypotheses, baselines, metrics, statistical validity, causal claims, evidence gaps, and overclaims."

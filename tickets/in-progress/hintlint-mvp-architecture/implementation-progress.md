@@ -1,0 +1,29 @@
+# Implementation Progress
+
+| Time | Step | Files | Result | Verification |
+| --- | --- | --- | --- | --- |
+| 2026-07-30 | Entered implementation mode | `workflow-state.md` | Source edits unlocked for M0/M1 implementation | Stage 5 review gate was `Go Confirmed` |
+| 2026-07-30 | Initialized git repository | `.git` | Created repo and switched to `feat/hintlint-mvp-foundation` | `git status --short` shows tracked worktree state |
+| 2026-07-30 | Copied TrainLens Codex skills | `.codex/skills/*/SKILL.md` | Copied `model-specialist`, `scientist`, and `gpu-specialist` | `find .codex/skills -maxdepth 2 -type f` |
+| 2026-07-30 | Added dependency-light Node CLI | `package.json`, `src/cli.js`, `src/index.js` | `hintlint <target>` supports text/json output and CI exit behavior | `node src/cli.js --version` |
+| 2026-07-30 | Added project discovery and extractors | `src/project-discovery.js`, `src/extractors/*` | Extracts TypeScript and Python MCP tool metadata from fixtures | `npm test` |
+| 2026-07-30 | Added schemas and fixtures | `schemas/*`, `fixtures/*` | Report, tool, and finding schema contracts plus TS/Python fixtures | `npm run scan:fixtures` |
+| 2026-07-30 | Added built-in static evidence detector | `src/evidence/static-detector.js`, reporters, tests | Produces false-readonly, false-open-world, process-flow, and filesystem-flow findings on fixtures | `npm test`, `npm run scan:fixtures` |
+| 2026-07-30 | Completed M0 fixture/schema gaps | `fixtures/ts-basic/src/server.ts`, `schemas/evidence.schema.json`, `schemas/finding.schema.json` | Added additive write fixture, dynamic unsupported fixture, evidence schema, and optional CWE/CVSS/AIVSS fields | `npm test`, `npm run scan:fixtures` |
+| 2026-07-30 | Ran direct competitor fixture teardown | `mcp-security-auditor-teardown.md` | Downloaded source, inspected analyzer approach, ran CLI against TS/Python fixtures using isolated local shim | `/private/tmp/hintlint-competitors/mcp-security-auditor-*.json` |
+| 2026-07-30 | Completed CSA methodology alignment | `csa-mcpserver-audit-alignment.md`, `skill-usage.md` | Classified CSA repo as methodology/check framework and mapped useful checks into roadmap | GitHub API metadata and checks/prompts inventory |
+
+## Test Results
+
+- `npm test`: pass, 4/4 tests.
+- `npm run scan:fixtures`: pass.
+- `node src/cli.js --version`: `0.1.0`.
+- `env npm_config_cache=/private/tmp/hintlint-npm-cache npm exec -- hintlint --version`: `0.1.0`.
+- `node src/cli.js fixtures/py-basic --ci --fail-on high`: exits `1` as expected because source-backed high/critical fixture findings exist.
+
+## Residual Risks
+
+- Current extractors are MVP text/regex extractors, not full AST parsers.
+- Built-in evidence detector is intentionally shallow; Semgrep/dataflow remains the next engine.
+- Copied TrainLens skills contain TrainLens/InferLens-specific wording and should be reviewed before treating them as project-native HintLint skills.
+- No SARIF reporter or GitHub Action yet.

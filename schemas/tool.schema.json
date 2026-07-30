@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/tool.schema.json",
+  "title": "HintLint Tool Record",
+  "type": "object",
+  "required": [
+    "name",
+    "language",
+    "source",
+    "input_schema",
+    "declared_annotations",
+    "handler",
+    "extraction"
+  ],
+  "properties": {
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "language": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["file", "line"],
+      "properties": {
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "input_schema": {
+      "type": "object",
+      "required": ["parameter_names"],
+      "properties": {
+        "parameter_names": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "declared_annotations": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "handler": {
+      "type": "object",
+      "required": ["file", "line", "confidence"],
+      "properties": {
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "symbol": { "type": ["string", "null"] },
+        "confidence": { "enum": ["resolved", "unknown"] }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "required": ["extractor", "pattern"],
+      "properties": {
+        "extractor": { "type": "string" },
+        "pattern": { "type": "string" }
+      }
+    }
+  }
+}

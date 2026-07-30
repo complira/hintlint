@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/finding.schema.json",
+  "title": "HintLint Finding",
+  "type": "object",
+  "required": [
+    "id",
+    "severity",
+    "type",
+    "tool",
+    "confidence",
+    "evidence",
+    "message"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "severity": { "enum": ["info", "low", "medium", "high", "critical"] },
+    "type": { "type": "string" },
+    "tool": { "type": "string" },
+    "confidence": { "enum": ["source-backed", "likely", "needs-review", "unknown"] },
+    "message": { "type": "string" },
+    "cwe_id": { "type": ["string", "null"] },
+    "cvss_score": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+    "aivss_score": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+    "standards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "id"],
+        "properties": {
+          "name": { "type": "string" },
+          "id": { "type": "string" },
+          "url": { "type": "string" }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "./evidence.schema.json" }
+    },
+    "suggested_annotations": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    }
+  }
+}

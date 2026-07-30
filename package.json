@@ -1,0 +1,17 @@
+{
+  "name": "hintlint",
+  "version": "0.1.0",
+  "description": "Verify MCP tool hints and capabilities against source evidence.",
+  "type": "module",
+  "bin": {
+    "hintlint": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "scan:fixtures": "node src/cli.js fixtures/ts-basic && node src/cli.js fixtures/py-basic"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}

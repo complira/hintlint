@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/evidence.schema.json",
+  "title": "HintLint Evidence Record",
+  "type": "object",
+  "required": [
+    "tool",
+    "category",
+    "file",
+    "line",
+    "source",
+    "confidence"
+  ],
+  "properties": {
+    "tool": { "type": "string" },
+    "category": { "type": "string" },
+    "sink": { "type": "string" },
+    "file": { "type": "string" },
+    "line": { "type": "integer", "minimum": 1 },
+    "source": { "type": "string" },
+    "confidence": {
+      "enum": ["source-backed", "likely", "needs-review", "unknown"]
+    },
+    "trace": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source_parameter": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "schema_path": { "type": "string" },
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "sanitizer": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": ["found", "not_found", "not_applicable", "unknown"]
+        },
+        "expected": { "type": "string" }
+      }
+    }
+  }
+}
