@@ -1,0 +1,424 @@
+{
+  "artifact_version": "hintlint.registry-artifact.v1",
+  "generated_at": "2026-07-30T06:27:00.477Z",
+  "hintlint_version": "0.1.0",
+  "server": {
+    "id": "ts-evidence",
+    "name": "TypeScript MCP source evidence fixture",
+    "source": {
+      "kind": "local",
+      "path": "../fixtures/ts-evidence"
+    },
+    "tags": [
+      "fixture",
+      "typescript",
+      "unsafe-flow"
+    ]
+  },
+  "summary": {
+    "tools_scanned": 3,
+    "source_evidence": 4,
+    "project_evidence": 1,
+    "findings": 4,
+    "source_backed_findings": 4,
+    "highest_severity": "critical"
+  },
+  "tools": [
+    {
+      "name": "delete_branch",
+      "language": "typescript",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "finding_count": 1,
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": true,
+        "destructive_action": true,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": true,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [],
+        "evidence_categories": [
+          "cloud_mutation"
+        ],
+        "confidence": "source-backed"
+      },
+      "source": {
+        "file": "src/server.ts",
+        "line": 30
+      }
+    },
+    {
+      "name": "run_script",
+      "language": "typescript",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true
+      },
+      "finding_count": 1,
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": true,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "process"
+        ],
+        "evidence_categories": [
+          "process_execution"
+        ],
+        "confidence": "source-backed"
+      },
+      "source": {
+        "file": "src/server.ts",
+        "line": 51
+      }
+    },
+    {
+      "name": "update_issue",
+      "language": "typescript",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "finding_count": 2,
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "writes_internal_state": true,
+        "external_side_effect": true,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": true,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": true,
+        "connection_string": false,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "http_mutation",
+          "url_construction"
+        ],
+        "confidence": "source-backed"
+      },
+      "source": {
+        "file": "src/server.ts",
+        "line": 7
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "HINTLINT-DESTRUCTIVE-001",
+      "severity": "high",
+      "type": "missing_or_false_destructive_hint",
+      "tool": "delete_branch",
+      "confidence": "source-backed",
+      "message": "Tool 'delete_branch' reaches destructive or process-execution evidence but does not declare destructiveHint=true.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": true,
+        "destructive_action": true,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": true,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [],
+        "evidence_categories": [
+          "cloud_mutation"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "cloud_mutation",
+          "sink_kind": "destructive",
+          "sink": "deleteRef",
+          "file": "src/server.ts",
+          "line": 46,
+          "rule_id": "hintlint.cloud.mutation",
+          "confidence": "source-backed",
+          "sanitizer_status": "not_applicable"
+        }
+      ],
+      "suggested_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true
+      },
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set destructiveHint=true and require approval before automatic invocation.",
+        "suggested_annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "openWorldHint": true
+        }
+      }
+    },
+    {
+      "id": "HINTLINT-FLOW-PROCESS-001",
+      "severity": "critical",
+      "type": "tool_input_to_process_execution",
+      "tool": "run_script",
+      "confidence": "source-backed",
+      "message": "Tool 'run_script' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": true,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "process"
+        ],
+        "evidence_categories": [
+          "process_execution"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "process_execution",
+          "sink_kind": "execute",
+          "sink": "child_process.exec(",
+          "file": "src/server.ts",
+          "line": 65,
+          "rule_id": "hintlint.process.execution",
+          "confidence": "source-backed",
+          "source_parameter": "command",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "source_parameter": {
+        "name": "command",
+        "schema_path": "$.tools[?(@.name==\"run_script\")].input_schema.parameter_names[?(@==\"command\")]",
+        "file": "src/server.ts",
+        "line": 51
+      },
+      "dangerous_sink": {
+        "category": "process_execution",
+        "sink_kind": "execute",
+        "sink": "child_process.exec(",
+        "file": "src/server.ts",
+        "line": 65,
+        "rule_id": "hintlint.process.execution"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "server-side command allowlist"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Add a server-side command allowlist before invoking process execution.",
+        "guidance": "Accept a fixed command enum or map caller intent to approved subcommands; never pass raw tool input to exec/spawn."
+      },
+      "cwe_id": "CWE-78"
+    },
+    {
+      "id": "HINTLINT-OPEN-WORLD-001",
+      "severity": "medium",
+      "type": "false_open_world",
+      "tool": "update_issue",
+      "confidence": "source-backed",
+      "message": "Tool 'update_issue' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "writes_internal_state": true,
+        "external_side_effect": true,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": true,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": true,
+        "connection_string": false,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "http_mutation",
+          "url_construction"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "http_mutation",
+          "sink_kind": "external_mutation",
+          "sink": "fetch(url, { method: \"PATCH\"",
+          "file": "src/server.ts",
+          "line": 25,
+          "rule_id": "hintlint.http.mutation",
+          "confidence": "source-backed",
+          "sanitizer_status": "not_applicable"
+        },
+        {
+          "category": "url_construction",
+          "sink_kind": "external_boundary",
+          "sink": "https://api.github.com/repos/${owner}/${repo}/issues/${",
+          "file": "src/server.ts",
+          "line": 24,
+          "rule_id": "hintlint.url.user-controlled",
+          "confidence": "source-backed",
+          "source_parameter": "owner",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "suggested_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set openWorldHint=true because the handler crosses a network or external boundary.",
+        "suggested_annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": true
+        }
+      }
+    },
+    {
+      "id": "HINTLINT-FLOW-URL-001",
+      "severity": "high",
+      "type": "tool_input_to_url_construction",
+      "tool": "update_issue",
+      "confidence": "source-backed",
+      "message": "Tool 'update_issue' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "writes_internal_state": true,
+        "external_side_effect": true,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": true,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": true,
+        "connection_string": false,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "http_mutation",
+          "url_construction"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "url_construction",
+          "sink_kind": "external_boundary",
+          "sink": "https://api.github.com/repos/${owner}/${repo}/issues/${",
+          "file": "src/server.ts",
+          "line": 24,
+          "rule_id": "hintlint.url.user-controlled",
+          "confidence": "source-backed",
+          "source_parameter": "owner",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "source_parameter": {
+        "name": "owner",
+        "schema_path": "$.tools[?(@.name==\"update_issue\")].input_schema.parameter_names[?(@==\"owner\")]",
+        "file": "src/server.ts",
+        "line": 7
+      },
+      "dangerous_sink": {
+        "category": "url_construction",
+        "sink_kind": "external_boundary",
+        "sink": "https://api.github.com/repos/${owner}/${repo}/issues/${",
+        "file": "src/server.ts",
+        "line": 24,
+        "rule_id": "hintlint.url.user-controlled"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "strict host or resource-name allowlist"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Validate host/resource names with a strict allowlist before constructing outbound URLs.",
+        "guidance": "For cloud resource names, enforce provider-specific regexes and reject full URLs unless the endpoint is pre-approved."
+      },
+      "cwe_id": "CWE-918"
+    }
+  ]
+}

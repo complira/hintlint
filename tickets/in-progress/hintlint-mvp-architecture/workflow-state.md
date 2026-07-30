@@ -68,6 +68,11 @@
 | 2026-07-30 | Stage 7 | Stage 8 | M4 unit, fixture, SARIF, CI policy, and YAML checks passed | `api-e2e-testing.md` |
 | 2026-07-30 | Stage 8 | Stage 9 | M4 code review recorded with live GitHub Action and Semgrep execution constraints | `code-review.md` |
 | 2026-07-30 | Stage 9 | Stage 10 | M4 gate recorded and next milestone identified | `m4-gate.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User said "next"; proceed into M5 public evidence/adoption loop with local reproducibility constraints | `milestones.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | M5 benchmark, registry artifact, report generation, docs, and ML bridge artifacts implemented | `scripts/scan-benchmark.js`, `docs/registry-artifact.md`, `docs/ml-bridge.md` |
+| 2026-07-30 | Stage 7 | Stage 8 | M5 unit, fixture, and benchmark checks passed | `api-e2e-testing.md`, `benchmark/results/summary.json` |
+| 2026-07-30 | Stage 8 | Stage 9 | M5 code review recorded with public-scan and maintainer-PR constraints | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | M5 gate recorded and next milestone identified | `m5-gate.md` |
 
 ## Waivers / Violations
 

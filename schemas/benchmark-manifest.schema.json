@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/benchmark-manifest.schema.json",
+  "title": "HintLint Benchmark Manifest",
+  "type": "object",
+  "required": ["manifest_version", "name", "servers"],
+  "properties": {
+    "manifest_version": { "const": "hintlint.benchmark.v1" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "methodology": {
+      "type": "object",
+      "properties": {
+        "scope": { "type": "string" },
+        "claim_level": { "enum": ["fixture", "curated", "public-ecosystem"] },
+        "evidence_policy": { "type": "string" }
+      }
+    },
+    "servers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "source", "enabled"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "enabled": { "type": "boolean" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "source": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": { "enum": ["local", "git"] },
+              "path": { "type": "string" },
+              "url": { "type": "string" },
+              "commit": { "type": "string" },
+              "ref": { "type": "string" }
+            }
+          },
+          "expected": {
+            "type": "object",
+            "properties": {
+              "tools_min": { "type": "integer", "minimum": 0 },
+              "source_backed_findings_min": { "type": "integer", "minimum": 0 },
+              "notes": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

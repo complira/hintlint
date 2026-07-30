@@ -5,6 +5,7 @@ import { applyConfig, loadConfig } from "./config.js";
 import { runScan } from "./index.js";
 import { shouldFail } from "./policy.js";
 import { renderJson } from "./reporters/json.js";
+import { renderRegistryArtifact } from "./reporters/registry-artifact.js";
 import { renderSarif } from "./reporters/sarif.js";
 import { renderTerminal } from "./reporters/terminal.js";
 
@@ -17,7 +18,7 @@ function usage() {
     "Options:",
     "  --config <path>       Read hintlint config from a JSON or flat YAML file",
     "  --semgrep-json <path> Import Semgrep JSON and normalize it into evidence records",
-    "  --format <text|json|sarif>",
+    "  --format <text|json|sarif|registry>",
     "                        Output format. Default: text",
     "  --output <path>        Write report to a file",
     "  --ci                  Use CI exit-code behavior",
@@ -93,7 +94,7 @@ function parseArgs(argv) {
 }
 
 function validateArgs(args) {
-  if (!["text", "json", "sarif"].includes(args.format)) {
+  if (!["text", "json", "sarif", "registry"].includes(args.format)) {
     throw new Error(`Unsupported format: ${args.format}`);
   }
   if (!["info", "low", "medium", "high", "critical"].includes(args.failOn)) {
@@ -124,6 +125,7 @@ async function main() {
   });
   const rendered = {
     json: () => renderJson(report),
+    registry: () => renderRegistryArtifact(report),
     sarif: () => renderSarif(report),
     text: () => renderTerminal(report)
   }[effectiveArgs.format]();

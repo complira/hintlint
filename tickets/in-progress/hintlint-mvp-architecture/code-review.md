@@ -10,7 +10,9 @@
 | Medium | `src/evidence/static-detector.js` | M2 evidence still uses built-in snippet/line matching for fixture execution; Semgrep JSON import is normalized, but Semgrep is not run as a subprocess yet. | Add real Semgrep execution and compare built-in vs Semgrep outputs before public scans. |
 | Medium | `rules/semgrep/hintlint-mcp.yml` | Semgrep binary is not installed locally, so the rule pack was not live-validated with Semgrep. | Validate the rule pack in an environment with Semgrep before publishing it as independently runnable. |
 | Medium | `action.yml` | The composite GitHub Action is static- and YAML-parse-tested locally, but not exercised in a real pull request, so upload/comment permissions are not yet runtime-verified. | Run the action in GitHub Actions with `upload-sarif` and `pr-comment` enabled before claiming production CI readiness. |
-| Medium | `src/evidence/static-detector.js` | Finding generation and evidence detection still live in the same module even though behavior inference has been split out. | Move annotation and unsafe-flow comparators into separate modules before M5 public scan work expands reporting and benchmark artifacts. |
+| Medium | `benchmark/manifest.json`, `benchmark/results/*` | The M5 benchmark is fixture-backed. It validates the evidence pipeline, but it is not public ecosystem evidence. | Add pinned external MCP repositories before publishing prevalence stats or opening maintainer PRs. |
+| Medium | `src/evidence/static-detector.js` | Finding generation and evidence detection still live in the same module even though behavior inference has been split out. | Move annotation and unsafe-flow comparators into separate modules before external public scans expand reporting and benchmark artifacts. |
+| Medium | `scripts/scan-benchmark.js` | The benchmark harness scans local checkouts only and does not clone/pin remote repositories itself. | Keep this default for safety, but add a documented fetch/pin workflow when public scans start. |
 | Low | `src/evidence/static-detector.js` | Validator recognition is intentionally heuristic and local to handler snippets. | Keep sanitizer status as evidence metadata, not proof of complete safety. |
 | Low | `src/reporters/sarif.js` | SARIF output is intentionally minimal and maps each finding to the first evidence location plus related locations. | Add schema validation or GitHub upload validation once CI credentials are available. |
 | Low | `src/config.js` | YAML support intentionally handles only flat key/value config. | Document this as MVP config behavior and avoid accepting nested policy config until a parser or typed config model exists. |
@@ -33,9 +35,13 @@ M3 follow-up review: pass with constraints. Findings now include declared annota
 
 M4 follow-up review: pass with constraints. SARIF output, conservative CI threshold handling, Action metadata, PR-comment/upload paths, CI workflow, and quickstart docs are implemented and locally tested. The remaining constraints are live GitHub Action execution and live Semgrep execution.
 
+M5 follow-up review: pass with constraints. Benchmark schema, local source-available manifest, reproducible scan script, generated aggregate report, registry artifact schema/reporter, CLI `--format registry`, registry docs, and ML bridge docs are implemented and tested. The remaining constraints are external public scans, upstream maintainer PRs, and partner-specific artifacts.
+
 ## Follow-Up
 
 - Add live Semgrep subprocess execution and rule-pack validation.
 - Split comparator modules before expanding output formats.
 - Run the composite GitHub Action in an actual pull request with SARIF upload and PR comments enabled.
+- Add pinned public MCP server checkouts to `benchmark/manifest.json` before publishing external stats.
+- Open maintainer PRs only after manually reviewing each source-backed finding.
 - Add JSON Schema validation for report artifacts.

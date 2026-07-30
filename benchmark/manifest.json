@@ -1,0 +1,77 @@
+{
+  "$schema": "../schemas/benchmark-manifest.schema.json",
+  "manifest_version": "hintlint.benchmark.v1",
+  "name": "hintlint-m5-fixture-benchmark",
+  "description": "Fixture-backed benchmark used to validate the public evidence pipeline before scanning external MCP servers.",
+  "methodology": {
+    "scope": "Local source-available fixtures. This is a reproducibility harness, not an ecosystem prevalence claim.",
+    "claim_level": "fixture",
+    "evidence_policy": "Only source-backed findings are counted as annotation drift or unsafe-flow evidence."
+  },
+  "servers": [
+    {
+      "id": "ts-basic",
+      "name": "TypeScript MCP annotation fixture",
+      "description": "Covers TypeScript read-only drift, external side effects, additive writes, and unsupported dynamic tool registration.",
+      "enabled": true,
+      "tags": ["fixture", "typescript", "annotations"],
+      "source": {
+        "kind": "local",
+        "path": "../fixtures/ts-basic"
+      },
+      "expected": {
+        "tools_min": 5,
+        "source_backed_findings_min": 2,
+        "notes": "Expected to emit false readOnlyHint and false openWorldHint findings."
+      }
+    },
+    {
+      "id": "py-basic",
+      "name": "Python MCP unsafe flow fixture",
+      "description": "Covers Python process execution and filesystem write flows from MCP parameters.",
+      "enabled": true,
+      "tags": ["fixture", "python", "unsafe-flow"],
+      "source": {
+        "kind": "local",
+        "path": "../fixtures/py-basic"
+      },
+      "expected": {
+        "tools_min": 3,
+        "source_backed_findings_min": 2,
+        "notes": "Expected to emit process and filesystem unsafe-flow findings."
+      }
+    },
+    {
+      "id": "py-taint",
+      "name": "Python MCP taint and validation fixture",
+      "description": "Covers query, URL, connection-string, validator, and validation-asymmetry cases.",
+      "enabled": true,
+      "tags": ["fixture", "python", "taint", "validation"],
+      "source": {
+        "kind": "local",
+        "path": "../fixtures/py-taint"
+      },
+      "expected": {
+        "tools_min": 6,
+        "source_backed_findings_min": 5,
+        "notes": "Expected to emit query, URL, connection-string, annotation drift, and validation-asymmetry findings."
+      }
+    },
+    {
+      "id": "ts-evidence",
+      "name": "TypeScript MCP source evidence fixture",
+      "description": "Covers HTTP mutation, cloud destructive calls, process execution, URL construction, and project-level evidence.",
+      "enabled": true,
+      "tags": ["fixture", "typescript", "unsafe-flow"],
+      "source": {
+        "kind": "local",
+        "path": "../fixtures/ts-evidence"
+      },
+      "expected": {
+        "tools_min": 3,
+        "source_backed_findings_min": 4,
+        "notes": "Expected to emit destructive hint, process, open-world, and URL flow findings."
+      }
+    }
+  ]
+}

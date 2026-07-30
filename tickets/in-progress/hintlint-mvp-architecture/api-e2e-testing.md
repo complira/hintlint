@@ -32,12 +32,19 @@
 | Conservative CI threshold | M4 HL-053 | Pass | `test/policy.test.js`; `fixtures/tools-list --ci --fail-on high` exits `0`, `fixtures/py-basic --ci --fail-on high` exits `1` |
 | GitHub Action metadata | M4 HL-054 | Pass with environment note | `test/action.test.js` checks setup-node, SARIF, upload, PR comment, and CI gate paths; YAML parse succeeded |
 | Standalone Semgrep rule-pack docs | M4 HL-060 | Pass with environment constraint | `rules/semgrep/README.md` documents direct Semgrep invocation; live Semgrep execution remains deferred |
+| Benchmark manifest schema | M5 HL-061 | Pass | `schemas/benchmark-manifest.schema.json`, `benchmark/manifest.json`, `test/benchmark.test.js` |
+| Reproducible benchmark scan script | M5 HL-062 | Pass | `npm run benchmark` scans 4 enabled source-available fixture entries |
+| Annotation Drift Report generation | M5 HL-062 | Pass with scope constraint | `benchmark/results/annotation-drift-report.md` includes aggregate stats and methodology for fixture-backed run |
+| Registry artifact format | M5 HL-064 | Pass | `schemas/registry-artifact.schema.json`, `docs/registry-artifact.md`, `--format registry`, benchmark registry artifacts |
+| Maintainer PR workflow | M5 HL-063 | Not executed | Public upstream targets and GitHub remote workflow are not configured in this environment |
+| Partner evidence artifacts | M5 HL-064 | Partial | Fixture-backed registry artifacts exist; external partner artifacts require public source scan manifest |
+| Python ML bridge boundary | M6 prep | Pass | `docs/ml-bridge.md` defines optional Python sidecar boundary and advisory-only confidence tiers |
 
 ## Execution Results
 
 ```text
 npm test
-pass: 15
+pass: 17
 fail: 0
 ```
 
@@ -59,6 +66,11 @@ zsh:1: command not found: semgrep
 ```text
 ruby -e 'require "yaml"; YAML.load_file("action.yml"); YAML.load_file(".github/workflows/ci.yml"); puts "yaml ok"'
 pass
+```
+
+```text
+npm run benchmark
+pass: 4 servers, 17 tools, 14 source-backed findings
 ```
 
 ## Waivers

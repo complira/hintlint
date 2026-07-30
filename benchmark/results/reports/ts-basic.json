@@ -1,0 +1,418 @@
+{
+  "hintlint_version": "0.1.0",
+  "scan_started_at": "2026-07-30T06:27:00.477Z",
+  "scan_duration_ms": 9,
+  "target": "fixtures/ts-basic",
+  "project": {
+    "languages": [
+      "typescript"
+    ],
+    "files_scanned": 2
+  },
+  "summary": {
+    "tools_scanned": 5,
+    "handlers_resolved": 4,
+    "annotations_present": 4,
+    "unsupported_patterns": 1,
+    "source_evidence": 4,
+    "project_evidence": 0,
+    "findings": 2
+  },
+  "tools": [
+    {
+      "name": "<dynamic:dynamicToolName>",
+      "description": "Dynamically registered tool that should not be treated as source-backed proof.",
+      "language": "typescript",
+      "source": {
+        "file": "src/server.ts",
+        "line": 83
+      },
+      "input_schema": {
+        "parameter_names": [
+          "value"
+        ],
+        "schema_format": "typescript-expression",
+        "schema_source": "{\n    value: z.string()\n  }"
+      },
+      "declared_annotations": {},
+      "handler": {
+        "file": "src/server.ts",
+        "line": 83,
+        "symbol": null,
+        "confidence": "unknown_handler"
+      },
+      "extraction": {
+        "extractor": "typescript-regex-mvp",
+        "pattern": "tool",
+        "name_expression": "dynamicToolName",
+        "dynamic_name": true
+      }
+    },
+    {
+      "name": "create_customer",
+      "description": "Create a customer record.",
+      "language": "typescript",
+      "source": {
+        "file": "src/server.ts",
+        "line": 41
+      },
+      "input_schema": {
+        "parameter_names": [
+          "email",
+          "name"
+        ],
+        "schema_format": "typescript-expression",
+        "schema_source": "{\n    name: z.string(),\n    email: z.string()\n  }"
+      },
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "handler": {
+        "file": "src/server.ts",
+        "line": 41,
+        "symbol": null,
+        "confidence": "resolved"
+      },
+      "extraction": {
+        "extractor": "typescript-regex-mvp",
+        "pattern": "tool",
+        "name_expression": null,
+        "dynamic_name": false
+      }
+    },
+    {
+      "name": "delete_customer",
+      "description": "Delete a customer record.",
+      "language": "typescript",
+      "source": {
+        "file": "src/server.ts",
+        "line": 23
+      },
+      "input_schema": {
+        "parameter_names": [
+          "customerId"
+        ],
+        "schema_format": "typescript-expression",
+        "schema_source": "{\n    customerId: z.string()\n  }"
+      },
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      },
+      "handler": {
+        "file": "src/server.ts",
+        "line": 23,
+        "symbol": null,
+        "confidence": "resolved"
+      },
+      "extraction": {
+        "extractor": "typescript-regex-mvp",
+        "pattern": "tool",
+        "name_expression": null,
+        "dynamic_name": false
+      }
+    },
+    {
+      "name": "list_customers",
+      "description": "List customers without mutating state.",
+      "language": "typescript",
+      "source": {
+        "file": "src/server.ts",
+        "line": 6
+      },
+      "input_schema": {
+        "parameter_names": [
+          "query"
+        ],
+        "schema_format": "typescript-expression",
+        "schema_source": "{\n    query: z.string().optional()\n  }"
+      },
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "handler": {
+        "file": "src/server.ts",
+        "line": 6,
+        "symbol": null,
+        "confidence": "resolved"
+      },
+      "extraction": {
+        "extractor": "typescript-regex-mvp",
+        "pattern": "tool",
+        "name_expression": null,
+        "dynamic_name": false
+      }
+    },
+    {
+      "name": "send_invoice_email",
+      "description": "Send an invoice email.",
+      "language": "typescript",
+      "source": {
+        "file": "src/server.ts",
+        "line": 61
+      },
+      "input_schema": {
+        "parameter_names": [
+          "invoiceId",
+          "recipient"
+        ],
+        "schema_format": "typescript-expression",
+        "schema_source": "{\n      recipient: z.string(),\n      invoiceId: z.string()\n    }"
+      },
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "handler": {
+        "file": "src/server.ts",
+        "line": 61,
+        "symbol": null,
+        "confidence": "resolved"
+      },
+      "extraction": {
+        "extractor": "typescript-regex-mvp",
+        "pattern": "registerTool",
+        "name_expression": null,
+        "dynamic_name": false
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "tool": "create_customer",
+      "scope": "tool",
+      "category": "database_mutation",
+      "sink_kind": "write",
+      "sink": "db.customer.create(",
+      "file": "src/server.ts",
+      "line": 56,
+      "source": "builtin-static-m2",
+      "engine": "builtin",
+      "rule_id": "hintlint.database.write",
+      "confidence": "source-backed",
+      "sanitizer": {
+        "status": "not_applicable",
+        "expected": "not applicable"
+      }
+    },
+    {
+      "tool": "delete_customer",
+      "scope": "tool",
+      "category": "database_mutation",
+      "sink_kind": "destructive",
+      "sink": "db.customer.delete(",
+      "file": "src/server.ts",
+      "line": 36,
+      "source": "builtin-static-m2",
+      "engine": "builtin",
+      "rule_id": "hintlint.database.destructive",
+      "confidence": "source-backed",
+      "sanitizer": {
+        "status": "not_applicable",
+        "expected": "not applicable"
+      }
+    },
+    {
+      "tool": "delete_customer",
+      "scope": "tool",
+      "category": "cloud_mutation",
+      "sink_kind": "destructive",
+      "sink": "deleted",
+      "file": "src/server.ts",
+      "line": 37,
+      "source": "builtin-static-m2",
+      "engine": "builtin",
+      "rule_id": "hintlint.cloud.mutation",
+      "confidence": "source-backed",
+      "sanitizer": {
+        "status": "not_applicable",
+        "expected": "not applicable"
+      }
+    },
+    {
+      "tool": "send_invoice_email",
+      "scope": "tool",
+      "category": "external_send",
+      "sink_kind": "external_mutation",
+      "sink": "sendgrid.send(",
+      "file": "src/server.ts",
+      "line": 76,
+      "source": "builtin-static-m2",
+      "engine": "builtin",
+      "rule_id": "hintlint.external.send",
+      "confidence": "source-backed",
+      "sanitizer": {
+        "status": "not_applicable",
+        "expected": "not applicable"
+      }
+    }
+  ],
+  "project_evidence": [],
+  "findings": [
+    {
+      "id": "HINTLINT-READONLY-001",
+      "severity": "high",
+      "type": "false_readonly",
+      "tool": "delete_customer",
+      "confidence": "source-backed",
+      "confidence_tier": "source-backed",
+      "message": "Tool 'delete_customer' declares readOnlyHint=true but source evidence shows state mutation, external side effect, or process execution.",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true,
+        "writes_internal_state": true,
+        "external_side_effect": true,
+        "destructive_action": true,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": true,
+        "http_mutation": false,
+        "cloud_mutation": true,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [],
+        "evidence_categories": [
+          "cloud_mutation",
+          "database_mutation"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "tool": "delete_customer",
+          "scope": "tool",
+          "category": "database_mutation",
+          "sink_kind": "destructive",
+          "sink": "db.customer.delete(",
+          "file": "src/server.ts",
+          "line": 36,
+          "source": "builtin-static-m2",
+          "engine": "builtin",
+          "rule_id": "hintlint.database.destructive",
+          "confidence": "source-backed",
+          "sanitizer": {
+            "status": "not_applicable",
+            "expected": "not applicable"
+          }
+        },
+        {
+          "tool": "delete_customer",
+          "scope": "tool",
+          "category": "cloud_mutation",
+          "sink_kind": "destructive",
+          "sink": "deleted",
+          "file": "src/server.ts",
+          "line": 37,
+          "source": "builtin-static-m2",
+          "engine": "builtin",
+          "rule_id": "hintlint.cloud.mutation",
+          "confidence": "source-backed",
+          "sanitizer": {
+            "status": "not_applicable",
+            "expected": "not applicable"
+          }
+        }
+      ],
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set readOnlyHint=false and align destructive/open-world hints with the verified behavior.",
+        "suggested_annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "openWorldHint": true
+        }
+      },
+      "suggested_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "id": "HINTLINT-OPEN-WORLD-001",
+      "severity": "medium",
+      "type": "false_open_world",
+      "tool": "send_invoice_email",
+      "confidence": "source-backed",
+      "confidence_tier": "source-backed",
+      "message": "Tool 'send_invoice_email' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": true,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [],
+        "evidence_categories": [
+          "external_send"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "tool": "send_invoice_email",
+          "scope": "tool",
+          "category": "external_send",
+          "sink_kind": "external_mutation",
+          "sink": "sendgrid.send(",
+          "file": "src/server.ts",
+          "line": 76,
+          "source": "builtin-static-m2",
+          "engine": "builtin",
+          "rule_id": "hintlint.external.send",
+          "confidence": "source-backed",
+          "sanitizer": {
+            "status": "not_applicable",
+            "expected": "not applicable"
+          }
+        }
+      ],
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set openWorldHint=true because the handler crosses a network or external boundary.",
+        "suggested_annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": true
+        }
+      },
+      "suggested_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      }
+    }
+  ],
+  "unsupported": [
+    {
+      "file": "src/server.ts",
+      "line": 83,
+      "reason": "Dynamic TypeScript tool name; handler evidence is not treated as source-backed"
+    }
+  ],
+  "options": {}
+}

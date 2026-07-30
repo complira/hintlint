@@ -1,0 +1,347 @@
+{
+  "hintlint_version": "0.1.0",
+  "scan_started_at": "2026-07-30T06:27:00.487Z",
+  "scan_duration_ms": 2,
+  "target": "fixtures/py-basic",
+  "project": {
+    "languages": [
+      "python"
+    ],
+    "files_scanned": 1
+  },
+  "summary": {
+    "tools_scanned": 3,
+    "handlers_resolved": 3,
+    "annotations_present": 3,
+    "unsupported_patterns": 0,
+    "source_evidence": 2,
+    "project_evidence": 0,
+    "findings": 2
+  },
+  "tools": [
+    {
+      "name": "download_artifact",
+      "description": "Download an artifact to a destination path.",
+      "language": "python",
+      "source": {
+        "file": "server.py",
+        "line": 24
+      },
+      "input_schema": {
+        "parameter_names": [
+          "artifact_name",
+          "destination_path"
+        ],
+        "schema_format": "python-signature",
+        "schema_source": "def download_artifact(destination_path: str, artifact_name: str) -> str:"
+      },
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      },
+      "handler": {
+        "file": "server.py",
+        "line": 28,
+        "symbol": "download_artifact",
+        "confidence": "resolved"
+      },
+      "extraction": {
+        "extractor": "python-decorator-mvp",
+        "pattern": "@tool"
+      }
+    },
+    {
+      "name": "run_az_command",
+      "description": "Run an Azure CLI command.",
+      "language": "python",
+      "source": {
+        "file": "server.py",
+        "line": 15
+      },
+      "input_schema": {
+        "parameter_names": [
+          "command"
+        ],
+        "schema_format": "python-signature",
+        "schema_source": "def run_az_command(command: str) -> str:"
+      },
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true
+      },
+      "handler": {
+        "file": "server.py",
+        "line": 20,
+        "symbol": "run_az_command",
+        "confidence": "resolved"
+      },
+      "extraction": {
+        "extractor": "python-decorator-mvp",
+        "pattern": "@tool"
+      }
+    },
+    {
+      "name": "search_docs",
+      "description": "Search local docs.",
+      "language": "python",
+      "source": {
+        "file": "server.py",
+        "line": 6
+      },
+      "input_schema": {
+        "parameter_names": [
+          "query"
+        ],
+        "schema_format": "python-signature",
+        "schema_source": "def search_docs(query: str) -> str:"
+      },
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "handler": {
+        "file": "server.py",
+        "line": 11,
+        "symbol": "search_docs",
+        "confidence": "resolved"
+      },
+      "extraction": {
+        "extractor": "python-decorator-mvp",
+        "pattern": "@tool"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "tool": "download_artifact",
+      "scope": "tool",
+      "category": "filesystem_mutation",
+      "sink_kind": "write",
+      "sink": "os.path.abspath(",
+      "file": "server.py",
+      "line": 29,
+      "source": "builtin-static-m2",
+      "engine": "builtin",
+      "rule_id": "hintlint.filesystem.mutation",
+      "confidence": "source-backed",
+      "sanitizer": {
+        "status": "not_found",
+        "expected": "path root containment with an allowed base directory"
+      },
+      "flow": "filesystem",
+      "source_parameter": {
+        "name": "destination_path",
+        "schema_path": "$.tools[?(@.name==\"download_artifact\")].input_schema.parameter_names[?(@==\"destination_path\")]",
+        "file": "server.py",
+        "line": 24
+      },
+      "cwe_id": "CWE-22"
+    },
+    {
+      "tool": "run_az_command",
+      "scope": "tool",
+      "category": "process_execution",
+      "sink_kind": "execute",
+      "sink": "subprocess.run(",
+      "file": "server.py",
+      "line": 21,
+      "source": "builtin-static-m2",
+      "engine": "builtin",
+      "rule_id": "hintlint.process.execution",
+      "confidence": "source-backed",
+      "sanitizer": {
+        "status": "not_found",
+        "expected": "server-side command allowlist"
+      },
+      "flow": "process",
+      "source_parameter": {
+        "name": "command",
+        "schema_path": "$.tools[?(@.name==\"run_az_command\")].input_schema.parameter_names[?(@==\"command\")]",
+        "file": "server.py",
+        "line": 15
+      },
+      "cwe_id": "CWE-78"
+    }
+  ],
+  "project_evidence": [],
+  "findings": [
+    {
+      "id": "HINTLINT-FLOW-FILESYSTEM-001",
+      "severity": "high",
+      "type": "tool_input_to_filesystem_write",
+      "tool": "download_artifact",
+      "confidence": "source-backed",
+      "confidence_tier": "source-backed",
+      "message": "Tool 'download_artifact' has path-like MCP parameters and reaches filesystem write/path operations. Validate containment under an allowed root before writing.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "writes_internal_state": true,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": true,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "filesystem"
+        ],
+        "evidence_categories": [
+          "filesystem_mutation"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "tool": "download_artifact",
+          "scope": "tool",
+          "category": "filesystem_mutation",
+          "sink_kind": "write",
+          "sink": "os.path.abspath(",
+          "file": "server.py",
+          "line": 29,
+          "source": "builtin-static-m2",
+          "engine": "builtin",
+          "rule_id": "hintlint.filesystem.mutation",
+          "confidence": "source-backed",
+          "sanitizer": {
+            "status": "not_found",
+            "expected": "path root containment with an allowed base directory"
+          },
+          "flow": "filesystem",
+          "source_parameter": {
+            "name": "destination_path",
+            "schema_path": "$.tools[?(@.name==\"download_artifact\")].input_schema.parameter_names[?(@==\"destination_path\")]",
+            "file": "server.py",
+            "line": 24
+          },
+          "cwe_id": "CWE-22"
+        }
+      ],
+      "cwe_id": "CWE-22",
+      "source_parameter": {
+        "name": "destination_path",
+        "schema_path": "$.tools[?(@.name==\"download_artifact\")].input_schema.parameter_names[?(@==\"destination_path\")]",
+        "file": "server.py",
+        "line": 24
+      },
+      "dangerous_sink": {
+        "category": "filesystem_mutation",
+        "sink_kind": "write",
+        "sink": "os.path.abspath(",
+        "file": "server.py",
+        "line": 29,
+        "rule_id": "hintlint.filesystem.mutation"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "path root containment with an allowed base directory"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Resolve destination paths under an allowed root and reject traversal before writing.",
+        "guidance": "Join caller paths to a configured base directory, normalize, then verify containment before mkdir/open/write."
+      }
+    },
+    {
+      "id": "HINTLINT-FLOW-PROCESS-001",
+      "severity": "critical",
+      "type": "tool_input_to_process_execution",
+      "tool": "run_az_command",
+      "confidence": "source-backed",
+      "confidence_tier": "source-backed",
+      "message": "Tool 'run_az_command' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": true,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "process"
+        ],
+        "evidence_categories": [
+          "process_execution"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "tool": "run_az_command",
+          "scope": "tool",
+          "category": "process_execution",
+          "sink_kind": "execute",
+          "sink": "subprocess.run(",
+          "file": "server.py",
+          "line": 21,
+          "source": "builtin-static-m2",
+          "engine": "builtin",
+          "rule_id": "hintlint.process.execution",
+          "confidence": "source-backed",
+          "sanitizer": {
+            "status": "not_found",
+            "expected": "server-side command allowlist"
+          },
+          "flow": "process",
+          "source_parameter": {
+            "name": "command",
+            "schema_path": "$.tools[?(@.name==\"run_az_command\")].input_schema.parameter_names[?(@==\"command\")]",
+            "file": "server.py",
+            "line": 15
+          },
+          "cwe_id": "CWE-78"
+        }
+      ],
+      "cwe_id": "CWE-78",
+      "source_parameter": {
+        "name": "command",
+        "schema_path": "$.tools[?(@.name==\"run_az_command\")].input_schema.parameter_names[?(@==\"command\")]",
+        "file": "server.py",
+        "line": 15
+      },
+      "dangerous_sink": {
+        "category": "process_execution",
+        "sink_kind": "execute",
+        "sink": "subprocess.run(",
+        "file": "server.py",
+        "line": 21,
+        "rule_id": "hintlint.process.execution"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "server-side command allowlist"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Add a server-side command allowlist before invoking process execution.",
+        "guidance": "Accept a fixed command enum or map caller intent to approved subcommands; never pass raw tool input to exec/spawn."
+      }
+    }
+  ],
+  "unsupported": [],
+  "options": {}
+}

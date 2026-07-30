@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/registry-artifact.schema.json",
+  "title": "HintLint Registry Artifact",
+  "type": "object",
+  "required": [
+    "artifact_version",
+    "generated_at",
+    "hintlint_version",
+    "server",
+    "summary",
+    "tools",
+    "findings"
+  ],
+  "properties": {
+    "artifact_version": { "const": "hintlint.registry-artifact.v1" },
+    "generated_at": { "type": "string" },
+    "hintlint_version": { "type": "string" },
+    "server": {
+      "type": "object",
+      "required": ["id", "name", "source"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "source": {
+          "type": "object",
+          "properties": {
+            "kind": { "type": "string" },
+            "path": { "type": "string" },
+            "url": { "type": "string" },
+            "commit": { "type": "string" },
+            "ref": { "type": "string" }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "tools_scanned",
+        "source_evidence",
+        "project_evidence",
+        "findings",
+        "source_backed_findings",
+        "highest_severity"
+      ],
+      "properties": {
+        "tools_scanned": { "type": "integer", "minimum": 0 },
+        "source_evidence": { "type": "integer", "minimum": 0 },
+        "project_evidence": { "type": "integer", "minimum": 0 },
+        "findings": { "type": "integer", "minimum": 0 },
+        "source_backed_findings": { "type": "integer", "minimum": 0 },
+        "highest_severity": { "enum": ["none", "info", "low", "medium", "high", "critical"] }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "language", "handler_confidence", "declared_annotations"],
+        "properties": {
+          "name": { "type": "string" },
+          "language": { "type": "string" },
+          "handler_confidence": { "type": "string" },
+          "declared_annotations": {
+            "type": "object",
+            "additionalProperties": { "type": "boolean" }
+          },
+          "finding_count": { "type": "integer", "minimum": 0 },
+          "verified_behavior": { "type": "object" }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "type", "tool", "confidence", "message"],
+        "properties": {
+          "id": { "type": "string" },
+          "severity": { "type": "string" },
+          "type": { "type": "string" },
+          "tool": { "type": "string" },
+          "confidence": { "type": "string" },
+          "message": { "type": "string" },
+          "evidence": { "type": "array" },
+          "suggested_annotations": { "type": "object" },
+          "repair": { "type": "object" }
+        }
+      }
+    }
+  }
+}

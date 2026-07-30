@@ -19,16 +19,19 @@
 | 2026-07-30 | Completed M3 annotation verifier contract | `src/evidence/behavior.js`, `src/evidence/static-detector.js`, `schemas/finding.schema.json`, `src/reporters/terminal.js` | Findings now include declared annotations, verified behavior, confidence tier, structured flow details, repair guidance, and suggested annotation patches | `npm test`, `npm run scan:fixtures` |
 | 2026-07-30 | Added stable report snapshots | `test/report-snapshots.test.js`, `test/snapshots/*` | Snapshot-tested compact JSON finding contract and normalized terminal report output | `npm test` |
 | 2026-07-30 | Implemented M4 CI and distribution surface | `src/reporters/sarif.js`, `src/policy.js`, `src/cli.js`, `action.yml`, `.github/workflows/ci.yml`, tests | Added SARIF output, conservative CI fail policy module, composite GitHub Action, CI workflow, and local/Action docs | `npm test`, `npm run scan:fixtures`, SARIF generation, YAML parse, `git diff --check` |
+| 2026-07-30 | Implemented M5 evidence/adoption harness | `benchmark/*`, `scripts/scan-benchmark.js`, `src/reporters/registry-artifact.js`, `docs/*`, schemas, tests | Added benchmark manifest/schema, registry artifact schema/reporter/CLI format, reproducible benchmark scan script, generated drift report, and JS/Python ML bridge docs | `npm test`, `npm run scan:fixtures`, `npm run benchmark` |
 
 ## Test Results
 
-- `npm test`: pass, 15/15 tests.
+- `npm test`: pass, 17/17 tests.
 - `npm run scan:fixtures`: pass.
+- `npm run benchmark`: pass; generated fixture benchmark report with 4 servers, 17 tools, 14 source-backed findings, 6 annotation drift findings, 7 unsafe-flow findings.
 - `node src/cli.js --version`: `0.1.0`.
 - `env npm_config_cache=/private/tmp/hintlint-npm-cache npm exec -- hintlint --version`: `0.1.0`.
 - `node src/cli.js fixtures/py-basic --ci --fail-on high`: exits `1` as expected because source-backed high/critical fixture findings exist.
 - `node src/cli.js fixtures/tools-list --ci --fail-on high`: exits `0` because metadata-only input has no source-backed findings.
 - `node src/cli.js fixtures/ts-basic --format sarif --output /private/tmp/hintlint-ts-basic.sarif`: pass.
+- `node src/cli.js fixtures/ts-basic --format registry`: emits `hintlint.registry-artifact.v1`.
 - `ruby -e 'require "yaml"; YAML.load_file("action.yml"); YAML.load_file(".github/workflows/ci.yml"); puts "yaml ok"'`: pass.
 - `git diff --check`: pass.
 - `node src/cli.js fixtures/tools-list/tools-list.json --format json`: emits two metadata-only tools and zero findings.
@@ -43,3 +46,5 @@
 - TypeScript overload support is still limited to the fixture-backed SDK patterns.
 - Copied TrainLens skills contain TrainLens/InferLens-specific wording and should be reviewed before treating them as project-native HintLint skills.
 - GitHub Action metadata is static-tested and YAML-parse-tested locally, but it has not run inside GitHub Actions yet.
+- M5 generated report is fixture-backed and explicitly not a public ecosystem prevalence claim.
+- No upstream maintainer PRs or partner conversations have been opened from this environment.

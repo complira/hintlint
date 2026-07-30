@@ -35,6 +35,20 @@ test("CLI emits SARIF report", async () => {
   assert.ok(report.runs[0].results.some((result) => result.ruleId === "HINTLINT-READONLY-001"));
 });
 
+test("CLI emits registry artifact", async () => {
+  const { stdout } = await execFileAsync("node", [
+    "src/cli.js",
+    "fixtures/ts-basic",
+    "--format",
+    "registry"
+  ]);
+  const artifact = JSON.parse(stdout);
+  assert.equal(artifact.artifact_version, "hintlint.registry-artifact.v1");
+  assert.equal(artifact.summary.tools_scanned, 5);
+  assert.equal(artifact.summary.source_backed_findings, 2);
+  assert.ok(artifact.tools.some((tool) => tool.name === "delete_customer" && tool.finding_count === 1));
+});
+
 test("CLI emits terminal report", async () => {
   const { stdout } = await execFileAsync("node", ["src/cli.js", "fixtures/py-basic"]);
   assert.match(stdout, /HintLint Report/);

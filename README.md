@@ -10,8 +10,10 @@ HintLint is starting as a local CLI for MCP server authors. The first implementa
 node src/cli.js fixtures/ts-basic
 node src/cli.js fixtures/py-basic --format json
 node src/cli.js fixtures/ts-basic --format sarif --output hintlint.sarif
+node src/cli.js fixtures/ts-basic --format registry --output hintlint.registry.json
 node src/cli.js fixtures/tools-list
 node src/cli.js fixtures/py-taint
+npm run benchmark
 ```
 
 CI mode fails only on source-backed findings at or above the configured threshold:
@@ -60,15 +62,24 @@ For local development in this repository, replace `hintlint/hintlint@v0` with `.
 - Annotation drift findings include declared hints, verified behavior, source evidence, confidence tier, and suggested annotation patches.
 - Unsafe-flow findings include source parameter, dangerous sink, validator status, and repair guidance.
 - Terminal, JSON, and SARIF reports.
+- Registry artifact output for registries, gateways, and governance platforms.
 - Composite GitHub Action that generates SARIF/text reports, can upload SARIF, can comment on pull requests, and applies the conservative CI threshold.
+- Benchmark harness that writes raw reports, registry artifacts, aggregate stats, and an annotation drift report.
 - No-source and unsupported patterns are reported honestly instead of treated as proof.
 
 Planned next:
 
 - Real Semgrep subprocess execution.
 - Deeper handler-to-sink reachability.
-- Public benchmark schema and reproducible scan scripts.
+- Public source-available MCP server scan manifest and maintainer PR workflow.
+- Optional Python ML bridge for M6 advisory labels.
 
 ## Local Skills
 
 Project-local Codex skills copied from `../trainlens/.codex/skills` live in `.codex/skills/`. They are retained as implementation review aids, especially the `scientist` skill for keeping ML and benchmark claims conservative.
+
+See also:
+
+- `docs/registry-artifact.md`
+- `docs/ml-bridge.md`
+- `benchmark/README.md`

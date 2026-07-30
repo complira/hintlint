@@ -1,0 +1,383 @@
+{
+  "artifact_version": "hintlint.benchmark-summary.v1",
+  "generated_at": "2026-07-30T06:27:00.477Z",
+  "manifest": {
+    "name": "hintlint-m5-fixture-benchmark",
+    "path": "benchmark/manifest.json",
+    "claim_level": "fixture",
+    "scope": "Local source-available fixtures. This is a reproducibility harness, not an ecosystem prevalence claim."
+  },
+  "totals": {
+    "servers_configured": 4,
+    "servers_scanned": 4,
+    "servers_skipped": 0,
+    "servers_failed": 0,
+    "tools_scanned": 17,
+    "handlers_resolved": 16,
+    "source_evidence": 16,
+    "project_evidence": 2,
+    "findings": 14,
+    "source_backed_findings": 14,
+    "annotation_drift_findings": 6,
+    "unsafe_flow_findings": 7,
+    "validation_findings": 1
+  },
+  "counts_by_severity": {
+    "critical": 3,
+    "high": 7,
+    "medium": 4
+  },
+  "counts_by_finding_id": {
+    "HINTLINT-DESTRUCTIVE-001": 1,
+    "HINTLINT-FLOW-CONNECTION-001": 1,
+    "HINTLINT-FLOW-FILESYSTEM-001": 1,
+    "HINTLINT-FLOW-PROCESS-001": 2,
+    "HINTLINT-FLOW-QUERY-001": 1,
+    "HINTLINT-FLOW-URL-001": 2,
+    "HINTLINT-OPEN-WORLD-001": 3,
+    "HINTLINT-READONLY-001": 2,
+    "HINTLINT-VALIDATION-ASYMMETRY-001": 1
+  },
+  "counts_by_finding_type": {
+    "false_open_world": 3,
+    "false_readonly": 2,
+    "missing_or_false_destructive_hint": 1,
+    "tool_input_to_connection_string": 1,
+    "tool_input_to_filesystem_write": 1,
+    "tool_input_to_process_execution": 2,
+    "tool_input_to_query_execution": 1,
+    "tool_input_to_url_construction": 2,
+    "validation_asymmetry": 1
+  },
+  "servers": [
+    {
+      "id": "ts-basic",
+      "name": "TypeScript MCP annotation fixture",
+      "tags": [
+        "fixture",
+        "typescript",
+        "annotations"
+      ],
+      "tools_scanned": 5,
+      "source_evidence": 4,
+      "findings": 2,
+      "source_backed_findings": 2,
+      "raw_report": "benchmark/results/reports/ts-basic.json",
+      "registry_artifact": "benchmark/results/registry/ts-basic.registry.json"
+    },
+    {
+      "id": "py-basic",
+      "name": "Python MCP unsafe flow fixture",
+      "tags": [
+        "fixture",
+        "python",
+        "unsafe-flow"
+      ],
+      "tools_scanned": 3,
+      "source_evidence": 2,
+      "findings": 2,
+      "source_backed_findings": 2,
+      "raw_report": "benchmark/results/reports/py-basic.json",
+      "registry_artifact": "benchmark/results/registry/py-basic.registry.json"
+    },
+    {
+      "id": "py-taint",
+      "name": "Python MCP taint and validation fixture",
+      "tags": [
+        "fixture",
+        "python",
+        "taint",
+        "validation"
+      ],
+      "tools_scanned": 6,
+      "source_evidence": 6,
+      "findings": 6,
+      "source_backed_findings": 6,
+      "raw_report": "benchmark/results/reports/py-taint.json",
+      "registry_artifact": "benchmark/results/registry/py-taint.registry.json"
+    },
+    {
+      "id": "ts-evidence",
+      "name": "TypeScript MCP source evidence fixture",
+      "tags": [
+        "fixture",
+        "typescript",
+        "unsafe-flow"
+      ],
+      "tools_scanned": 3,
+      "source_evidence": 4,
+      "findings": 4,
+      "source_backed_findings": 4,
+      "raw_report": "benchmark/results/reports/ts-evidence.json",
+      "registry_artifact": "benchmark/results/registry/ts-evidence.registry.json"
+    }
+  ],
+  "top_findings": [
+    {
+      "server_id": "py-basic",
+      "server_name": "Python MCP unsafe flow fixture",
+      "id": "HINTLINT-FLOW-PROCESS-001",
+      "severity": "critical",
+      "type": "tool_input_to_process_execution",
+      "tool": "run_az_command",
+      "confidence": "source-backed",
+      "message": "Tool 'run_az_command' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 21,
+          "category": "process_execution",
+          "sink": "subprocess.run("
+        }
+      ]
+    },
+    {
+      "server_id": "py-taint",
+      "server_name": "Python MCP taint and validation fixture",
+      "id": "HINTLINT-FLOW-QUERY-001",
+      "severity": "critical",
+      "type": "tool_input_to_query_execution",
+      "tool": "unsafe_postgres_query",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_postgres_query' has query-like MCP parameters and reaches query execution without recognized binding or allowlist validation.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 21,
+          "category": "query_execution",
+          "sink": "conn.execute(query"
+        }
+      ]
+    },
+    {
+      "server_id": "ts-evidence",
+      "server_name": "TypeScript MCP source evidence fixture",
+      "id": "HINTLINT-FLOW-PROCESS-001",
+      "severity": "critical",
+      "type": "tool_input_to_process_execution",
+      "tool": "run_script",
+      "confidence": "source-backed",
+      "message": "Tool 'run_script' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.",
+      "evidence": [
+        {
+          "file": "src/server.ts",
+          "line": 65,
+          "category": "process_execution",
+          "sink": "child_process.exec("
+        }
+      ]
+    },
+    {
+      "server_id": "py-basic",
+      "server_name": "Python MCP unsafe flow fixture",
+      "id": "HINTLINT-FLOW-FILESYSTEM-001",
+      "severity": "high",
+      "type": "tool_input_to_filesystem_write",
+      "tool": "download_artifact",
+      "confidence": "source-backed",
+      "message": "Tool 'download_artifact' has path-like MCP parameters and reaches filesystem write/path operations. Validate containment under an allowed root before writing.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 29,
+          "category": "filesystem_mutation",
+          "sink": "os.path.abspath("
+        }
+      ]
+    },
+    {
+      "server_id": "py-taint",
+      "server_name": "Python MCP taint and validation fixture",
+      "id": "HINTLINT-FLOW-CONNECTION-001",
+      "severity": "high",
+      "type": "tool_input_to_connection_string",
+      "tool": "unsafe_connection_string",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_connection_string' has connection-string-relevant MCP parameters and builds a structured connection string without recognized delimiter protection.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 63,
+          "category": "connection_string",
+          "sink": "connection_string ="
+        }
+      ]
+    },
+    {
+      "server_id": "py-taint",
+      "server_name": "Python MCP taint and validation fixture",
+      "id": "HINTLINT-READONLY-001",
+      "severity": "high",
+      "type": "false_readonly",
+      "tool": "unsafe_postgres_query",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_postgres_query' declares readOnlyHint=true but source evidence shows state mutation, external side effect, or process execution.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 21,
+          "category": "query_execution",
+          "sink": "conn.execute(query"
+        }
+      ]
+    },
+    {
+      "server_id": "py-taint",
+      "server_name": "Python MCP taint and validation fixture",
+      "id": "HINTLINT-FLOW-URL-001",
+      "severity": "high",
+      "type": "tool_input_to_url_construction",
+      "tool": "unsafe_storage_account",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_storage_account' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 40,
+          "category": "url_construction",
+          "sink": "https://{account_name}"
+        }
+      ]
+    },
+    {
+      "server_id": "ts-basic",
+      "server_name": "TypeScript MCP annotation fixture",
+      "id": "HINTLINT-READONLY-001",
+      "severity": "high",
+      "type": "false_readonly",
+      "tool": "delete_customer",
+      "confidence": "source-backed",
+      "message": "Tool 'delete_customer' declares readOnlyHint=true but source evidence shows state mutation, external side effect, or process execution.",
+      "evidence": [
+        {
+          "file": "src/server.ts",
+          "line": 36,
+          "category": "database_mutation",
+          "sink": "db.customer.delete("
+        },
+        {
+          "file": "src/server.ts",
+          "line": 37,
+          "category": "cloud_mutation",
+          "sink": "deleted"
+        }
+      ]
+    },
+    {
+      "server_id": "ts-evidence",
+      "server_name": "TypeScript MCP source evidence fixture",
+      "id": "HINTLINT-DESTRUCTIVE-001",
+      "severity": "high",
+      "type": "missing_or_false_destructive_hint",
+      "tool": "delete_branch",
+      "confidence": "source-backed",
+      "message": "Tool 'delete_branch' reaches destructive or process-execution evidence but does not declare destructiveHint=true.",
+      "evidence": [
+        {
+          "file": "src/server.ts",
+          "line": 46,
+          "category": "cloud_mutation",
+          "sink": "deleteRef"
+        }
+      ]
+    },
+    {
+      "server_id": "ts-evidence",
+      "server_name": "TypeScript MCP source evidence fixture",
+      "id": "HINTLINT-FLOW-URL-001",
+      "severity": "high",
+      "type": "tool_input_to_url_construction",
+      "tool": "update_issue",
+      "confidence": "source-backed",
+      "message": "Tool 'update_issue' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.",
+      "evidence": [
+        {
+          "file": "src/server.ts",
+          "line": 24,
+          "category": "url_construction",
+          "sink": "https://api.github.com/repos/${owner}/${repo}/issues/${"
+        }
+      ]
+    },
+    {
+      "server_id": "py-taint",
+      "server_name": "Python MCP taint and validation fixture",
+      "id": "HINTLINT-VALIDATION-ASYMMETRY-001",
+      "severity": "medium",
+      "type": "validation_asymmetry",
+      "tool": "unsafe_postgres_query",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_postgres_query' reaches query execution without recognized validation, while sibling tool 'safe_mysql_query' validates the same query-shaped input.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 21,
+          "category": "query_execution",
+          "sink": "conn.execute(query"
+        }
+      ]
+    },
+    {
+      "server_id": "py-taint",
+      "server_name": "Python MCP taint and validation fixture",
+      "id": "HINTLINT-OPEN-WORLD-001",
+      "severity": "medium",
+      "type": "false_open_world",
+      "tool": "unsafe_storage_account",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_storage_account' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
+      "evidence": [
+        {
+          "file": "server.py",
+          "line": 40,
+          "category": "url_construction",
+          "sink": "https://{account_name}"
+        }
+      ]
+    },
+    {
+      "server_id": "ts-basic",
+      "server_name": "TypeScript MCP annotation fixture",
+      "id": "HINTLINT-OPEN-WORLD-001",
+      "severity": "medium",
+      "type": "false_open_world",
+      "tool": "send_invoice_email",
+      "confidence": "source-backed",
+      "message": "Tool 'send_invoice_email' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
+      "evidence": [
+        {
+          "file": "src/server.ts",
+          "line": 76,
+          "category": "external_send",
+          "sink": "sendgrid.send("
+        }
+      ]
+    },
+    {
+      "server_id": "ts-evidence",
+      "server_name": "TypeScript MCP source evidence fixture",
+      "id": "HINTLINT-OPEN-WORLD-001",
+      "severity": "medium",
+      "type": "false_open_world",
+      "tool": "update_issue",
+      "confidence": "source-backed",
+      "message": "Tool 'update_issue' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
+      "evidence": [
+        {
+          "file": "src/server.ts",
+          "line": 25,
+          "category": "http_mutation",
+          "sink": "fetch(url, { method: \"PATCH\""
+        },
+        {
+          "file": "src/server.ts",
+          "line": 24,
+          "category": "url_construction",
+          "sink": "https://api.github.com/repos/${owner}/${repo}/issues/${"
+        }
+      ]
+    }
+  ],
+  "skipped": [],
+  "failures": []
+}

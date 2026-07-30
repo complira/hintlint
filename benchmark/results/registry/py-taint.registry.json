@@ -1,0 +1,595 @@
+{
+  "artifact_version": "hintlint.registry-artifact.v1",
+  "generated_at": "2026-07-30T06:27:00.477Z",
+  "hintlint_version": "0.1.0",
+  "server": {
+    "id": "py-taint",
+    "name": "Python MCP taint and validation fixture",
+    "source": {
+      "kind": "local",
+      "path": "../fixtures/py-taint"
+    },
+    "tags": [
+      "fixture",
+      "python",
+      "taint",
+      "validation"
+    ]
+  },
+  "summary": {
+    "tools_scanned": 6,
+    "source_evidence": 6,
+    "project_evidence": 1,
+    "findings": 6,
+    "source_backed_findings": 6,
+    "highest_severity": "critical"
+  },
+  "tools": [
+    {
+      "name": "safe_download_artifact",
+      "language": "python",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      },
+      "finding_count": 0,
+      "verified_behavior": null,
+      "source": {
+        "file": "server.py",
+        "line": 67
+      }
+    },
+    {
+      "name": "safe_mysql_query",
+      "language": "python",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false
+      },
+      "finding_count": 0,
+      "verified_behavior": null,
+      "source": {
+        "file": "server.py",
+        "line": 24
+      }
+    },
+    {
+      "name": "safe_storage_account",
+      "language": "python",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "finding_count": 0,
+      "verified_behavior": null,
+      "source": {
+        "file": "server.py",
+        "line": 44
+      }
+    },
+    {
+      "name": "unsafe_connection_string",
+      "language": "python",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false
+      },
+      "finding_count": 1,
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": true,
+        "unsafe_flows": [
+          "connection_string"
+        ],
+        "evidence_categories": [
+          "connection_string"
+        ],
+        "confidence": "source-backed"
+      },
+      "source": {
+        "file": "server.py",
+        "line": 56
+      }
+    },
+    {
+      "name": "unsafe_postgres_query",
+      "language": "python",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "finding_count": 3,
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": true,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "query"
+        ],
+        "evidence_categories": [
+          "query_execution"
+        ],
+        "confidence": "source-backed"
+      },
+      "source": {
+        "file": "server.py",
+        "line": 15
+      }
+    },
+    {
+      "name": "unsafe_storage_account",
+      "language": "python",
+      "handler_confidence": "resolved",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "finding_count": 2,
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": true,
+        "connection_string": false,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "url_construction"
+        ],
+        "confidence": "source-backed"
+      },
+      "source": {
+        "file": "server.py",
+        "line": 34
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "HINTLINT-FLOW-CONNECTION-001",
+      "severity": "high",
+      "type": "tool_input_to_connection_string",
+      "tool": "unsafe_connection_string",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_connection_string' has connection-string-relevant MCP parameters and builds a structured connection string without recognized delimiter protection.",
+      "declared_annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": false,
+        "connection_string": true,
+        "unsafe_flows": [
+          "connection_string"
+        ],
+        "evidence_categories": [
+          "connection_string"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "connection_string",
+          "sink_kind": "credential_boundary",
+          "sink": "connection_string =",
+          "file": "server.py",
+          "line": 63,
+          "rule_id": "hintlint.connection-string.user-controlled",
+          "confidence": "source-backed",
+          "source_parameter": "database",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "source_parameter": {
+        "name": "database",
+        "schema_path": "$.tools[?(@.name==\"unsafe_connection_string\")].input_schema.parameter_names[?(@==\"database\")]",
+        "file": "server.py",
+        "line": 56
+      },
+      "dangerous_sink": {
+        "category": "connection_string",
+        "sink_kind": "credential_boundary",
+        "sink": "connection_string =",
+        "file": "server.py",
+        "line": 63,
+        "rule_id": "hintlint.connection-string.user-controlled"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "connection string builder or delimiter rejection"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Use a connection-string builder or reject delimiter characters in caller-controlled fields.",
+        "guidance": "Reject semicolons and equals signs in structured connection-string fields so later parameters cannot override earlier values."
+      },
+      "cwe_id": "CWE-88"
+    },
+    {
+      "id": "HINTLINT-READONLY-001",
+      "severity": "high",
+      "type": "false_readonly",
+      "tool": "unsafe_postgres_query",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_postgres_query' declares readOnlyHint=true but source evidence shows state mutation, external side effect, or process execution.",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": true,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "query"
+        ],
+        "evidence_categories": [
+          "query_execution"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "query_execution",
+          "sink_kind": "query",
+          "sink": "conn.execute(query",
+          "file": "server.py",
+          "line": 21,
+          "rule_id": "hintlint.query.execution",
+          "confidence": "source-backed",
+          "source_parameter": "query",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "suggested_annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false
+      },
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set readOnlyHint=false and align destructive/open-world hints with the verified behavior.",
+        "suggested_annotations": {
+          "readOnlyHint": false,
+          "openWorldHint": false
+        }
+      }
+    },
+    {
+      "id": "HINTLINT-FLOW-QUERY-001",
+      "severity": "critical",
+      "type": "tool_input_to_query_execution",
+      "tool": "unsafe_postgres_query",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_postgres_query' has query-like MCP parameters and reaches query execution without recognized binding or allowlist validation.",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": true,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "query"
+        ],
+        "evidence_categories": [
+          "query_execution"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "query_execution",
+          "sink_kind": "query",
+          "sink": "conn.execute(query",
+          "file": "server.py",
+          "line": 21,
+          "rule_id": "hintlint.query.execution",
+          "confidence": "source-backed",
+          "source_parameter": "query",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "source_parameter": {
+        "name": "query",
+        "schema_path": "$.tools[?(@.name==\"unsafe_postgres_query\")].input_schema.parameter_names[?(@==\"query\")]",
+        "file": "server.py",
+        "line": 15
+      },
+      "dangerous_sink": {
+        "category": "query_execution",
+        "sink_kind": "query",
+        "sink": "conn.execute(query",
+        "file": "server.py",
+        "line": 21,
+        "rule_id": "hintlint.query.execution"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "parameter binding or strict query allowlist"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Use parameter binding or a strict query allowlist before execution.",
+        "guidance": "Do not execute caller-provided SQL/KQL directly. Bind values or map requests to reviewed query templates."
+      },
+      "cwe_id": "CWE-89"
+    },
+    {
+      "id": "HINTLINT-OPEN-WORLD-001",
+      "severity": "medium",
+      "type": "false_open_world",
+      "tool": "unsafe_storage_account",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_storage_account' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": true,
+        "connection_string": false,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "url_construction"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "url_construction",
+          "sink_kind": "external_boundary",
+          "sink": "https://{account_name}",
+          "file": "server.py",
+          "line": 40,
+          "rule_id": "hintlint.url.user-controlled",
+          "confidence": "source-backed",
+          "source_parameter": "account_name",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "suggested_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "repair": {
+        "type": "annotation_patch",
+        "summary": "Set openWorldHint=true because the handler crosses a network or external boundary.",
+        "suggested_annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": true
+        }
+      }
+    },
+    {
+      "id": "HINTLINT-FLOW-URL-001",
+      "severity": "high",
+      "type": "tool_input_to_url_construction",
+      "tool": "unsafe_storage_account",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_storage_account' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": true,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": false,
+        "url_construction": true,
+        "connection_string": false,
+        "unsafe_flows": [
+          "url"
+        ],
+        "evidence_categories": [
+          "url_construction"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "url_construction",
+          "sink_kind": "external_boundary",
+          "sink": "https://{account_name}",
+          "file": "server.py",
+          "line": 40,
+          "rule_id": "hintlint.url.user-controlled",
+          "confidence": "source-backed",
+          "source_parameter": "account_name",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "source_parameter": {
+        "name": "account_name",
+        "schema_path": "$.tools[?(@.name==\"unsafe_storage_account\")].input_schema.parameter_names[?(@==\"account_name\")]",
+        "file": "server.py",
+        "line": 34
+      },
+      "dangerous_sink": {
+        "category": "url_construction",
+        "sink_kind": "external_boundary",
+        "sink": "https://{account_name}",
+        "file": "server.py",
+        "line": 40,
+        "rule_id": "hintlint.url.user-controlled"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "strict host or resource-name allowlist"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Validate host/resource names with a strict allowlist before constructing outbound URLs.",
+        "guidance": "For cloud resource names, enforce provider-specific regexes and reject full URLs unless the endpoint is pre-approved."
+      },
+      "cwe_id": "CWE-918"
+    },
+    {
+      "id": "HINTLINT-VALIDATION-ASYMMETRY-001",
+      "severity": "medium",
+      "type": "validation_asymmetry",
+      "tool": "unsafe_postgres_query",
+      "confidence": "source-backed",
+      "message": "Tool 'unsafe_postgres_query' reaches query execution without recognized validation, while sibling tool 'safe_mysql_query' validates the same query-shaped input.",
+      "declared_annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "verified_behavior": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false,
+        "writes_internal_state": false,
+        "external_side_effect": false,
+        "destructive_action": false,
+        "process_execution": false,
+        "filesystem_mutation": false,
+        "database_mutation": false,
+        "http_mutation": false,
+        "cloud_mutation": false,
+        "query_execution": true,
+        "url_construction": false,
+        "connection_string": false,
+        "unsafe_flows": [
+          "query"
+        ],
+        "evidence_categories": [
+          "query_execution"
+        ],
+        "confidence": "source-backed"
+      },
+      "evidence": [
+        {
+          "category": "query_execution",
+          "sink_kind": "query",
+          "sink": "conn.execute(query",
+          "file": "server.py",
+          "line": 21,
+          "rule_id": "hintlint.query.execution",
+          "confidence": "source-backed",
+          "source_parameter": "query",
+          "sanitizer_status": "not_found"
+        }
+      ],
+      "source_parameter": {
+        "name": "query",
+        "schema_path": "$.tools[?(@.name==\"unsafe_postgres_query\")].input_schema.parameter_names[?(@==\"query\")]",
+        "file": "server.py",
+        "line": 15
+      },
+      "dangerous_sink": {
+        "category": "query_execution",
+        "sink_kind": "query",
+        "sink": "conn.execute(query",
+        "file": "server.py",
+        "line": 21,
+        "rule_id": "hintlint.query.execution"
+      },
+      "validator_status": {
+        "status": "not_found",
+        "expected": "parameter binding or strict query allowlist"
+      },
+      "repair": {
+        "type": "server_side_validation",
+        "summary": "Port the validation pattern from sibling tool 'safe_mysql_query' or document why it is not applicable.",
+        "guidance": "When parallel MCP tools accept the same query-shaped input, validators should be consistently applied across sibling implementations."
+      },
+      "cwe_id": "CWE-89"
+    }
+  ]
+}
