@@ -31,7 +31,10 @@
         "parameter_names": {
           "type": "array",
           "items": { "type": "string" }
-        }
+        },
+        "schema_format": { "type": "string" },
+        "schema_source": { "type": ["string", "null"] },
+        "json_schema": { "type": "object" }
       }
     },
     "declared_annotations": {
@@ -45,7 +48,7 @@
         "file": { "type": "string" },
         "line": { "type": "integer", "minimum": 1 },
         "symbol": { "type": ["string", "null"] },
-        "confidence": { "enum": ["resolved", "unknown"] }
+        "confidence": { "enum": ["resolved", "unknown_handler", "metadata_only"] }
       }
     },
     "extraction": {
@@ -53,7 +56,9 @@
       "required": ["extractor", "pattern"],
       "properties": {
         "extractor": { "type": "string" },
-        "pattern": { "type": "string" }
+        "pattern": { "type": "string" },
+        "name_expression": { "type": ["string", "null"] },
+        "dynamic_name": { "type": "boolean" }
       }
     }
   }

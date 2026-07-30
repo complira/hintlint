@@ -48,6 +48,11 @@
 | 2026-07-30 | Stage 9 | Stage 10 | README added and ticket handoff ready | `README.md` |
 | 2026-07-30 | Stage 10 | Stage 6 | User asked to continue until first milestone | `milestones.md` |
 | 2026-07-30 | Stage 6 | Stage 10 | M0 exit criteria completed and gate recorded | `m0-gate.md`, `mcp-security-auditor-teardown.md`, `csa-mcpserver-audit-alignment.md`, `skill-usage.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User asked to commit and move to next milestone | `milestones.md`, commit `13db164` |
+| 2026-07-30 | Stage 6 | Stage 7 | M1 extractor/config/metadata import implementation completed | `implementation-progress.md` |
+| 2026-07-30 | Stage 7 | Stage 8 | M1 unit, fixture, and direct JSON-file checks passed | `api-e2e-testing.md` |
+| 2026-07-30 | Stage 8 | Stage 9 | M1 code review recorded with non-blocking constraints | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | M1 gate recorded and next milestone identified | `m1-gate.md` |
 
 ## Waivers / Violations
 

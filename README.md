@@ -9,12 +9,15 @@ HintLint is starting as a local CLI for MCP server authors. The first implementa
 ```bash
 node src/cli.js fixtures/ts-basic
 node src/cli.js fixtures/py-basic --format json
+node src/cli.js fixtures/tools-list
 ```
 
 ## Current Scope
 
 - TypeScript MCP SDK-style `server.tool(...)` and `server.registerTool(...)` extraction.
 - Python FastMCP-style `@mcp.tool(...)` extraction.
+- Saved `tools/list` JSON import as metadata-only evidence.
+- Flat `hintlint.yaml`/JSON config for local defaults.
 - Terminal and JSON reports.
 - No-source and unsupported patterns are reported honestly instead of treated as proof.
 

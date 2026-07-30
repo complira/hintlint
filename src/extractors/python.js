@@ -47,6 +47,14 @@ function parseParameterNames(defLine) {
     .sort();
 }
 
+function parseInputSchema(defLine) {
+  return {
+    parameter_names: parseParameterNames(defLine),
+    schema_format: "python-signature",
+    schema_source: defLine.trim()
+  };
+}
+
 function parseFunctionName(defLine) {
   const match = defLine.match(/def\s+(\w+)\s*\(/);
   return match ? match[1] : null;
@@ -108,7 +116,7 @@ export async function scanPython(project) {
           line: index + 1
         },
         input_schema: {
-          parameter_names: parseParameterNames(defLine)
+          ...parseInputSchema(defLine)
         },
         declared_annotations: parseBooleanAnnotations(decorator.text),
         handler: {

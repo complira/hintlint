@@ -13,18 +13,28 @@
 | Unit tests | AC-1, AC-2, AC-6 | Pass | `npm test` passed 4/4 tests |
 | Competitor fixture teardown | M0 HL-004 | Pass with environment note | `mcp-security-auditor` ran against both fixtures with local `yaml` shim; results recorded in `mcp-security-auditor-teardown.md` |
 | CSA methodology alignment | M0 HL-005 | Pass | `csa-mcpserver-audit-alignment.md` maps checks/prompts into future roadmap |
+| TypeScript extraction confidence tiers | M1 HL-020, HL-022 | Pass | `npm run scan:fixtures` reports 5 TS tools, 4 resolved handlers, and one `unknown_handler` dynamic registration |
+| Python extraction schema details | M1 HL-021 | Pass | `npm test` verifies Python parameter names and `python-signature` schema format |
+| Saved `tools/list` directory import | M1 HL-023 | Pass | `npm run scan:fixtures` reports two metadata-only tools from `fixtures/tools-list/tools-list.json` |
+| Saved `tools/list` direct file import | M1 HL-023 | Pass | `node src/cli.js fixtures/tools-list/tools-list.json --format json` emits two `metadata_only` tools and zero findings |
+| Config loading | M1 HL-012 | Pass | `npm test` verifies flat `hintlint.yaml` config controls JSON output |
 
 ## Execution Results
 
 ```text
 npm test
-pass: 4
+pass: 6
 fail: 0
 ```
 
 ```text
 npm run scan:fixtures
 pass
+```
+
+```text
+node src/cli.js fixtures/tools-list/tools-list.json --format json
+pass: 2 metadata-only tools, 0 findings
 ```
 
 ## Waivers

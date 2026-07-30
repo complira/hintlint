@@ -227,6 +227,10 @@ export function analyzeTools(tools) {
   const publicTools = [];
 
   for (const tool of tools) {
+    if (tool.handler?.confidence !== "resolved") {
+      publicTools.push(publicTool(tool));
+      continue;
+    }
     const sinkEvidence = detectSinkEvidence(tool);
     findings.push(...compareAnnotations(tool, sinkEvidence));
     findings.push(...detectUnsafeFlows(tool, sinkEvidence));

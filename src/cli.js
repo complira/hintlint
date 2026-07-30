@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { writeFile } from "node:fs/promises";
+import { applyConfig, loadConfig } from "./config.js";
 import { runScan } from "./index.js";
 import { renderJson } from "./reporters/json.js";
 import { renderTerminal } from "./reporters/terminal.js";
@@ -12,6 +13,7 @@ function usage() {
     "Usage: hintlint <target> [options]",
     "",
     "Options:",
+    "  --config <path>       Read hintlint config from a JSON or flat YAML file",
     "  --format <text|json>   Output format. Default: text",
     "  --output <path>        Write report to a file",
     "  --ci                  Use CI exit-code behavior",
@@ -24,10 +26,12 @@ function usage() {
 function parseArgs(argv) {
   const args = {
     target: null,
+    config: null,
     format: "text",
     output: null,
     ci: false,
-    failOn: "high"
+    failOn: "high",
+    _explicit: new Set()
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -40,18 +44,26 @@ function parseArgs(argv) {
     }
     if (arg === "--format") {
       args.format = argv[++i];
+      args._explicit.add("format");
       continue;
     }
     if (arg === "--output") {
       args.output = argv[++i];
+      args._explicit.add("output");
+      continue;
+    }
+    if (arg === "--config") {
+      args.config = argv[++i];
       continue;
     }
     if (arg === "--ci") {
       args.ci = true;
+      args._explicit.add("ci");
       continue;
     }
     if (arg === "--fail-on") {
       args.failOn = argv[++i];
+      args._explicit.add("failOn");
       continue;
     }
     if (arg.startsWith("-")) {
@@ -67,11 +79,16 @@ function parseArgs(argv) {
   if (!args.target) {
     throw new Error("Missing target path");
   }
+  return args;
+}
+
+function validateArgs(args) {
   if (!["text", "json"].includes(args.format)) {
     throw new Error(`Unsupported format: ${args.format}`);
   }
-
-  return args;
+  if (!["info", "low", "medium", "high", "critical"].includes(args.failOn)) {
+    throw new Error(`Unsupported fail-on severity: ${args.failOn}`);
+  }
 }
 
 function shouldFail(report, failOn) {
@@ -100,16 +117,24 @@ async function main() {
     return;
   }
 
-  const report = await runScan(args.target);
-  const rendered = args.format === "json" ? renderJson(report) : renderTerminal(report);
+  const loadedConfig = await loadConfig(args.target, args.config);
+  const effectiveArgs = applyConfig(args, loadedConfig.config);
+  validateArgs(effectiveArgs);
 
-  if (args.output) {
-    await writeFile(args.output, rendered, "utf8");
+  const report = await runScan(effectiveArgs.target, {
+    config: loadedConfig.path,
+    ci: effectiveArgs.ci,
+    failOn: effectiveArgs.failOn
+  });
+  const rendered = effectiveArgs.format === "json" ? renderJson(report) : renderTerminal(report);
+
+  if (effectiveArgs.output) {
+    await writeFile(effectiveArgs.output, rendered, "utf8");
   } else {
     console.log(rendered);
   }
 
-  if (args.ci && shouldFail(report, args.failOn)) {
+  if (effectiveArgs.ci && shouldFail(report, effectiveArgs.failOn)) {
     process.exitCode = 1;
   }
 }

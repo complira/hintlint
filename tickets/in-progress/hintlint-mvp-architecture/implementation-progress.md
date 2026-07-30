@@ -12,18 +12,22 @@
 | 2026-07-30 | Completed M0 fixture/schema gaps | `fixtures/ts-basic/src/server.ts`, `schemas/evidence.schema.json`, `schemas/finding.schema.json` | Added additive write fixture, dynamic unsupported fixture, evidence schema, and optional CWE/CVSS/AIVSS fields | `npm test`, `npm run scan:fixtures` |
 | 2026-07-30 | Ran direct competitor fixture teardown | `mcp-security-auditor-teardown.md` | Downloaded source, inspected analyzer approach, ran CLI against TS/Python fixtures using isolated local shim | `/private/tmp/hintlint-competitors/mcp-security-auditor-*.json` |
 | 2026-07-30 | Completed CSA methodology alignment | `csa-mcpserver-audit-alignment.md`, `skill-usage.md` | Classified CSA repo as methodology/check framework and mapped useful checks into roadmap | GitHub API metadata and checks/prompts inventory |
+| 2026-07-30 | Committed M0 foundation | repository | Created checkpoint commit `13db164` | `git commit -m "feat: establish hintlint mvp foundation"` |
+| 2026-07-30 | Completed M1 extraction upgrades | `src/extractors/*`, `src/config.js`, `src/cli.js`, `schemas/tool.schema.json`, `fixtures/tools-list/*`, tests | Added metadata-only `tools/list` JSON import, flat config loading, schema source details, and explicit `unknown_handler`/`metadata_only` tiers | `npm test`, `npm run scan:fixtures`, direct JSON-file scan |
 
 ## Test Results
 
-- `npm test`: pass, 4/4 tests.
+- `npm test`: pass, 6/6 tests.
 - `npm run scan:fixtures`: pass.
 - `node src/cli.js --version`: `0.1.0`.
 - `env npm_config_cache=/private/tmp/hintlint-npm-cache npm exec -- hintlint --version`: `0.1.0`.
 - `node src/cli.js fixtures/py-basic --ci --fail-on high`: exits `1` as expected because source-backed high/critical fixture findings exist.
+- `node src/cli.js fixtures/tools-list/tools-list.json --format json`: emits two metadata-only tools and zero findings.
 
 ## Residual Risks
 
 - Current extractors are MVP text/regex extractors, not full AST parsers.
 - Built-in evidence detector is intentionally shallow; Semgrep/dataflow remains the next engine.
+- TypeScript overload support is still limited to the fixture-backed SDK patterns.
 - Copied TrainLens skills contain TrainLens/InferLens-specific wording and should be reviewed before treating them as project-native HintLint skills.
 - No SARIF reporter or GitHub Action yet.

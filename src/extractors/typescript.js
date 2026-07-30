@@ -1,4 +1,11 @@
-import { readSourceFile, findMatchingParen, lineForOffset, parseBooleanAnnotations } from "./common.js";
+import {
+  readSourceFile,
+  findMatchingBrace,
+  findMatchingParen,
+  lineForOffset,
+  parseBooleanAnnotations,
+  splitTopLevelArguments
+} from "./common.js";
 
 const TS_EXTENSIONS = /\.(ts|tsx|js|mjs|cjs)$/;
 const TOOL_CALL_PATTERNS = [
@@ -33,9 +40,25 @@ function collectCallBlocks(source) {
   return blocks;
 }
 
-function parseDescription(callText) {
-  const strings = [...callText.matchAll(/["']([^"']+)["']/g)].map((match) => match[1]);
-  return strings.length > 1 ? strings[1] : "";
+function parseStringLiteral(expression) {
+  const match = expression.trim().match(/^["']([^"']+)["']$/);
+  return match ? match[1] : null;
+}
+
+function parsePropertyString(objectText, propertyName) {
+  const match = objectText.match(new RegExp(`${propertyName}\\s*:\\s*["']([^"']+)["']`));
+  return match ? match[1] : null;
+}
+
+function parseDescription(args, kind) {
+  if (kind === "tool") {
+    return parseStringLiteral(args[1] ?? "") ?? "";
+  }
+  return parsePropertyString(args[1] ?? "", "description") ?? "";
+}
+
+function compactExpression(expression) {
+  return expression.replace(/\s+/g, " ").trim().slice(0, 120);
 }
 
 function parseParameterNames(callText) {
@@ -61,39 +84,63 @@ function parseParameterNames(callText) {
   return [...params].sort();
 }
 
-function parseToolBlock(project, filePath, sourceFile, block) {
-  const nameMatch = block.text.match(/\.(?:tool|registerTool)\s*\(\s*["']([^"']+)["']/);
-  const name = nameMatch ? nameMatch[1] : null;
-  if (!name) {
-    return null;
+function parseInputSchema(callText, args, kind) {
+  const parameterNames = parseParameterNames(callText);
+  let schemaSource = null;
+
+  if (kind === "tool") {
+    schemaSource = args[2]?.trim() || null;
+  } else {
+    const optionsText = args[1] ?? "";
+    const inputSchemaMatch = optionsText.match(/inputSchema\s*:\s*\{/);
+    if (inputSchemaMatch) {
+      const openIndex = optionsText.indexOf("{", inputSchemaMatch.index);
+      const closeIndex = findMatchingBrace(optionsText, openIndex);
+      if (closeIndex !== -1) {
+        schemaSource = optionsText.slice(openIndex, closeIndex + 1).trim();
+      }
+    }
   }
 
+  return {
+    parameter_names: parameterNames,
+    schema_format: schemaSource ? "typescript-expression" : "unknown",
+    schema_source: schemaSource
+  };
+}
+
+function parseToolBlock(project, filePath, sourceFile, block) {
+  const args = splitTopLevelArguments(block.text);
+  const name = parseStringLiteral(args[0] ?? "");
+  const dynamicNameExpression = name ? null : compactExpression(args[0] ?? "unknown");
+
   const line = lineForOffset(sourceFile.lineStarts, block.start);
-  const parameterNames = parseParameterNames(block.text);
+  const handlerConfidence = name ? "resolved" : "unknown_handler";
+  const toolName = name ?? `<dynamic:${dynamicNameExpression}>`;
 
   return {
-    name,
-    description: parseDescription(block.text),
+    name: toolName,
+    description: parseDescription(args, block.kind),
     language: "typescript",
     source: {
       file: project.relativePath(filePath),
       line
     },
-    input_schema: {
-      parameter_names: parameterNames
-    },
+    input_schema: parseInputSchema(block.text, args, block.kind),
     declared_annotations: parseBooleanAnnotations(block.text),
     handler: {
       file: project.relativePath(filePath),
       line,
       symbol: null,
       confidence: block.text.includes("async") || block.text.includes("=>") || block.text.includes("function")
-        ? "resolved"
-        : "unknown"
+        ? handlerConfidence
+        : "unknown_handler"
     },
     extraction: {
       extractor: "typescript-regex-mvp",
-      pattern: block.kind
+      pattern: block.kind,
+      name_expression: dynamicNameExpression,
+      dynamic_name: Boolean(dynamicNameExpression)
     },
     _analysis: {
       text: block.text,
@@ -112,13 +159,12 @@ export async function scanTypeScript(project) {
     const blocks = collectCallBlocks(sourceFile.text);
     for (const block of blocks) {
       const tool = parseToolBlock(project, filePath, sourceFile, block);
-      if (tool) {
-        tools.push(tool);
-      } else {
+      tools.push(tool);
+      if (tool.handler.confidence === "unknown_handler") {
         unsupported.push({
           file: project.relativePath(filePath),
           line: lineForOffset(sourceFile.lineStarts, block.start),
-          reason: "Unable to parse TypeScript tool name"
+          reason: "Dynamic TypeScript tool name; handler evidence is not treated as source-backed"
         });
       }
     }

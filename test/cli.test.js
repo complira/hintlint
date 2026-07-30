@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
+import { mkdtemp, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import test from "node:test";
 import { promisify } from "node:util";
 
@@ -13,7 +16,7 @@ test("CLI emits JSON report", async () => {
     "json"
   ]);
   const report = JSON.parse(stdout);
-  assert.equal(report.summary.tools_scanned, 4);
+  assert.equal(report.summary.tools_scanned, 5);
   assert.equal(report.findings.length, 2);
 });
 
@@ -22,4 +25,31 @@ test("CLI emits terminal report", async () => {
   assert.match(stdout, /HintLint Report/);
   assert.match(stdout, /run_az_command/);
   assert.match(stdout, /HINTLINT-FLOW-PROCESS-001/);
+});
+
+test("CLI reads flat hintlint YAML config", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "hintlint-cli-"));
+  await writeFile(join(dir, "hintlint.yaml"), "format: json\nfailOn: medium\n", "utf8");
+  await writeFile(join(dir, "tools-list.json"), JSON.stringify({
+    tools: [
+      {
+        name: "metadata_only_tool",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: { type: "string" }
+          }
+        },
+        annotations: {
+          readOnlyHint: true
+        }
+      }
+    ]
+  }), "utf8");
+
+  const { stdout } = await execFileAsync("node", ["src/cli.js", dir]);
+  const report = JSON.parse(stdout);
+  assert.equal(report.options.config.endsWith("hintlint.yaml"), true);
+  assert.equal(report.summary.tools_scanned, 1);
+  assert.equal(report.tools[0].handler.confidence, "metadata_only");
 });

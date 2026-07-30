@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { discoverProject } from "./project-discovery.js";
 import { analyzeTools } from "./evidence/static-detector.js";
 import { scanPython } from "./extractors/python.js";
+import { scanToolsListJson } from "./extractors/tools-list-json.js";
 import { scanTypeScript } from "./extractors/typescript.js";
 
 export async function runScan(targetPath, options = {}) {
@@ -10,12 +11,13 @@ export async function runScan(targetPath, options = {}) {
   const project = await discoverProject(root);
   const tsResult = await scanTypeScript(project);
   const pyResult = await scanPython(project);
-  const extractedTools = [...tsResult.tools, ...pyResult.tools].sort((a, b) =>
+  const toolsListResult = await scanToolsListJson(project);
+  const extractedTools = [...tsResult.tools, ...pyResult.tools, ...toolsListResult.tools].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
   const analysis = analyzeTools(extractedTools);
   const tools = analysis.tools;
-  const unsupported = [...tsResult.unsupported, ...pyResult.unsupported];
+  const unsupported = [...tsResult.unsupported, ...pyResult.unsupported, ...toolsListResult.unsupported];
   const endedAt = new Date();
 
   return {

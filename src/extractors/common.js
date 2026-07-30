@@ -82,3 +82,91 @@ export function findMatchingParen(source, openIndex) {
   }
   return -1;
 }
+
+export function findMatchingBrace(source, openIndex) {
+  let depth = 0;
+  let quote = null;
+  let escaped = false;
+
+  for (let index = openIndex; index < source.length; index += 1) {
+    const char = source[index];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+
+    if (char === "\"" || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+    if (char === "{") {
+      depth += 1;
+      continue;
+    }
+    if (char === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        return index;
+      }
+    }
+  }
+  return -1;
+}
+
+export function splitTopLevelArguments(callText) {
+  const openIndex = callText.indexOf("(");
+  const closeIndex = openIndex === -1 ? -1 : findMatchingParen(callText, openIndex);
+  if (openIndex === -1 || closeIndex === -1) {
+    return [];
+  }
+
+  const argsText = callText.slice(openIndex + 1, closeIndex);
+  const args = [];
+  let start = 0;
+  let depth = 0;
+  let quote = null;
+  let escaped = false;
+
+  for (let index = 0; index < argsText.length; index += 1) {
+    const char = argsText[index];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+
+    if (char === "\"" || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+    if (char === "(" || char === "{" || char === "[") {
+      depth += 1;
+      continue;
+    }
+    if (char === ")" || char === "}" || char === "]") {
+      depth -= 1;
+      continue;
+    }
+    if (char === "," && depth === 0) {
+      args.push(argsText.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+
+  const lastArg = argsText.slice(start).trim();
+  if (lastArg) {
+    args.push(lastArg);
+  }
+  return args;
+}
