@@ -1,6 +1,6 @@
 {
   "name": "hintlint",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Verify MCP tool annotations match actual behavior. Detect annotation drift in Model Context Protocol servers.",
   "type": "module",
   "bin": {
