@@ -70,10 +70,11 @@ jobs:
           deny-licenses: GPL-2.0-only, GPL-3.0-only, AGPL-3.0-only
 
   # --- Scorecard (OpenSSF supply chain security) ---
+  # Enable after repo is indexed by OpenSSF (typically 24-48 hours after first public push)
   scorecard:
     name: OpenSSF Scorecard
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: false  # Disabled until repo is indexed. Re-enable: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
       security-events: write
