@@ -1,6 +1,10 @@
 name: HintLint
 description: Verify MCP tool hints against source evidence.
 
+branding:
+  icon: shield
+  color: blue
+
 inputs:
   target:
     description: Path to the MCP server source or saved tools/list JSON.
