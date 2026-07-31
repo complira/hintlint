@@ -1,15 +1,22 @@
-# HintLint
+<p align="center">
+  <strong>HintLint</strong><br>
+  <em>Verify MCP tool annotations match actual behavior</em>
+</p>
 
-[![CI](https://github.com/hintlint/hintlint/actions/workflows/ci.yml/badge.svg)](https://github.com/hintlint/hintlint/actions/workflows/ci.yml)
-[![Security](https://github.com/hintlint/hintlint/actions/workflows/security.yml/badge.svg)](https://github.com/hintlint/hintlint/actions/workflows/security.yml)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/hintlint/hintlint/badge)](https://scorecard.dev/viewer/?uri=github.com/hintlint/hintlint)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<p align="center">
+  <a href="https://github.com/complira/hintlint/actions/workflows/ci.yml"><img src="https://github.com/complira/hintlint/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/complira/hintlint/actions/workflows/security.yml"><img src="https://github.com/complira/hintlint/actions/workflows/security.yml/badge.svg" alt="Security"></a>
+  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
+  <a href="https://www.npmjs.com/package/hintlint"><img src="https://img.shields.io/npm/v/hintlint.svg" alt="npm"></a>
+</p>
+
+---
 
 MCP servers declare tool annotations — `readOnlyHint`, `destructiveHint`, `openWorldHint` — that tell agent runtimes which tools need human approval. Nothing verifies these annotations are accurate. HintLint does.
 
 It reads the source code, detects what each tool actually does, and reports where annotations don't match behavior. A tool that calls `iam.delete_access_key()` but omits `destructiveHint` means the agent skips confirmation on an irreversible action.
 
-In a [20-repo pilot](docs/findings-report-july-2026.md), HintLint confirmed 23 annotation mismatches at 82% precision, including 19 AWS tools performing destructive cloud operations without `destructiveHint`.
+In a [20-repo pilot](docs/findings-report-july-2026.md), HintLint confirmed **23 annotation mismatches at 82% precision**, including 19 AWS tools performing destructive cloud operations without `destructiveHint`.
 
 ## Install and Run
 
@@ -30,7 +37,7 @@ Zero dependencies. Node.js 20+.
 ## GitHub Action
 
 ```yaml
-- uses: hintlint/hintlint@v0
+- uses: complira/hintlint@v0
   with:
     target: .
     fail-on: high
@@ -44,29 +51,39 @@ Also works with [GitLab CI, Jenkins, Azure DevOps, CircleCI](docs/ci-integration
 
 | ID | What's Wrong | Severity |
 |----|-------------|----------|
-| HINTLINT-READONLY-001 | Says `readOnlyHint=true`, source shows writes | High |
-| HINTLINT-DESTRUCTIVE-001 | Calls destructive API, no `destructiveHint` | High |
-| HINTLINT-OPEN-WORLD-001 | Says `openWorldHint=false`, makes external calls | Medium |
-| HINTLINT-FLOW-PROCESS-001 | User input reaches `exec()` / `subprocess.run()` | Critical |
-| HINTLINT-FLOW-QUERY-001 | User input reaches raw SQL without binding | Critical |
-| HINTLINT-FLOW-URL-001 | User input controls outbound URL | High |
-| HINTLINT-FLOW-FILESYSTEM-001 | User input reaches file write without path check | High |
-| HINTLINT-FLOW-CONNECTION-001 | User input in connection string without sanitizer | High |
+| `READONLY-001` | Says `readOnlyHint=true`, source shows writes | High |
+| `DESTRUCTIVE-001` | Calls destructive API, no `destructiveHint` | High |
+| `OPEN-WORLD-001` | Says `openWorldHint=false`, makes external calls | Medium |
+| `FLOW-PROCESS-001` | User input reaches `exec()` / `subprocess.run()` | Critical |
+| `FLOW-QUERY-001` | User input reaches raw SQL without binding | Critical |
+| `FLOW-URL-001` | User input controls outbound URL | High |
+| `FLOW-FILESYSTEM-001` | User input reaches file write without path check | High |
+| `FLOW-CONNECTION-001` | User input in connection string without sanitizer | High |
 
-Full details: [Finding Reference](docs/finding-reference.md)
+Full details with CWE IDs and repair guidance: [Finding Reference](docs/finding-reference.md)
 
 ## How It Works
 
 ```
-Source Code → Extract tools → Detect sinks → Compare annotations → Report drift
+Source Code
+    |
+    v
+ Extract tools        TypeScript, JavaScript, Python
+    |
+    v
+ Detect sinks         10 categories (DB, filesystem, HTTP, process, cloud, ...)
+    |
+    v
+ Compare annotations  Declared vs verified behavior
+    |
+    v
+ Report drift         Terminal, JSON, SARIF 2.1.0, Registry artifact
+    |
+    v
+ CI policy            Fail only on source-backed findings (L3/L4)
 ```
 
-1. **Extracts** MCP tool definitions from TypeScript/JavaScript and Python source
-2. **Detects** what each tool handler actually does (10 sink categories: database, filesystem, HTTP, process execution, cloud APIs, etc.)
-3. **Compares** declared annotations against detected behavior
-4. **Reports** mismatches with evidence, CWE IDs, and repair guidance
-
-Only findings with source-backed evidence (L3/L4) can fail CI. Metadata-only findings never block your build.
+Only findings with handler-scoped source evidence can fail your build. Metadata-only guesses never block CI.
 
 ## Language Support
 
@@ -77,39 +94,33 @@ Only findings with source-backed evidence (L3/L4) can fail CI. Metadata-only fin
 
 ## Output Formats
 
-| Format | Flag | Use Case |
-|--------|------|----------|
-| Terminal | `--format text` | Developer review |
-| JSON | `--format json` | Programmatic consumption |
-| SARIF 2.1.0 | `--format sarif` | GitHub Security, Defect Dojo, SIEM |
-| Registry artifact | `--format registry` | MCP gateway trust metadata |
+| Format | Use Case |
+|--------|----------|
+| Terminal | Developer review |
+| JSON | Programmatic consumption |
+| SARIF 2.1.0 | GitHub Security, Defect Dojo, SIEM |
+| Registry artifact | MCP gateway trust metadata |
 
 ## Documentation
 
-- [FAQ](docs/faq.md) — common questions, comparisons, how it works
-- [CLI Reference](docs/cli-reference.md) — flags, config, exit codes
-- [Finding Reference](docs/finding-reference.md) — every finding, CWE, repair guidance
-- [CI Integration](docs/ci-integration.md) — GitHub, GitLab, Jenkins, Azure DevOps, CircleCI
-- [Enterprise Usage](docs/enterprise-usage.md) — pre-registry scanning, catalog management, continuous monitoring
-- [Registry Artifact](docs/registry-artifact.md) — gateway integration format
-- [Findings Report](docs/findings-report-july-2026.md) — validated pilot results with methodology
+| | |
+|---|---|
+| [FAQ](docs/faq.md) | Common questions, comparisons |
+| [CLI Reference](docs/cli-reference.md) | Flags, config, exit codes |
+| [Finding Reference](docs/finding-reference.md) | Every finding, CWE, repair guidance |
+| [CI Integration](docs/ci-integration.md) | GitHub, GitLab, Jenkins, Azure DevOps, CircleCI |
+| [Enterprise Usage](docs/enterprise-usage.md) | Pre-registry scanning, catalog management, continuous monitoring |
+| [Registry Artifact](docs/registry-artifact.md) | Gateway integration format |
+| [Findings Report](docs/findings-report-july-2026.md) | Validated pilot results with methodology |
 
-## Development
+## Contributing
 
-```bash
-git clone https://github.com/hintlint/hintlint.git
-cd hintlint
-npm test
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Zero-dependency policy is intentional.
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
-
-Security issues: [SECURITY.md](SECURITY.md)
+Apache 2.0 — [LICENSE](LICENSE) | Security issues — [SECURITY.md](SECURITY.md)
 
 ---
 
-Built by [Complira](https://complira.co)
+<p align="center">Built by <a href="https://complira.co">Complira</a></p>
