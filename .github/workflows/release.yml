@@ -1,5 +1,6 @@
 name: Release
 
+# Triggered by pushing a version tag: git tag v0.1.0 && git push origin v0.1.0
 on:
   push:
     tags:
@@ -11,8 +12,21 @@ permissions:
   attestations: write
 
 jobs:
+  # Gate: run full test suite before releasing
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm test
+      - run: npm run scan:fixtures
+
   release:
     name: Build, Attest, Release
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,61 +36,60 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Run tests
-        run: npm test
-
-      - name: Run fixture scans
-        run: npm run scan:fixtures
+      # --- Verify version matches tag ---
+      - name: Verify package.json version matches tag
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('package.json','utf-8')).version)")
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+          echo "Version verified: $PKG_VERSION"
 
       # --- SBOM Generation ---
       - name: Generate CycloneDX SBOM
-        uses: CycloneDX/gh-node-module-generatebom@v2
-        with:
-          output: sbom.cdx.json
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json --spec-version 1.5 || true
 
       - name: Generate SPDX SBOM
         run: |
-          npx --yes @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.spdx.json --spec-version 1.5 2>/dev/null || true
-          # Fallback: generate minimal SPDX since we have zero deps
-          if [ ! -f sbom.spdx.json ]; then
-            node -e "
-            const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf-8'));
-            const spdx = {
-              spdxVersion: 'SPDX-2.3',
-              dataLicense: 'CC0-1.0',
-              SPDXID: 'SPDXRef-DOCUMENT',
+          node -e "
+          const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf-8'));
+          const spdx = {
+            spdxVersion: 'SPDX-2.3',
+            dataLicense: 'CC0-1.0',
+            SPDXID: 'SPDXRef-DOCUMENT',
+            name: pkg.name,
+            documentNamespace: 'https://github.com/complira/hintlint',
+            creationInfo: {
+              created: new Date().toISOString(),
+              creators: ['Tool: hintlint-sbom-generator'],
+              licenseListVersion: '3.19'
+            },
+            packages: [{
+              SPDXID: 'SPDXRef-Package',
               name: pkg.name,
-              documentNamespace: 'https://github.com/hintlint/hintlint',
-              creationInfo: {
-                created: new Date().toISOString(),
-                creators: ['Tool: hintlint-sbom-generator'],
-                licenseListVersion: '3.19'
-              },
-              packages: [{
-                SPDXID: 'SPDXRef-Package',
-                name: pkg.name,
-                versionInfo: pkg.version,
-                downloadLocation: pkg.repository?.url || 'NOASSERTION',
-                licenseConcluded: pkg.license,
-                licenseDeclared: pkg.license,
-                copyrightText: 'Copyright 2026 HintLint Contributors',
-                externalRefs: [{
-                  referenceCategory: 'PACKAGE-MANAGER',
-                  referenceType: 'purl',
-                  referenceLocator: 'pkg:npm/hintlint@' + pkg.version
-                }],
-                supplier: 'NOASSERTION',
-                filesAnalyzed: false
+              versionInfo: pkg.version,
+              downloadLocation: pkg.repository?.url || 'NOASSERTION',
+              licenseConcluded: pkg.license,
+              licenseDeclared: pkg.license,
+              copyrightText: 'Copyright 2026 Complira',
+              externalRefs: [{
+                referenceCategory: 'PACKAGE-MANAGER',
+                referenceType: 'purl',
+                referenceLocator: 'pkg:npm/hintlint@' + pkg.version
               }],
-              relationships: [{
-                spdxElementId: 'SPDXRef-DOCUMENT',
-                relatedSpdxElement: 'SPDXRef-Package',
-                relationshipType: 'DESCRIBES'
-              }]
-            };
-            require('fs').writeFileSync('sbom.spdx.json', JSON.stringify(spdx, null, 2));
-            "
-          fi
+              supplier: 'Organization: Complira',
+              filesAnalyzed: false
+            }],
+            relationships: [{
+              spdxElementId: 'SPDXRef-DOCUMENT',
+              relatedSpdxElement: 'SPDXRef-Package',
+              relationshipType: 'DESCRIBES'
+            }]
+          };
+          require('fs').writeFileSync('sbom.spdx.json', JSON.stringify(spdx, null, 2));
+          "
 
       # --- Supply Chain Attestation ---
       - name: Generate build provenance attestation
