@@ -20,7 +20,17 @@ const LANGUAGE_BY_EXTENSION = new Map([
   [".js", "javascript"],
   [".mjs", "javascript"],
   [".cjs", "javascript"],
-  [".py", "python"]
+  [".py", "python"],
+  [".go", "go"],
+  [".cs", "csharp"],
+  [".rs", "rust"],
+  [".java", "java"]
+]);
+
+const SUPPORTED_SOURCE_LANGUAGES = new Set([
+  "typescript",
+  "javascript",
+  "python"
 ]);
 
 const TOOLS_LIST_FILES = new Set([
@@ -69,10 +79,20 @@ export async function discoverProject(root) {
       .map((file) => LANGUAGE_BY_EXTENSION.get(extensionOf(file)))
       .filter(Boolean)
   )].sort();
+  const fileLanguageCounts = {};
+  for (const file of files) {
+    const language = LANGUAGE_BY_EXTENSION.get(extensionOf(file));
+    if (language) {
+      fileLanguageCounts[language] = (fileLanguageCounts[language] ?? 0) + 1;
+    }
+  }
 
   return {
     root,
     languages,
+    supported_languages: languages.filter((language) => SUPPORTED_SOURCE_LANGUAGES.has(language)),
+    unsupported_languages: languages.filter((language) => !SUPPORTED_SOURCE_LANGUAGES.has(language)),
+    file_language_counts: fileLanguageCounts,
     files,
     relativePath(filePath) {
       return relative(baseDir, filePath) || basename(filePath);

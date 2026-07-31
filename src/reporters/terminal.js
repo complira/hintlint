@@ -30,6 +30,8 @@ export function renderTerminal(report) {
     `Annotations present: ${report.summary.annotations_present}`,
     `Source evidence: ${report.summary.source_evidence ?? 0}`,
     `Project evidence: ${report.summary.project_evidence ?? 0}`,
+    `Coverage: ${report.coverage?.extraction_status ?? report.summary.coverage_status ?? "unknown"}`,
+    `Handler mapping: ${report.coverage?.handler_mapping_rate ?? "n/a"}`,
     `Findings: ${report.summary.findings}`,
     ""
   ];
@@ -71,6 +73,7 @@ export function renderTerminal(report) {
       lines.push(
         `  - ${finding.id} [${finding.severity}] ${finding.tool}`,
         `    ${finding.message}`,
+        `    tier: ${finding.evidence_tier ?? finding.confidence_tier ?? finding.confidence}`,
         `    declared: ${formatAnnotations(finding.declared_annotations ?? {})}`,
         `    verified: ${formatBehavior(finding.verified_behavior)}`,
         `    evidence: ${location}`

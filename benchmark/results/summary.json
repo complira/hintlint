@@ -1,6 +1,6 @@
 {
   "artifact_version": "hintlint.benchmark-summary.v1",
-  "generated_at": "2026-07-30T06:35:50.808Z",
+  "generated_at": "2026-07-30T16:36:01.656Z",
   "manifest": {
     "name": "hintlint-m5-fixture-benchmark",
     "path": "benchmark/manifest.json",
@@ -14,7 +14,7 @@
     "servers_failed": 0,
     "tools_scanned": 17,
     "handlers_resolved": 16,
-    "source_evidence": 16,
+    "source_evidence": 15,
     "project_evidence": 2,
     "findings": 14,
     "source_backed_findings": 14,
@@ -59,7 +59,7 @@
         "annotations"
       ],
       "tools_scanned": 5,
-      "source_evidence": 4,
+      "source_evidence": 3,
       "findings": 2,
       "source_backed_findings": 2,
       "raw_report": "benchmark/results/reports/ts-basic.json",
@@ -254,12 +254,6 @@
           "line": 36,
           "category": "database_mutation",
           "sink": "db.customer.delete("
-        },
-        {
-          "file": "src/server.ts",
-          "line": 37,
-          "category": "cloud_mutation",
-          "sink": "deleted"
         }
       ]
     },
@@ -277,7 +271,7 @@
           "file": "src/server.ts",
           "line": 46,
           "category": "cloud_mutation",
-          "sink": "deleteRef"
+          "sink": "octokit.git.deleteRef("
         }
       ]
     },

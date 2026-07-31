@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/metadata-validation.schema.json",
+  "title": "HintLint Metadata Validation Report",
+  "type": "object",
+  "required": ["schema_version", "server_id", "status", "comparisons"],
+  "properties": {
+    "schema_version": { "const": "hintlint.metadata-validation.v1" },
+    "server_id": { "type": "string" },
+    "server_name": { "type": "string" },
+    "status": {
+      "enum": [
+        "success",
+        "no_start_command",
+        "start_failed",
+        "timeout",
+        "exited_early",
+        "protocol_error",
+        "not_cloned"
+      ]
+    },
+    "error": { "type": ["string", "null"] },
+    "runtime_tools_count": { "type": "integer", "minimum": 0 },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tool", "match"],
+        "properties": {
+          "tool": { "type": "string" },
+          "runtime_annotations": { "type": "object" },
+          "source_annotations": { "type": "object" },
+          "source_extracted": { "type": "boolean" },
+          "match": { "type": "boolean" },
+          "drifts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["annotation", "runtime", "source"],
+              "properties": {
+                "annotation": { "type": "string" },
+                "runtime": {},
+                "source": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "annotation_matches": { "type": "integer", "minimum": 0 },
+    "annotation_drifts": { "type": "integer", "minimum": 0 },
+    "tools_not_in_source": { "type": "integer", "minimum": 0 }
+  }
+}

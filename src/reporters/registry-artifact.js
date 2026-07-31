@@ -21,6 +21,7 @@ function compactEvidence(evidence) {
     line: evidence.line,
     rule_id: evidence.rule_id,
     confidence: evidence.confidence,
+    evidence_tier: evidence.evidence_tier,
     source_parameter: evidence.source_parameter?.name ?? undefined,
     sanitizer_status: evidence.sanitizer?.status ?? undefined
   };
@@ -33,6 +34,7 @@ function compactFinding(finding) {
     type: finding.type,
     tool: finding.tool,
     confidence: finding.confidence,
+    evidence_tier: finding.evidence_tier,
     message: finding.message,
     declared_annotations: finding.declared_annotations,
     verified_behavior: finding.verified_behavior,
@@ -90,9 +92,14 @@ export function toRegistryArtifact(report, metadata = {}) {
       source_evidence: report.summary.source_evidence,
       project_evidence: report.summary.project_evidence,
       findings: report.summary.findings,
+      coverage_status: report.coverage?.extraction_status ?? report.summary.coverage_status,
+      handler_mapping_rate: report.coverage?.handler_mapping_rate ?? report.summary.handler_mapping_rate,
+      evidence_records_by_tier: report.summary.evidence_records_by_tier,
+      findings_by_tier: report.summary.findings_by_tier,
       source_backed_findings: report.findings.filter((finding) => finding.confidence === "source-backed").length,
       highest_severity: highestSeverity(report.findings)
     },
+    coverage: report.coverage,
     tools: report.tools.map((tool) => toolArtifact(tool, report.findings)),
     findings: report.findings.map(compactFinding)
   };

@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    name: Build, Attest, Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run fixture scans
+        run: npm run scan:fixtures
+
+      # --- SBOM Generation ---
+      - name: Generate CycloneDX SBOM
+        uses: CycloneDX/gh-node-module-generatebom@v2
+        with:
+          output: sbom.cdx.json
+
+      - name: Generate SPDX SBOM
+        run: |
+          npx --yes @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.spdx.json --spec-version 1.5 2>/dev/null || true
+          # Fallback: generate minimal SPDX since we have zero deps
+          if [ ! -f sbom.spdx.json ]; then
+            node -e "
+            const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf-8'));
+            const spdx = {
+              spdxVersion: 'SPDX-2.3',
+              dataLicense: 'CC0-1.0',
+              SPDXID: 'SPDXRef-DOCUMENT',
+              name: pkg.name,
+              documentNamespace: 'https://github.com/hintlint/hintlint',
+              creationInfo: {
+                created: new Date().toISOString(),
+                creators: ['Tool: hintlint-sbom-generator'],
+                licenseListVersion: '3.19'
+              },
+              packages: [{
+                SPDXID: 'SPDXRef-Package',
+                name: pkg.name,
+                versionInfo: pkg.version,
+                downloadLocation: pkg.repository?.url || 'NOASSERTION',
+                licenseConcluded: pkg.license,
+                licenseDeclared: pkg.license,
+                copyrightText: 'Copyright 2026 HintLint Contributors',
+                externalRefs: [{
+                  referenceCategory: 'PACKAGE-MANAGER',
+                  referenceType: 'purl',
+                  referenceLocator: 'pkg:npm/hintlint@' + pkg.version
+                }],
+                supplier: 'NOASSERTION',
+                filesAnalyzed: false
+              }],
+              relationships: [{
+                spdxElementId: 'SPDXRef-DOCUMENT',
+                relatedSpdxElement: 'SPDXRef-Package',
+                relationshipType: 'DESCRIBES'
+              }]
+            };
+            require('fs').writeFileSync('sbom.spdx.json', JSON.stringify(spdx, null, 2));
+            "
+          fi
+
+      # --- Supply Chain Attestation ---
+      - name: Generate build provenance attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            package.json
+            sbom.cdx.json
+
+      # --- npm Publish ---
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # --- GitHub Release ---
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            sbom.cdx.json
+            sbom.spdx.json

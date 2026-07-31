@@ -40,14 +40,16 @@ export function toMlFeatureRecords(report) {
       evidence: {
         categories: unique(evidence.map((item) => item.category)),
         sink_kinds: unique(evidence.map((item) => item.sink_kind)),
+        tiers: unique(evidence.map((item) => item.evidence_tier)),
         unsafe_flows: unsafeFlows,
-        source_backed: evidence.some((item) => item.confidence === "source-backed")
+        source_backed: evidence.some((item) => item.evidence_tier === "L3" || item.evidence_tier === "L4" || item.confidence === "source-backed")
       },
       findings: findings.map((finding) => ({
         id: finding.id,
         type: finding.type,
         severity: finding.severity,
-        confidence: finding.confidence
+        confidence: finding.confidence,
+        evidence_tier: finding.evidence_tier
       })),
       text: textFor(tool, evidence, findings)
     };

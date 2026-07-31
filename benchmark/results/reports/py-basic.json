@@ -1,6 +1,6 @@
 {
   "hintlint_version": "0.1.0",
-  "scan_started_at": "2026-07-30T06:35:50.820Z",
+  "scan_started_at": "2026-07-30T16:36:01.670Z",
   "scan_duration_ms": 1,
   "target": "fixtures/py-basic",
   "project": {
@@ -16,7 +16,39 @@
     "unsupported_patterns": 0,
     "source_evidence": 2,
     "project_evidence": 0,
-    "findings": 2
+    "findings": 2,
+    "coverage_status": "supported",
+    "handler_mapping_rate": 1,
+    "evidence_records_by_tier": {
+      "L3": 2
+    },
+    "findings_by_tier": {
+      "L3": 2
+    }
+  },
+  "coverage": {
+    "extraction_status": "supported",
+    "extraction_reason": "Tool extraction produced at least one MCP tool.",
+    "mcp_markers_detected": true,
+    "tools_extracted": 3,
+    "metadata_only_tools": 0,
+    "handlers_resolved": 3,
+    "handler_mapping_rate": 1,
+    "annotation_coverage_rate": 1,
+    "unsupported_patterns": 0,
+    "unsupported_languages": [],
+    "supported_languages": [
+      "python"
+    ],
+    "file_language_counts": {
+      "python": 1
+    },
+    "evidence_records_by_tier": {
+      "L3": 2
+    },
+    "findings_by_tier": {
+      "L3": 2
+    }
   },
   "tools": [
     {
@@ -125,6 +157,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.filesystem.mutation",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_found",
         "expected": "path root containment with an allowed base directory"
@@ -150,6 +183,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.process.execution",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_found",
         "expected": "server-side command allowlist"
@@ -172,7 +206,8 @@
       "type": "tool_input_to_filesystem_write",
       "tool": "download_artifact",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'download_artifact' has path-like MCP parameters and reaches filesystem write/path operations. Validate containment under an allowed root before writing.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -214,6 +249,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.filesystem.mutation",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "path root containment with an allowed base directory"
@@ -259,7 +295,8 @@
       "type": "tool_input_to_process_execution",
       "tool": "run_az_command",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'run_az_command' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -302,6 +339,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.process.execution",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "server-side command allowlist"

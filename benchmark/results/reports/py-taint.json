@@ -1,6 +1,6 @@
 {
   "hintlint_version": "0.1.0",
-  "scan_started_at": "2026-07-30T06:35:50.822Z",
+  "scan_started_at": "2026-07-30T16:36:01.671Z",
   "scan_duration_ms": 2,
   "target": "fixtures/py-taint",
   "project": {
@@ -16,7 +16,41 @@
     "unsupported_patterns": 0,
     "source_evidence": 6,
     "project_evidence": 1,
-    "findings": 6
+    "findings": 6,
+    "coverage_status": "supported",
+    "handler_mapping_rate": 1,
+    "evidence_records_by_tier": {
+      "L2": 1,
+      "L3": 6
+    },
+    "findings_by_tier": {
+      "L3": 6
+    }
+  },
+  "coverage": {
+    "extraction_status": "supported",
+    "extraction_reason": "Tool extraction produced at least one MCP tool.",
+    "mcp_markers_detected": true,
+    "tools_extracted": 6,
+    "metadata_only_tools": 0,
+    "handlers_resolved": 6,
+    "handler_mapping_rate": 1,
+    "annotation_coverage_rate": 1,
+    "unsupported_patterns": 0,
+    "unsupported_languages": [],
+    "supported_languages": [
+      "python"
+    ],
+    "file_language_counts": {
+      "python": 1
+    },
+    "evidence_records_by_tier": {
+      "L2": 1,
+      "L3": 6
+    },
+    "findings_by_tier": {
+      "L3": 6
+    }
   },
   "tools": [
     {
@@ -214,6 +248,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.filesystem.mutation",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "found",
         "expected": "path root containment with an allowed base directory"
@@ -239,6 +274,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.query.execution",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "found",
         "expected": "parameter binding or strict query allowlist"
@@ -264,6 +300,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.url.user-controlled",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "found",
         "expected": "strict host or resource-name allowlist"
@@ -289,6 +326,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.connection-string.user-controlled",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_found",
         "expected": "connection string builder or delimiter rejection"
@@ -314,6 +352,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.query.execution",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_found",
         "expected": "parameter binding or strict query allowlist"
@@ -339,6 +378,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.url.user-controlled",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_found",
         "expected": "strict host or resource-name allowlist"
@@ -366,6 +406,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.filesystem.mutation",
       "confidence": "needs-review",
+      "evidence_tier": "L2",
       "sanitizer": {
         "status": "not_found",
         "expected": "path root containment with an allowed base directory"
@@ -381,7 +422,8 @@
       "type": "tool_input_to_connection_string",
       "tool": "unsafe_connection_string",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'unsafe_connection_string' has connection-string-relevant MCP parameters and builds a structured connection string without recognized delimiter protection.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -423,6 +465,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.connection-string.user-controlled",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "connection string builder or delimiter rejection"
@@ -468,7 +511,8 @@
       "type": "false_readonly",
       "tool": "unsafe_postgres_query",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'unsafe_postgres_query' declares readOnlyHint=true but source evidence shows state mutation, external side effect, or process execution.",
       "declared_annotations": {
         "readOnlyHint": true,
@@ -510,6 +554,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.query.execution",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "parameter binding or strict query allowlist"
@@ -543,7 +588,8 @@
       "type": "tool_input_to_query_execution",
       "tool": "unsafe_postgres_query",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'unsafe_postgres_query' has query-like MCP parameters and reaches query execution without recognized binding or allowlist validation.",
       "declared_annotations": {
         "readOnlyHint": true,
@@ -585,6 +631,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.query.execution",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "parameter binding or strict query allowlist"
@@ -630,7 +677,8 @@
       "type": "false_open_world",
       "tool": "unsafe_storage_account",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'unsafe_storage_account' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
       "declared_annotations": {
         "readOnlyHint": true,
@@ -672,6 +720,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.url.user-controlled",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "strict host or resource-name allowlist"
@@ -705,7 +754,8 @@
       "type": "tool_input_to_url_construction",
       "tool": "unsafe_storage_account",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'unsafe_storage_account' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.",
       "declared_annotations": {
         "readOnlyHint": true,
@@ -747,6 +797,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.url.user-controlled",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "strict host or resource-name allowlist"
@@ -792,7 +843,8 @@
       "type": "validation_asymmetry",
       "tool": "unsafe_postgres_query",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'unsafe_postgres_query' reaches query execution without recognized validation, while sibling tool 'safe_mysql_query' validates the same query-shaped input.",
       "declared_annotations": {
         "readOnlyHint": true,
@@ -834,6 +886,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.query.execution",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "parameter binding or strict query allowlist"

@@ -18,6 +18,8 @@ test("CLI emits JSON report", async () => {
   const report = JSON.parse(stdout);
   assert.equal(report.summary.tools_scanned, 5);
   assert.equal(report.findings.length, 2);
+  assert.equal(report.coverage.extraction_status, "supported");
+  assert.equal(report.summary.findings_by_tier.L3, 2);
 });
 
 test("CLI emits SARIF report", async () => {
@@ -46,6 +48,8 @@ test("CLI emits registry artifact", async () => {
   assert.equal(artifact.artifact_version, "hintlint.registry-artifact.v1");
   assert.equal(artifact.summary.tools_scanned, 5);
   assert.equal(artifact.summary.source_backed_findings, 2);
+  assert.equal(artifact.summary.coverage_status, "supported");
+  assert.equal(artifact.summary.findings_by_tier.L3, 2);
   assert.ok(artifact.tools.some((tool) => tool.name === "delete_customer" && tool.finding_count === 1));
 });
 

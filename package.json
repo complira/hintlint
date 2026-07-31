@@ -1,19 +1,53 @@
 {
   "name": "hintlint",
   "version": "0.1.0",
-  "description": "Verify MCP tool hints and capabilities against source evidence.",
+  "description": "Verify MCP tool annotations match actual behavior. Detect annotation drift in Model Context Protocol servers.",
   "type": "module",
   "bin": {
     "hintlint": "./src/cli.js"
   },
   "scripts": {
-    "test": "node --test",
+    "test": "node --test test/*.test.js",
     "scan:fixtures": "node src/cli.js fixtures/ts-basic && node src/cli.js fixtures/py-basic && node src/cli.js fixtures/tools-list && node src/cli.js fixtures/py-taint && node src/cli.js fixtures/ts-evidence",
     "benchmark": "node scripts/scan-benchmark.js",
+    "benchmark:public": "node scripts/scan-public-mcp.js",
+    "cross-validate": "node scripts/cross-validate-public.js",
+    "review:scaffold": "node scripts/generate-review-scaffold.js",
+    "review:auto": "node scripts/auto-review.js",
+    "review:report": "node scripts/generate-validated-report.js",
+    "inspect:mcp": "node scripts/mcp-inspector.js",
+    "scan:continuous": "node scripts/continuous-scan.js",
     "ml:features": "node src/cli.js fixtures/tools-list --format features"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "security",
+    "static-analysis",
+    "annotations",
+    "tool-verification",
+    "sarif",
+    "ai-safety",
+    "supply-chain-security"
+  ],
+  "homepage": "https://github.com/hintlint/hintlint",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hintlint/hintlint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hintlint/hintlint/issues"
   },
   "engines": {
     "node": ">=20"
   },
+  "files": [
+    "src/",
+    "schemas/",
+    "rules/",
+    "action.yml",
+    "LICENSE",
+    "README.md"
+  ],
   "license": "Apache-2.0"
 }

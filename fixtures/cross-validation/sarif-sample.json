@@ -1,0 +1,124 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "test-engine",
+          "version": "1.0.0",
+          "rules": [
+            {
+              "id": "test/process-execution",
+              "name": "ProcessExecution",
+              "shortDescription": {
+                "text": "Process execution detected"
+              }
+            },
+            {
+              "id": "test/filesystem-write",
+              "name": "FilesystemWrite",
+              "shortDescription": {
+                "text": "Filesystem write detected"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "test/process-execution",
+          "level": "error",
+          "message": {
+            "text": "child_process.exec called with user input"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/server.ts"
+                },
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 5
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/server.ts" },
+                          "region": { "startLine": 60 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/helpers.ts" },
+                          "region": { "startLine": 15 }
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/server.ts" },
+                          "region": { "startLine": 65 }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "test/filesystem-write",
+          "level": "warning",
+          "message": {
+            "text": "writeFile called with user-controlled path"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/server.ts"
+                },
+                "region": {
+                  "startLine": 80
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "test/unknown-rule",
+          "level": "note",
+          "message": {
+            "text": "Some unrelated finding"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/other.ts"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

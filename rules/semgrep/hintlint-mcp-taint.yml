@@ -1,0 +1,254 @@
+rules:
+  # ---------- Process execution taint ----------
+  - id: hintlint.taint.process-execution-ts
+    mode: taint
+    languages: [typescript, javascript]
+    message: MCP tool parameter flows to process execution sink.
+    severity: ERROR
+    metadata:
+      hintlint_category: process_execution
+      hintlint_sink_kind: execute
+      hintlint_flow: process
+      hintlint_sanitizer_expected: server-side command allowlist
+      cwe: "CWE-78"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              server.tool($NAME, $SCHEMA, async ($ARGS) => { ... })
+          - focus-metavariable: $ARGS
+      - patterns:
+          - pattern: |
+              server.setRequestHandler(CallToolRequestSchema, async ($REQ) => { ... })
+          - focus-metavariable: $REQ
+    pattern-sinks:
+      - pattern: child_process.exec(...)
+      - pattern: child_process.execSync(...)
+      - pattern: child_process.spawn(...)
+      - pattern: child_process.spawnSync(...)
+      - pattern: execSync(...)
+      - pattern: exec(...)
+
+  - id: hintlint.taint.process-execution-py
+    mode: taint
+    languages: [python]
+    message: MCP tool parameter flows to process execution sink.
+    severity: ERROR
+    metadata:
+      hintlint_category: process_execution
+      hintlint_sink_kind: execute
+      hintlint_flow: process
+      hintlint_sanitizer_expected: server-side command allowlist
+      cwe: "CWE-78"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              @server.tool()
+              def $FUNC(..., $PARAM, ...):
+                  ...
+          - focus-metavariable: $PARAM
+      - patterns:
+          - pattern: |
+              @mcp.tool()
+              def $FUNC(..., $PARAM, ...):
+                  ...
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - pattern: subprocess.run(...)
+      - pattern: subprocess.Popen(...)
+      - pattern: subprocess.call(...)
+      - pattern: subprocess.check_output(...)
+      - pattern: os.system(...)
+      - pattern: os.popen(...)
+
+  # ---------- Filesystem write taint ----------
+  - id: hintlint.taint.filesystem-write-ts
+    mode: taint
+    languages: [typescript, javascript]
+    message: MCP tool parameter flows to filesystem write sink.
+    severity: WARNING
+    metadata:
+      hintlint_category: filesystem_mutation
+      hintlint_sink_kind: write
+      hintlint_flow: filesystem
+      hintlint_sanitizer_expected: path root containment with an allowed base directory
+      cwe: "CWE-22"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              server.tool($NAME, $SCHEMA, async ($ARGS) => { ... })
+          - focus-metavariable: $ARGS
+    pattern-sinks:
+      - pattern: fs.writeFile(...)
+      - pattern: fs.writeFileSync(...)
+      - pattern: fs.createWriteStream(...)
+      - pattern: fs.mkdir(...)
+      - pattern: fs.mkdirSync(...)
+      - pattern: fs.rm(...)
+      - pattern: fs.rmSync(...)
+      - pattern: writeFile(...)
+      - pattern: createWriteStream(...)
+
+  - id: hintlint.taint.filesystem-write-py
+    mode: taint
+    languages: [python]
+    message: MCP tool parameter flows to filesystem write sink.
+    severity: WARNING
+    metadata:
+      hintlint_category: filesystem_mutation
+      hintlint_sink_kind: write
+      hintlint_flow: filesystem
+      hintlint_sanitizer_expected: path root containment with an allowed base directory
+      cwe: "CWE-22"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              @server.tool()
+              def $FUNC(..., $PARAM, ...):
+                  ...
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - pattern: open($PATH, "w")
+      - pattern: open($PATH, "wb")
+      - pattern: open($PATH, "a")
+      - pattern: shutil.rmtree(...)
+      - pattern: os.remove(...)
+      - pattern: os.unlink(...)
+      - pattern: pathlib.Path(...).write_text(...)
+
+  # ---------- Query injection taint ----------
+  - id: hintlint.taint.query-injection-ts
+    mode: taint
+    languages: [typescript, javascript]
+    message: MCP tool parameter flows to query execution without binding.
+    severity: ERROR
+    metadata:
+      hintlint_category: query_execution
+      hintlint_sink_kind: query
+      hintlint_flow: query
+      hintlint_sanitizer_expected: parameter binding or strict query allowlist
+      cwe: "CWE-89"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              server.tool($NAME, $SCHEMA, async ($ARGS) => { ... })
+          - focus-metavariable: $ARGS
+    pattern-sinks:
+      - pattern: $DB.query(...)
+      - pattern: $DB.execute(...)
+      - pattern: $CONN.query(...)
+      - pattern: $POOL.query(...)
+
+  - id: hintlint.taint.query-injection-py
+    mode: taint
+    languages: [python]
+    message: MCP tool parameter flows to query execution without binding.
+    severity: ERROR
+    metadata:
+      hintlint_category: query_execution
+      hintlint_sink_kind: query
+      hintlint_flow: query
+      hintlint_sanitizer_expected: parameter binding or strict query allowlist
+      cwe: "CWE-89"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              @server.tool()
+              def $FUNC(..., $PARAM, ...):
+                  ...
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - pattern: $CURSOR.execute(...)
+      - pattern: $CONN.execute(...)
+
+  # ---------- URL/SSRF taint ----------
+  - id: hintlint.taint.url-ssrf-ts
+    mode: taint
+    languages: [typescript, javascript]
+    message: MCP tool parameter flows to outbound URL construction.
+    severity: ERROR
+    metadata:
+      hintlint_category: url_construction
+      hintlint_sink_kind: external_boundary
+      hintlint_flow: url
+      hintlint_sanitizer_expected: strict host or resource-name allowlist
+      cwe: "CWE-918"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              server.tool($NAME, $SCHEMA, async ($ARGS) => { ... })
+          - focus-metavariable: $ARGS
+    pattern-sinks:
+      - pattern: fetch($URL, ...)
+      - pattern: axios.get($URL, ...)
+      - pattern: axios.post($URL, ...)
+      - pattern: new URL($URL)
+
+  - id: hintlint.taint.url-ssrf-py
+    mode: taint
+    languages: [python]
+    message: MCP tool parameter flows to outbound URL construction.
+    severity: ERROR
+    metadata:
+      hintlint_category: url_construction
+      hintlint_sink_kind: external_boundary
+      hintlint_flow: url
+      hintlint_sanitizer_expected: strict host or resource-name allowlist
+      cwe: "CWE-918"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              @server.tool()
+              def $FUNC(..., $PARAM, ...):
+                  ...
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - pattern: requests.get(...)
+      - pattern: requests.post(...)
+      - pattern: httpx.get(...)
+      - pattern: httpx.post(...)
+      - pattern: urllib.request.urlopen(...)
+
+  # ---------- Connection string taint ----------
+  - id: hintlint.taint.connection-string-ts
+    mode: taint
+    languages: [typescript, javascript]
+    message: MCP tool parameter flows to connection string interpolation.
+    severity: ERROR
+    metadata:
+      hintlint_category: connection_string
+      hintlint_sink_kind: credential_boundary
+      hintlint_flow: connection_string
+      hintlint_sanitizer_expected: connection string builder or delimiter rejection
+      cwe: "CWE-88"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              server.tool($NAME, $SCHEMA, async ($ARGS) => { ... })
+          - focus-metavariable: $ARGS
+    pattern-sinks:
+      - pattern: new $CLIENT($CONN_STRING)
+      - pattern: $CLIENT.connect($CONN_STRING)
+      - pattern: createConnection($CONN_STRING)
+
+  - id: hintlint.taint.connection-string-py
+    mode: taint
+    languages: [python]
+    message: MCP tool parameter flows to connection string interpolation.
+    severity: ERROR
+    metadata:
+      hintlint_category: connection_string
+      hintlint_sink_kind: credential_boundary
+      hintlint_flow: connection_string
+      hintlint_sanitizer_expected: connection string builder or delimiter rejection
+      cwe: "CWE-88"
+    pattern-sources:
+      - patterns:
+          - pattern: |
+              @server.tool()
+              def $FUNC(..., $PARAM, ...):
+                  ...
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - pattern: psycopg2.connect(...)
+      - pattern: pymysql.connect(...)
+      - pattern: sqlalchemy.create_engine(...)

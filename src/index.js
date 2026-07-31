@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
 import { readFile } from "node:fs/promises";
+import { buildCoverage } from "./coverage.js";
 import { discoverProject } from "./project-discovery.js";
 import { analyzeTools } from "./evidence/static-detector.js";
 import { normalizeSemgrepJson } from "./evidence/semgrep-normalizer.js";
@@ -23,6 +24,7 @@ export async function runScan(targetPath, options = {}) {
   const analysis = await analyzeTools(project, extractedTools, { semgrepEvidence });
   const tools = analysis.tools;
   const unsupported = [...tsResult.unsupported, ...pyResult.unsupported, ...toolsListResult.unsupported];
+  const coverage = await buildCoverage(project, tools, unsupported, analysis);
   const endedAt = new Date();
 
   return {
@@ -41,8 +43,13 @@ export async function runScan(targetPath, options = {}) {
       unsupported_patterns: unsupported.length,
       source_evidence: analysis.evidence.length,
       project_evidence: analysis.projectEvidence.length,
-      findings: analysis.findings.length
+      findings: analysis.findings.length,
+      coverage_status: coverage.extraction_status,
+      handler_mapping_rate: coverage.handler_mapping_rate,
+      evidence_records_by_tier: coverage.evidence_records_by_tier,
+      findings_by_tier: coverage.findings_by_tier
     },
+    coverage,
     tools,
     evidence: analysis.evidence,
     project_evidence: analysis.projectEvidence,

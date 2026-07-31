@@ -9,6 +9,7 @@ HintLint should ship in credibility-building slices:
 3. make it easy to adopt in CI,
 4. publish enough public evidence to earn distribution,
 5. only then introduce ML as an advisory layer.
+6. harden coverage and handler-to-sink reachability before partner packaging.
 
 The product should avoid a hosted dashboard or broad registry until the evidence engine has adoption.
 
@@ -202,9 +203,45 @@ The product should avoid a hosted dashboard or broad registry until the evidence
 - No ML-based CI failure.
 - No closed-source proof claims.
 
-## M7: Partner-Ready Evidence Engine
+## M7: 80/20 Coverage and Reachability
 
-- Target window: After M5/M6 validation
+- Target window: Weeks 17-22
+- Goal: Cover the dominant TypeScript/JavaScript MCP patterns, use Semgrep for cross-language sink evidence, and turn project-level evidence into handler-reachable proof where it matters.
+- Primary users: MCP maintainers, registry reviewers, security engineers.
+- Included tickets: HL-080, HL-081, HL-082, HL-083, HL-084, HL-085, HL-086, HL-087, HL-088, HL-089.
+
+### Exit Criteria
+
+- Public scan results explain zero-tool repositories as `unsupported_language`, `unsupported_pattern`, `not_mcp_server`, `requires_build`, `runtime_only`, or `requires_credentials`.
+- TypeScript extractor covers static arrays, exported registries, simple loops, SDK calls, and common wrapper factories.
+- Existing Python decorator extraction continues to work, but no new Python parser is added in M7.
+- Semgrep findings inside resolved handlers are `L3`; Semgrep findings outside resolved handlers are `L2`.
+- Optional runtime introspection calls only `initialize` and `tools/list`; it never executes business tools or requires production API keys.
+- Reports include extraction coverage, handler mapping coverage, evidence tiers, and unsupported-pattern details.
+- TypeScript/JavaScript local call graph passes produce handler-to-sink paths for common helper/service layers.
+- Evidence tiers are enforced:
+  - `L1`: metadata-only classification,
+  - `L2`: project-level source evidence,
+  - `L3`: handler-reachable source evidence,
+  - `L4`: handler-reachable source evidence plus safe runtime introspection.
+- CI fails only on configured `L3` or `L4` findings.
+- A rerun over at least 50 source-available TypeScript/JavaScript/Python MCP repositories achieves:
+  - at least 80% nonzero extraction or explicit unsupported classification for known MCP servers,
+  - at least 70% handler mapping across extracted tools.
+- Highest-confidence findings are manually reviewed before public claims or maintainer PRs.
+
+### Non-Goals
+
+- No Go/C#/Rust/Java extractor expansion.
+- No new Python parser expansion.
+- No execution of real MCP tools.
+- No API-key-dependent validation.
+- No public vulnerability claims from unreviewed candidates.
+- No ML-based CI blocking.
+
+## M8: Partner-Ready Evidence Engine
+
+- Target window: After M7 validation
 - Goal: Package HintLint as an embeddable verifier for registries, gateways, and governance platforms.
 - Primary users: Stacklok/ToolHive-like platforms, Glama-like registries, agent security vendors, enterprise AI platform teams.
 
@@ -229,7 +266,8 @@ The product should avoid a hosted dashboard or broad registry until the evidence
 | `v0.4.0` | M4 | CI/SARIF/GitHub Action ready |
 | `v0.5.0` | M5 | Public drift report and registry artifact |
 | `v0.6.0-experimental` | M6 | ML advisory preview |
-| `v1.0.0` | M7 | Stable evidence engine for CI and integrations |
+| `v0.7.0` | M7 | 80/20 extractor coverage and handler-to-sink evidence tiers |
+| `v1.0.0` | M8 | Stable evidence engine for CI and integrations |
 
 ## Milestone Gate Principles
 

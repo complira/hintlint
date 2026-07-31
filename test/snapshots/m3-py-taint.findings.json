@@ -6,7 +6,16 @@
     "unsupported_patterns": 0,
     "source_evidence": 6,
     "project_evidence": 1,
-    "findings": 6
+    "findings": 6,
+    "coverage_status": "supported",
+    "handler_mapping_rate": 1,
+    "evidence_records_by_tier": {
+      "L2": 1,
+      "L3": 6
+    },
+    "findings_by_tier": {
+      "L3": 6
+    }
   },
   "findings": [
     {
@@ -14,7 +23,7 @@
       "severity": "high",
       "type": "tool_input_to_connection_string",
       "tool": "unsafe_connection_string",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
       "declared_annotations": {
         "readOnlyHint": false,
         "openWorldHint": false
@@ -50,7 +59,7 @@
       "severity": "high",
       "type": "false_readonly",
       "tool": "unsafe_postgres_query",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
       "declared_annotations": {
         "readOnlyHint": true,
         "openWorldHint": false
@@ -83,7 +92,7 @@
       "severity": "critical",
       "type": "tool_input_to_query_execution",
       "tool": "unsafe_postgres_query",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
       "declared_annotations": {
         "readOnlyHint": true,
         "openWorldHint": false
@@ -119,7 +128,7 @@
       "severity": "medium",
       "type": "false_open_world",
       "tool": "unsafe_storage_account",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
       "declared_annotations": {
         "readOnlyHint": true,
         "openWorldHint": false
@@ -152,7 +161,7 @@
       "severity": "high",
       "type": "tool_input_to_url_construction",
       "tool": "unsafe_storage_account",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
       "declared_annotations": {
         "readOnlyHint": true,
         "openWorldHint": false
@@ -188,7 +197,7 @@
       "severity": "medium",
       "type": "validation_asymmetry",
       "tool": "unsafe_postgres_query",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
       "declared_annotations": {
         "readOnlyHint": true,
         "openWorldHint": false

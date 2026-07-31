@@ -1,7 +1,46 @@
+# Dependencies
 node_modules/
+
+# Python
+.venv-semgrep/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Benchmark external repos (cloned on demand)
+benchmark/external/
+
+# Public scan results (generated, not committed)
+benchmark/results-public/
+
+# Enterprise scan results
+benchmark/results-enterprise/
+
+# Generated scan outputs
 hintlint.sarif
+hintlint.txt
+hintlint-*.sarif
+hintlint-gate.json
 features.jsonl
 ml-advice.jsonl
+hintlint-features.jsonl
+hintlint-ml-advice.jsonl
+
+# SBOM (generated in release workflow)
+sbom.cdx.json
+sbom.spdx.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local

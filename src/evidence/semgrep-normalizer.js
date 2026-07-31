@@ -1,6 +1,7 @@
 import { relativeEvidencePath, resolvedToolForLocation } from "./tool-location.js";
 
 const CATEGORY_BY_RULE = new Map([
+  // Pattern-only rules
   ["hintlint.database.destructive", "database_mutation"],
   ["hintlint.database.write", "database_mutation"],
   ["hintlint.filesystem.mutation", "filesystem_mutation"],
@@ -10,8 +11,30 @@ const CATEGORY_BY_RULE = new Map([
   ["hintlint.process.execution", "process_execution"],
   ["hintlint.query.execution", "query_execution"],
   ["hintlint.url.user-controlled", "url_construction"],
-  ["hintlint.connection-string.user-controlled", "connection_string"]
+  ["hintlint.connection-string.user-controlled", "connection_string"],
+  // Taint-mode rules (TypeScript/JavaScript)
+  ["hintlint.taint.process-execution-ts", "process_execution"],
+  ["hintlint.taint.filesystem-write-ts", "filesystem_mutation"],
+  ["hintlint.taint.query-injection-ts", "query_execution"],
+  ["hintlint.taint.url-ssrf-ts", "url_construction"],
+  ["hintlint.taint.connection-string-ts", "connection_string"],
+  // Taint-mode rules (Python)
+  ["hintlint.taint.process-execution-py", "process_execution"],
+  ["hintlint.taint.filesystem-write-py", "filesystem_mutation"],
+  ["hintlint.taint.query-injection-py", "query_execution"],
+  ["hintlint.taint.url-ssrf-py", "url_construction"],
+  ["hintlint.taint.connection-string-py", "connection_string"]
 ]);
+
+function extractDataflowTrace(result) {
+  const trace = result.extra?.dataflow_trace;
+  if (!trace || !Array.isArray(trace.intermediate_vars)) {
+    return undefined;
+  }
+  return trace.intermediate_vars
+    .filter((v) => v.location?.path && v.location?.start?.line)
+    .map((v) => `${v.location.path}:${v.location.start.line}`);
+}
 
 function metadata(result) {
   return result.extra?.metadata ?? {};
@@ -43,6 +66,7 @@ export function normalizeSemgrepJson(project, tools, semgrepJson) {
     const line = resultLine(result);
     const tool = resolvedToolForLocation(tools, file, line);
     const category = meta.hintlint_category ?? CATEGORY_BY_RULE.get(result.check_id) ?? "unknown";
+    const evidenceTier = tool ? "L3" : "L2";
     const record = {
       tool: tool?.name ?? null,
       scope: tool ? "tool" : "project",
@@ -55,6 +79,7 @@ export function normalizeSemgrepJson(project, tools, semgrepJson) {
       engine: "semgrep",
       rule_id: result.check_id,
       confidence: tool ? "source-backed" : "needs-review",
+      evidence_tier: evidenceTier,
       sanitizer: {
         status: meta.hintlint_sanitizer_status ?? "unknown",
         expected: meta.hintlint_sanitizer_expected ?? "unknown"
@@ -70,6 +95,10 @@ export function normalizeSemgrepJson(project, tools, semgrepJson) {
     }
     if (meta.cwe) {
       record.cwe_id = meta.cwe;
+    }
+    const trace = extractDataflowTrace(result);
+    if (trace && trace.length > 0) {
+      record.trace = trace;
     }
     return record;
   });

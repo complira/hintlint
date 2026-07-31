@@ -40,8 +40,8 @@ rules:
       hintlint_category: database_mutation
       hintlint_sink_kind: destructive
     pattern-either:
-      - pattern: $DB.$MODEL.delete(...)
-      - pattern: $DB.$MODEL.deleteMany(...)
+      - pattern-regex: "\\b(?:db|prisma|knex|sequelize|mongoose|collection|repository|repo|model)\\.[A-Za-z0-9_.]+\\.(?:delete|delete_[A-Za-z0-9_]+|remove|remove_[A-Za-z0-9_]+|destroy|destroy_[A-Za-z0-9_]+|drop|drop_[A-Za-z0-9_]+|truncate|truncate_[A-Za-z0-9_]+)(?:One|Many)?\\s*\\("
+      - pattern-regex: "\\b[A-Za-z0-9_.]+(?:Repository|Model)\\.(?:delete|delete_[A-Za-z0-9_]+|remove|remove_[A-Za-z0-9_]+|destroy|destroy_[A-Za-z0-9_]+|drop|drop_[A-Za-z0-9_]+|truncate|truncate_[A-Za-z0-9_]+)(?:One|Many)?\\s*\\("
       - pattern: $CURSOR.execute("DELETE FROM" + ...)
       - pattern: $CURSOR.execute("DROP TABLE" + ...)
 
@@ -53,9 +53,8 @@ rules:
       hintlint_category: database_mutation
       hintlint_sink_kind: write
     pattern-either:
-      - pattern: $DB.$MODEL.create(...)
-      - pattern: $DB.$MODEL.update(...)
-      - pattern: $DB.$MODEL.upsert(...)
+      - pattern-regex: "\\b(?:db|prisma|knex|sequelize|mongoose|collection|repository|repo|model)\\.[A-Za-z0-9_.]+\\.(?:create|create_[A-Za-z0-9_]+|update|update_[A-Za-z0-9_]+|upsert|upsert_[A-Za-z0-9_]+|insert|insert_[A-Za-z0-9_]+|save|save_[A-Za-z0-9_]+)(?:One|Many)?\\s*\\("
+      - pattern-regex: "\\b[A-Za-z0-9_.]+(?:Repository|Model)\\.(?:create|create_[A-Za-z0-9_]+|update|update_[A-Za-z0-9_]+|upsert|upsert_[A-Za-z0-9_]+|insert|insert_[A-Za-z0-9_]+|save|save_[A-Za-z0-9_]+)(?:One|Many)?\\s*\\("
       - pattern: $CURSOR.execute("INSERT" + ...)
       - pattern: $CURSOR.execute("UPDATE" + ...)
 
@@ -67,10 +66,10 @@ rules:
       hintlint_category: http_mutation
       hintlint_sink_kind: external_mutation
     pattern-either:
-      - pattern: fetch($URL, {method: "POST", ...})
-      - pattern: fetch($URL, {method: "PUT", ...})
-      - pattern: fetch($URL, {method: "PATCH", ...})
-      - pattern: fetch($URL, {method: "DELETE", ...})
+      - pattern: 'fetch($URL, {method: "POST", ...})'
+      - pattern: 'fetch($URL, {method: "PUT", ...})'
+      - pattern: 'fetch($URL, {method: "PATCH", ...})'
+      - pattern: 'fetch($URL, {method: "DELETE", ...})'
       - pattern: requests.post(...)
       - pattern: requests.put(...)
       - pattern: requests.patch(...)
@@ -95,10 +94,12 @@ rules:
     metadata:
       hintlint_category: cloud_mutation
       hintlint_sink_kind: destructive
-    pattern-either:
-      - pattern: octokit.git.deleteRef(...)
-      - pattern: $CLIENT.delete(...)
-      - pattern: $CLIENT.terminate(...)
+    patterns:
+      - pattern-either:
+          - pattern: octokit.git.deleteRef(...)
+          - pattern-regex: "\\b[A-Za-z0-9_.]+\\.(?:delete[A-Z][A-Za-z0-9_]*|delete_[A-Za-z0-9_]+|terminate[A-Z][A-Za-z0-9_]*|terminate_[A-Za-z0-9_]+)\\s*\\("
+          - pattern-regex: "\\b(?:Delete|Terminate)[A-Za-z0-9_]+\\("
+      - pattern-not-regex: "\\b(?:def|function)\\s+(?:delete|terminate)"
 
   - id: hintlint.query.execution
     languages: [typescript, javascript, python]
@@ -107,12 +108,12 @@ rules:
     metadata:
       hintlint_category: query_execution
       hintlint_sink_kind: query
+      hintlint_sink: query execution
       hintlint_flow: query
       hintlint_sanitizer_expected: parameter binding or strict query allowlist
       cwe: "CWE-89"
     pattern-either:
-      - pattern: $CONN.execute($QUERY)
-      - pattern: $CURSOR.execute($QUERY)
+      - pattern-regex: "\\b(?:cursor|conn|connection|db|database|kustoClient|sqlClient|pool)\\.(?:execute|query|ExecuteReaderAsync|ExecuteQueryCommandAsync)\\s*\\("
       - pattern: new NpgsqlCommand($QUERY, ...)
 
   - id: hintlint.url.user-controlled
@@ -128,8 +129,7 @@ rules:
     pattern-either:
       - pattern: requests.get($URL)
       - pattern: fetch($URL)
-      - pattern: $URL = f"...{$PARAM}..."
-      - pattern: $URL = `...${$PARAM}...`
+      - pattern-regex: "https?://[^\\n]*(\\$\\{|\\{[A-Za-z_][A-Za-z0-9_]*\\})"
 
   - id: hintlint.connection-string.user-controlled
     languages: [typescript, javascript, python]
@@ -142,5 +142,4 @@ rules:
       hintlint_sanitizer_expected: connection string builder or delimiter rejection
       cwe: "CWE-88"
     pattern-either:
-      - pattern: $CONNECTION = f"...Database={$DATABASE}..."
-      - pattern: $CONNECTION = `...Database=${$DATABASE}...`
+      - pattern-regex: "(Host|Server|Database|Username|Password)=[^\\n]*(\\$\\{|\\{[A-Za-z_][A-Za-z0-9_]*\\})"

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hintlint.dev/schemas/cross-validation.schema.json",
+  "title": "HintLint Cross-Validation Summary",
+  "type": "object",
+  "required": ["artifact_version", "generated_at", "engines_used", "findings_total", "per_finding"],
+  "properties": {
+    "artifact_version": { "const": "hintlint.cross-validation.v1" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "engines_used": { "type": "array", "items": { "type": "string" } },
+    "findings_total": { "type": "integer", "minimum": 0 },
+    "findings_confirmed_by_3_plus": { "type": "integer", "minimum": 0 },
+    "findings_confirmed_by_2": { "type": "integer", "minimum": 0 },
+    "findings_single_engine_only": { "type": "integer", "minimum": 0 },
+    "per_finding": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding", "corroboration"],
+        "properties": {
+          "finding": { "type": "object" },
+          "corroboration": {
+            "type": "object",
+            "properties": {
+              "engines_confirming": { "type": "array", "items": { "type": "string" } },
+              "engines_no_signal": { "type": "array", "items": { "type": "string" } },
+              "confirmation_count": { "type": "integer", "minimum": 0 },
+              "evidence_by_engine": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "engine_coverage": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "repos_analyzed": { "type": "integer" },
+          "repos_skipped": { "type": "integer" },
+          "evidence_produced": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

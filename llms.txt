@@ -1,0 +1,51 @@
+# HintLint
+
+> Static analysis tool that verifies MCP (Model Context Protocol) server tool annotations match actual source code behavior.
+
+## What it does
+
+HintLint reads MCP server source code and checks whether tool annotations (readOnlyHint, destructiveHint, openWorldHint, idempotentHint) match what the code actually does. It detects annotation drift — the gap between what a tool claims and what it performs.
+
+## Why it matters
+
+MCP clients use tool annotations to decide which tool invocations need human approval. If a tool declares readOnlyHint=true but actually deletes data, the agent runtime skips the confirmation dialog. This is the trust metadata layer for AI agent tool use — and nobody was verifying it until HintLint.
+
+## What problem it solves
+
+- Tools that claim to be read-only but perform writes or deletes
+- Tools that perform destructive operations (delete IAM keys, drop databases) without declaring destructiveHint
+- Tools that claim to be closed-world but make external HTTP calls
+- Tool input that flows to process execution, SQL queries, filesystem writes, or URL construction without validation
+
+## Who should use it
+
+- MCP server developers — verify your annotations before shipping
+- Enterprise security teams — scan MCP servers before adding them to your agent catalog
+- MCP gateway operators — enforce annotation trust policies
+- AI agent platform teams — validate the tool metadata your runtime depends on
+
+## How to use it
+
+Install: npx hintlint ./my-mcp-server
+CI mode: npx hintlint ./my-mcp-server --ci --fail-on high
+SARIF output: npx hintlint ./my-mcp-server --format sarif --output hintlint.sarif
+GitHub Action: uses: hintlint/hintlint@v0
+
+## Key facts
+
+- Zero npm dependencies
+- Supports TypeScript, JavaScript, Python
+- 88% handler resolution rate on real-world MCP servers
+- 82% precision (23 confirmed findings in 20-repo pilot)
+- Outputs SARIF 2.1.0 for GitHub Security, Defect Dojo, SIEM integration
+- Apache 2.0 license
+- Built by Complira (https://complira.co)
+
+## Documentation
+
+- CLI Reference: docs/cli-reference.md
+- Finding Reference: docs/finding-reference.md
+- CI Integration: docs/ci-integration.md
+- Enterprise Usage: docs/enterprise-usage.md
+- Registry Artifact: docs/registry-artifact.md
+- Findings Report: docs/findings-report-july-2026.md

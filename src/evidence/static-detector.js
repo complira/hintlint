@@ -1,5 +1,6 @@
 import { readSourceFile } from "../extractors/common.js";
 import { inferVerifiedBehavior, suggestedAnnotationsFor } from "./behavior.js";
+import { projectEvidenceKey, reachableEvidenceByTool } from "./typescript-reachability.js";
 import { normalizeFilePath, resolvedToolForLocation } from "./tool-location.js";
 
 const READONLY_FINDING = "HINTLINT-READONLY-001";
@@ -21,7 +22,7 @@ const SINK_RULES = [
     languages: ["typescript", "javascript", "python"],
     category: "database_mutation",
     sink_kind: "destructive",
-    pattern: /\b(?:db\.)?[\w.]+(?:delete|remove|destroy|drop|truncate)(?:One|Many)?\s*\(|\bDELETE\s+FROM\b|\bDROP\s+TABLE\b/i,
+    pattern: /\b(?:db|prisma|knex|sequelize|mongoose|collection|repository|repo|model)\.[\w.]+(?:delete|delete_[A-Za-z0-9_]+|remove|remove_[A-Za-z0-9_]+|destroy|destroy_[A-Za-z0-9_]+|drop|drop_[A-Za-z0-9_]+|truncate|truncate_[A-Za-z0-9_]+)(?:One|Many)?\s*\(|\b[\w.]+(?:Repository|Model)\.(?:delete|delete_[A-Za-z0-9_]+|remove|remove_[A-Za-z0-9_]+|destroy|destroy_[A-Za-z0-9_]+|drop|drop_[A-Za-z0-9_]+|truncate|truncate_[A-Za-z0-9_]+)(?:One|Many)?\s*\(|\bDELETE\s+FROM\b|\bDROP\s+TABLE\b/i,
     sink: "database destructive operation"
   },
   {
@@ -29,7 +30,7 @@ const SINK_RULES = [
     languages: ["typescript", "javascript", "python"],
     category: "database_mutation",
     sink_kind: "write",
-    pattern: /\b(?:db\.)?[\w.]+(?:create|update|upsert|insert|save)\s*\(|\bINSERT\s+INTO\b|\bUPDATE\s+[\w.]+\s+SET\b/i,
+    pattern: /\b(?:db|prisma|knex|sequelize|mongoose|collection|repository|repo|model)\.[\w.]+(?:create|create_[A-Za-z0-9_]+|update|update_[A-Za-z0-9_]+|upsert|upsert_[A-Za-z0-9_]+|insert|insert_[A-Za-z0-9_]+|save|save_[A-Za-z0-9_]+)(?:One|Many)?\s*\(|\b[\w.]+(?:Repository|Model)\.(?:create|create_[A-Za-z0-9_]+|update|update_[A-Za-z0-9_]+|upsert|upsert_[A-Za-z0-9_]+|insert|insert_[A-Za-z0-9_]+|save|save_[A-Za-z0-9_]+)(?:One|Many)?\s*\(|\bINSERT\s+INTO\b|\bUPDATE\s+[\w.]+\s+SET\b/i,
     sink: "database write operation"
   },
   {
@@ -65,7 +66,7 @@ const SINK_RULES = [
     languages: ["typescript", "javascript", "python"],
     category: "cloud_mutation",
     sink_kind: "destructive",
-    pattern: /\b(?:deleteRef|delete[A-Z]\w*|terminate[A-Z]\w*|az\s+[\w-]+\s+delete)\b/i,
+    pattern: /\b[\w.]+\.(?:deleteRef|delete[A-Z]\w*|delete_[A-Za-z0-9_]+|terminate[A-Z]\w*|terminate_[A-Za-z0-9_]+)\s*\(|\b(?:Delete|Terminate)[A-Za-z0-9_]+\(|\baz\s+[\w-]+\s+delete\b/,
     sink: "cloud destructive/update operation"
   },
   {
@@ -226,6 +227,7 @@ function sanitizerFor(rule, tool, text, sourceParam) {
 
 function evidenceRecord({ tool, rule, file, line, lineText, sourceText, scope, confidence }) {
   const sourceParam = scope === "tool" ? sourceParameter(tool, rule, lineText) : undefined;
+  const evidenceTier = scope === "tool" ? "L3" : "L2";
   const record = {
     tool: tool?.name ?? null,
     scope,
@@ -238,6 +240,7 @@ function evidenceRecord({ tool, rule, file, line, lineText, sourceText, scope, c
     engine: "builtin",
     rule_id: rule.rule_id,
     confidence,
+    evidence_tier: evidenceTier,
     sanitizer: sanitizerFor(rule, tool, sourceText, sourceParam)
   };
   if (rule.flow) {
@@ -334,6 +337,20 @@ function validationRepair(summary, guidance) {
   };
 }
 
+function evidenceTierFor(findingEvidence) {
+  const tiers = new Set(findingEvidence.map((item) => item.evidence_tier).filter(Boolean));
+  if (tiers.has("L4")) {
+    return "L4";
+  }
+  if (tiers.has("L3")) {
+    return "L3";
+  }
+  if (tiers.has("L2")) {
+    return "L2";
+  }
+  return "L1";
+}
+
 function finding({
   id,
   severity,
@@ -347,13 +364,15 @@ function finding({
   cweId = undefined,
   includeFlowDetails = false
 }) {
+  const evidenceTier = evidenceTierFor(findingEvidence);
   const result = {
     id,
     severity,
     type,
     tool: tool.name,
     confidence: "source-backed",
-    confidence_tier: "source-backed",
+    confidence_tier: evidenceTier,
+    evidence_tier: evidenceTier,
     message,
     declared_annotations: tool.declared_annotations,
     verified_behavior: behavior ?? inferVerifiedBehavior(findingEvidence),
@@ -428,7 +447,11 @@ function compareAnnotations(tool, sinkEvidence) {
 }
 
 function unsafeFlowEvidence(sinkEvidence, flow) {
-  return sinkEvidence.filter((item) => item.flow === flow && item.sanitizer?.status !== "found");
+  return sinkEvidence.filter((item) =>
+    item.flow === flow &&
+    item.sanitizer?.status !== "found" &&
+    item.source_parameter
+  );
 }
 
 function detectUnsafeFlows(tool, sinkEvidence) {
@@ -630,11 +653,29 @@ function mergeEvidence(primary, additional) {
   return merged;
 }
 
+function evidenceByToolName(evidence) {
+  const grouped = new Map();
+  for (const item of evidence) {
+    if (item.scope !== "tool" || !item.tool) {
+      continue;
+    }
+    const group = grouped.get(item.tool) ?? [];
+    group.push(item);
+    grouped.set(item.tool, group);
+  }
+  return grouped;
+}
+
 export async function analyzeTools(project, tools, options = {}) {
   const findings = [];
   const publicTools = [];
   const toolEvidence = [];
   const evidenceByTool = new Map();
+  const semgrepEvidence = options.semgrepEvidence ?? [];
+  const semgrepToolEvidenceByName = evidenceByToolName(semgrepEvidence);
+  const semgrepProjectEvidence = semgrepEvidence.filter((item) => item.scope === "project");
+  const rawProjectEvidence = mergeEvidence(await detectProjectEvidence(project, tools), semgrepProjectEvidence);
+  const reachableProjectEvidence = await reachableEvidenceByTool(project, tools, rawProjectEvidence);
 
   for (const tool of tools) {
     if (tool.handler?.confidence !== "resolved") {
@@ -642,7 +683,7 @@ export async function analyzeTools(project, tools, options = {}) {
       continue;
     }
 
-    const evidence = detectEvidenceInText({
+    const builtInEvidence = detectEvidenceInText({
       tool,
       file: tool.handler.file,
       language: tool.language,
@@ -651,6 +692,8 @@ export async function analyzeTools(project, tools, options = {}) {
       scope: "tool",
       confidence: "source-backed"
     });
+    const directEvidence = mergeEvidence(builtInEvidence, semgrepToolEvidenceByName.get(tool.name) ?? []);
+    const evidence = mergeEvidence(directEvidence, reachableProjectEvidence.byTool.get(tool.name) ?? []);
     evidenceByTool.set(tool.name, evidence);
     toolEvidence.push(...evidence);
     findings.push(...compareAnnotations(tool, evidence));
@@ -660,14 +703,13 @@ export async function analyzeTools(project, tools, options = {}) {
 
   findings.push(...detectValidationAsymmetry(tools, evidenceByTool));
 
-  const semgrepEvidence = options.semgrepEvidence ?? [];
-  const semgrepToolEvidence = semgrepEvidence.filter((item) => item.scope === "tool");
-  const semgrepProjectEvidence = semgrepEvidence.filter((item) => item.scope === "project");
-  const projectEvidence = mergeEvidence(await detectProjectEvidence(project, tools), semgrepProjectEvidence);
+  const projectEvidence = rawProjectEvidence.filter((item) =>
+    !reachableProjectEvidence.promotedProjectEvidenceKeys.has(projectEvidenceKey(item))
+  );
 
   return {
     tools: publicTools,
-    evidence: mergeEvidence(toolEvidence, semgrepToolEvidence),
+    evidence: toolEvidence,
     projectEvidence,
     findings
   };

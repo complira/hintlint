@@ -33,3 +33,14 @@ test("benchmark script writes aggregate report and registry artifacts", async ()
 
   await stat(join(outDir, "annotation-drift-report.md"));
 });
+
+test("public MCP scan runner exposes reproducible-scan options", async () => {
+  const { stdout } = await execFileAsync("node", [
+    "scripts/scan-public-mcp.js",
+    "--help"
+  ]);
+
+  assert.match(stdout, /benchmark\/public-mcp-manifest\.json/);
+  assert.match(stdout, /--semgrep <mode>/);
+  assert.match(stdout, /--skip-fetch/);
+});

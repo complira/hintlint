@@ -15,6 +15,28 @@ Outputs:
 - `benchmark/results/summary.json`: aggregate machine-readable statistics.
 - `benchmark/results/annotation-drift-report.md`: Markdown report for review or publication.
 
-The checked-in manifest uses local fixtures. Replace or extend `benchmark/manifest.json` with pinned source-available MCP server checkouts before making public prevalence claims.
+The checked-in fixture manifest uses local fixtures. Replace or extend `benchmark/manifest.json` with pinned source-available MCP server checkouts before making public prevalence claims.
 
-For external repositories, clone them separately and add entries with `source.kind = "git"`, `source.url`, `source.commit`, and a local `source.path` pointing at the checkout. The harness intentionally does not clone from the network by default.
+## Public MCP Pilot
+
+The public scan pilot is separate:
+
+```bash
+npm run benchmark:public
+```
+
+It reads `benchmark/public-mcp-manifest.json`, clones enabled `git` sources into ignored `benchmark/external/`, records the exact scanned commits, runs the HintLint Semgrep rule pack when available, and writes ignored outputs under `benchmark/results-public/`.
+
+Useful local run while Docker is unavailable:
+
+```bash
+node scripts/scan-public-mcp.js --semgrep local --semgrep-bin .venv-semgrep/bin/semgrep
+```
+
+Docker run when the daemon is available:
+
+```bash
+node scripts/scan-public-mcp.js --semgrep docker
+```
+
+Generated public-scan findings are unreviewed candidates. Publish only after manual review of each high-impact finding and after pinning exact commits in the manifest or generated summary.

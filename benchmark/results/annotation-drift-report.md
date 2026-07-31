@@ -1,6 +1,6 @@
 # HintLint Annotation Drift Report
 
-Generated: 2026-07-30T06:35:50.808Z
+Generated: 2026-07-30T16:36:01.656Z
 
 ## Scope
 
@@ -14,7 +14,7 @@ This report counts only source-backed HintLint findings as evidence. Metadata-on
 
 - Servers scanned: 4
 - Tools scanned: 17
-- Source evidence records: 16
+- Source evidence records: 15
 - Findings: 14
 - Source-backed findings: 14
 - Annotation drift findings: 6
@@ -39,7 +39,7 @@ This report counts only source-backed HintLint findings as evidence. Metadata-on
 
 | Server | Tools | Evidence | Findings | Source-backed |
 | --- | --- | --- | --- | --- |
-| ts-basic | 5 | 4 | 2 | 2 |
+| ts-basic | 5 | 3 | 2 | 2 |
 | py-basic | 3 | 2 | 2 | 2 |
 | py-taint | 6 | 6 | 6 | 6 |
 | ts-evidence | 3 | 4 | 4 | 4 |

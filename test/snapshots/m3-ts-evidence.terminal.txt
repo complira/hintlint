@@ -9,6 +9,8 @@ Handlers resolved: 3
 Annotations present: 3
 Source evidence: 4
 Project evidence: 1
+Coverage: supported
+Handler mapping: 1
 Findings: 4
 
 Tools:
@@ -31,12 +33,14 @@ Project Evidence:
 Findings:
   - HINTLINT-DESTRUCTIVE-001 [high] delete_branch
     Tool 'delete_branch' reaches destructive or process-execution evidence but does not declare destructiveHint=true.
+    tier: L3
     declared: readOnlyHint=false, destructiveHint=false, openWorldHint=true
     verified: readOnlyHint=false, destructiveHint=true, openWorldHint=true
     evidence: src/server.ts:46
     repair: Set destructiveHint=true and require approval before automatic invocation.
   - HINTLINT-FLOW-PROCESS-001 [critical] run_script
     Tool 'run_script' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.
+    tier: L3
     declared: readOnlyHint=false, destructiveHint=true, openWorldHint=true
     verified: readOnlyHint=false, destructiveHint=true, openWorldHint=true
     evidence: src/server.ts:65
@@ -46,12 +50,14 @@ Findings:
     repair: Add a server-side command allowlist before invoking process execution.
   - HINTLINT-OPEN-WORLD-001 [medium] update_issue
     Tool 'update_issue' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.
+    tier: L3
     declared: readOnlyHint=false, destructiveHint=false, openWorldHint=false
     verified: readOnlyHint=false, destructiveHint=false, openWorldHint=true
     evidence: src/server.ts:25
     repair: Set openWorldHint=true because the handler crosses a network or external boundary.
   - HINTLINT-FLOW-URL-001 [high] update_issue
     Tool 'update_issue' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.
+    tier: L3
     declared: readOnlyHint=false, destructiveHint=false, openWorldHint=false
     verified: readOnlyHint=false, destructiveHint=false, openWorldHint=true
     evidence: src/server.ts:24

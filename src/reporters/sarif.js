@@ -45,6 +45,7 @@ function uniqueRules(findings) {
         precision: finding.confidence === "source-backed" ? "high" : "medium",
         severity: finding.severity,
         confidence: finding.confidence,
+        evidence_tier: finding.evidence_tier,
         tags: ["security", "mcp", "hintlint", finding.type, finding.cwe_id].filter(Boolean)
       }
     });
@@ -107,6 +108,7 @@ function resultFor(finding) {
       severity: finding.severity,
       confidence: finding.confidence,
       confidence_tier: finding.confidence_tier,
+      evidence_tier: finding.evidence_tier,
       declared_annotations: finding.declared_annotations,
       verified_behavior: finding.verified_behavior,
       suggested_annotations: finding.suggested_annotations,

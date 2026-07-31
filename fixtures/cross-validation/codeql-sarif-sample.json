@@ -1,0 +1,103 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "CodeQL",
+          "version": "2.18.0",
+          "rules": [
+            {
+              "id": "hintlint/process-execution",
+              "name": "McpProcessExecution"
+            },
+            {
+              "id": "js/command-line-injection",
+              "name": "CommandLineInjection"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "hintlint/process-execution",
+          "level": "error",
+          "message": {
+            "text": "MCP tool parameter flows to process execution at child_process.exec."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/server.ts"
+                },
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 5
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/server.ts" },
+                          "region": { "startLine": 55 }
+                        },
+                        "message": { "text": "MCP handler parameter" }
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/helpers.ts" },
+                          "region": { "startLine": 20 }
+                        },
+                        "message": { "text": "passed to runCommand" }
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": { "uri": "src/server.ts" },
+                          "region": { "startLine": 65 }
+                        },
+                        "message": { "text": "child_process.exec" }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "js/command-line-injection",
+          "level": "error",
+          "message": {
+            "text": "This argument to a shell command depends on a user-provided value."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/server.ts"
+                },
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 30
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

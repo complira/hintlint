@@ -1,0 +1,125 @@
+# HintLint — Full Context for AI Assistants
+
+> Static analysis tool that verifies MCP (Model Context Protocol) server tool annotations match actual source code behavior. Built by Complira (https://complira.co). Apache 2.0 license.
+
+## Problem
+
+MCP servers declare tool annotations (readOnlyHint, destructiveHint, openWorldHint, idempotentHint) that agent runtimes use to decide which tool calls need human approval. Nothing verifies these annotations are accurate. A tool that declares readOnlyHint=true but calls iam.delete_access_key() means the agent skips confirmation on an irreversible action.
+
+## Solution
+
+HintLint reads MCP server source code, extracts tool definitions, detects what each tool handler actually does (10 sink categories), and compares declared annotations against detected behavior. It reports mismatches as findings with source evidence, CWE IDs, and repair guidance.
+
+## Installation
+
+```bash
+npx hintlint ./my-mcp-server
+npm install -g hintlint
+```
+
+Zero npm dependencies. Node.js 20+.
+
+## CLI Usage
+
+```bash
+hintlint <target> [options]
+
+--format text|json|sarif|registry|features   Output format (default: text)
+--output <path>                               Write to file
+--ci                                          Exit 1 on findings above threshold
+--fail-on critical|high|medium|low            Severity threshold (default: high)
+--config <path>                               Config file
+--semgrep-json <path>                         Import Semgrep evidence
+```
+
+## GitHub Action
+
+```yaml
+- uses: hintlint/hintlint@v0
+  with:
+    target: .
+    fail-on: high
+    upload-sarif: "true"
+    pr-comment: "true"
+```
+
+## Findings
+
+HINTLINT-READONLY-001 (High): Tool declares readOnlyHint=true but source shows state mutation.
+HINTLINT-DESTRUCTIVE-001 (High): Tool performs destructive operations without destructiveHint=true.
+HINTLINT-OPEN-WORLD-001 (Medium): Tool declares openWorldHint=false but crosses network boundary.
+HINTLINT-FLOW-PROCESS-001 (Critical, CWE-78): Tool input reaches process execution without allowlist.
+HINTLINT-FLOW-QUERY-001 (Critical, CWE-89): Tool input reaches query execution without binding.
+HINTLINT-FLOW-URL-001 (High, CWE-918): Tool input reaches URL construction without allowlist.
+HINTLINT-FLOW-FILESYSTEM-001 (High, CWE-22): Tool input reaches filesystem write without containment.
+HINTLINT-FLOW-CONNECTION-001 (High, CWE-88): Tool input reaches connection string without sanitizer.
+HINTLINT-VALIDATION-ASYMMETRY-001 (Medium): Sibling tools have inconsistent input validation.
+
+## Evidence Tiers
+
+L1: Metadata only. Cannot fail CI.
+L2: Project-level evidence (outside handler scope). Cannot fail CI.
+L3: Handler-scoped source evidence. Can fail CI.
+L4: Runtime-verified evidence. Can fail CI.
+
+## Language Support
+
+TypeScript/JavaScript: 88% handler resolution. Patterns: server.tool(), registerTool(), defineTool(), createTool(), makeTool(), static registries, addTools(), factory wrappers, ListToolsRequestSchema inline arrays, function-returned tool arrays, property access name resolution, switch/case dispatch correlation.
+
+Python: 100% handler resolution. Patterns: @mcp.tool(), @server.tool(), @tool (bare decorator), ToolAnnotations() constructor kwargs.
+
+## Architecture
+
+Source Code → Extractors (TS/JS/Python) → Evidence Engine (10 sink categories + Semgrep + call-graph reachability + dispatch correlation) → Annotation Verifier (declared vs verified behavior) → Reporters (terminal, JSON, SARIF, registry artifact) → CI Policy (fail on L3/L4 above threshold).
+
+## Output Formats
+
+Terminal: human-readable colored output.
+JSON: full structured report with tools, evidence, findings.
+SARIF 2.1.0: for GitHub Security tab, Defect Dojo, Snyk, SIEM.
+Registry artifact: compact trust metadata for MCP gateways.
+ML features: JSONL feature vectors for training.
+
+## Sink Categories
+
+database_mutation, filesystem_mutation, http_mutation, external_send, cloud_mutation, process_execution, query_execution, url_construction, connection_string.
+
+## Configuration
+
+hintlint.yaml or hintlint.json in project root:
+
+```yaml
+fail_on: high
+format: json
+semgrep_json: semgrep-results.json
+```
+
+## Cross-Validation
+
+Supports Semgrep (pattern + taint mode), Bandit, ESLint security plugin, CodeQL (custom MCP queries). Auto-review script verifies findings against source code. Validated report separates confirmed from false positive.
+
+## Validated Results (July 2026)
+
+20-repo pilot: 1,160 tools extracted, 1,021 handlers resolved (88%), 23 confirmed true positives, 5 false positives, 82% precision. Zero scanner failures. Zero dependencies.
+
+## Comparisons
+
+vs Cisco MCP Scanner: Cisco finds exploitable vulnerabilities. HintLint verifies annotation accuracy. Complementary.
+vs VIPER-MCP: VIPER proves exploitability with PoC prompts. HintLint proves metadata is wrong. Different problems.
+vs Semgrep/CodeQL: HintLint uses them as evidence sources. They find code vulnerabilities; HintLint maps findings to MCP annotation semantics.
+
+## Key Files
+
+src/cli.js — CLI entry point
+src/index.js — scan orchestrator
+src/extractors/typescript.js — TS/JS tool extraction
+src/extractors/python.js — Python tool extraction
+src/evidence/static-detector.js — sink detection and finding generation
+src/evidence/semgrep-normalizer.js — Semgrep evidence import
+src/evidence/typescript-reachability.js — call-graph traversal
+src/policy.js — CI fail policy
+src/reporters/sarif.js — SARIF 2.1.0 output
+action.yml — GitHub Action definition
+schemas/ — 11 JSON Schema contracts
+rules/semgrep/ — Semgrep rule packs
+rules/codeql/ — CodeQL query pack

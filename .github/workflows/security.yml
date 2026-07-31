@@ -1,0 +1,95 @@
+name: Security Scans
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly scan — catches new CVEs in Node.js runtime
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # --- CodeQL (GitHub's semantic code analysis) ---
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          queries: security-and-quality
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
+
+  # --- HintLint self-scan (eat your own dog food) ---
+  hintlint-self-scan:
+    name: HintLint Self-Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Scan fixtures and generate SARIF
+        run: |
+          node src/cli.js fixtures/ts-basic --format sarif --output hintlint-ts.sarif
+          node src/cli.js fixtures/py-taint --format sarif --output hintlint-py.sarif
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hintlint-ts.sarif
+          category: hintlint-typescript
+      - name: Upload Python SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hintlint-py.sarif
+          category: hintlint-python
+
+  # --- Dependency review (block bad licenses / known vulns on PRs) ---
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          deny-licenses: GPL-2.0-only, GPL-3.0-only, AGPL-3.0-only
+
+  # --- Scorecard (OpenSSF supply chain security) ---
+  scorecard:
+    name: OpenSSF Scorecard
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run Scorecard
+        uses: ossf/scorecard-action@v2
+        with:
+          results_file: scorecard-results.json
+          results_format: json
+          publish_results: true
+      - name: Upload Scorecard SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: scorecard-results.json
+          category: scorecard

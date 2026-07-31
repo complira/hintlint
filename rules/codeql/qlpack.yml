@@ -1,0 +1,6 @@
+name: hintlint/mcp-security-queries
+version: 0.1.0
+description: HintLint CodeQL queries for MCP tool annotation drift and unsafe flow detection.
+dependencies:
+  codeql/javascript-all: "*"
+  codeql/python-all: "*"

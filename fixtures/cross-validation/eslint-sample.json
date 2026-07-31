@@ -1,0 +1,66 @@
+[
+  {
+    "filePath": "src/server.ts",
+    "messages": [
+      {
+        "ruleId": "security/detect-child-process",
+        "severity": 2,
+        "message": "Found child_process.exec with non-literal argument.",
+        "line": 65,
+        "column": 5,
+        "nodeType": "CallExpression",
+        "endLine": 65,
+        "endColumn": 40
+      },
+      {
+        "ruleId": "security/detect-non-literal-fs-filename",
+        "severity": 1,
+        "message": "Found non-literal argument to fs.writeFile.",
+        "line": 80,
+        "column": 3,
+        "nodeType": "CallExpression",
+        "endLine": 80,
+        "endColumn": 35
+      },
+      {
+        "ruleId": "security/detect-eval-with-expression",
+        "severity": 2,
+        "message": "eval can be harmful.",
+        "line": 95,
+        "column": 5,
+        "nodeType": "CallExpression",
+        "endLine": 95,
+        "endColumn": 25
+      }
+    ],
+    "errorCount": 2,
+    "warningCount": 1,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "src/utils.ts",
+    "messages": [
+      {
+        "ruleId": "security/detect-non-literal-require",
+        "severity": 2,
+        "message": "Found non-literal argument in require.",
+        "line": 12,
+        "column": 1,
+        "nodeType": "CallExpression",
+        "endLine": 12,
+        "endColumn": 30
+      },
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 1,
+        "message": "'foo' is assigned a value but never used.",
+        "line": 5,
+        "column": 7,
+        "nodeType": "Identifier"
+      }
+    ],
+    "errorCount": 1,
+    "warningCount": 1,
+    "usedDeprecatedRules": []
+  }
+]

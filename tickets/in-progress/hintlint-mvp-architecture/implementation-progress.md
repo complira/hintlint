@@ -21,10 +21,14 @@
 | 2026-07-30 | Implemented M4 CI and distribution surface | `src/reporters/sarif.js`, `src/policy.js`, `src/cli.js`, `action.yml`, `.github/workflows/ci.yml`, tests | Added SARIF output, conservative CI fail policy module, composite GitHub Action, CI workflow, and local/Action docs | `npm test`, `npm run scan:fixtures`, SARIF generation, YAML parse, `git diff --check` |
 | 2026-07-30 | Implemented M5 evidence/adoption harness | `benchmark/*`, `scripts/scan-benchmark.js`, `src/reporters/registry-artifact.js`, `docs/*`, schemas, tests | Added benchmark manifest/schema, registry artifact schema/reporter/CLI format, reproducible benchmark scan script, generated drift report, and JS/Python ML bridge docs | `npm test`, `npm run scan:fixtures`, `npm run benchmark` |
 | 2026-07-30 | Implemented M6 advisory ML bridge | `src/ml/*`, `python/hintlint_ml/*`, `ml/*`, `schemas/ml-*.schema.json`, `action.yml`, tests | Added JS feature export, advisory ML advice merge, Python sidecar keyword baseline, labeling rubric, evaluation plan, and Action opt-in ML path | `npm test`, Python sidecar smoke, YAML parse |
+| 2026-07-30 | Added public MCP Docker scan pilot | `benchmark/public-mcp-manifest.json`, `scripts/scan-public-mcp.js`, `rules/semgrep/hintlint-mcp.yml`, `src/extractors/typescript.js`, tests | Added curated 20-repo public manifest, Docker/local Semgrep runner, factory-pattern TypeScript extraction, Semgrep evidence fusion, and precision fixes from public-scan false positives | `npm test`, Docker Semgrep fixture validation, `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker` |
+| 2026-07-30 | Implemented M7 coverage/tier slice | `src/coverage.js`, `src/project-discovery.js`, `src/evidence/*`, reporters, `scripts/scan-public-mcp.js`, tests | Added extraction coverage taxonomy, unsupported-language visibility, MCP marker unsupported-pattern classification, explicit `L2`/`L3` evidence tiers, and CI gating on `L3`/`L4` only | `npm test`, `npm run scan:fixtures`, `npm run benchmark`, `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2` |
+| 2026-07-30 | Implemented M7 TS/JS extractor breadth | `src/extractors/typescript.js`, `test/extractors.test.js` | Added static registry extraction, `addTools` inline extraction, loop-over-static-registry duplicate suppression, broader wrapper factories, JS language tagging, and handler fields `handler`/`execute`/`run`/`callback` | `npm test`, `npm run scan:fixtures`, `npm run benchmark`, `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2` |
+| 2026-07-30 | Implemented M7 TS/JS local helper reachability | `src/evidence/typescript-reachability.js`, `src/evidence/static-detector.js`, `test/evidence.test.js` | Added same-file plus named/namespace local import call graph traversal for TypeScript/JavaScript handlers; reachable helper project evidence is promoted from `L2` to `L3` with reachability path metadata before findings are generated | `npm test`, `npm run scan:fixtures`, `npm run benchmark`, `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2` |
 
 ## Test Results
 
-- `npm test`: pass, 21/21 tests.
+- `npm test`: pass, 35/35 tests after public-clone test discovery was scoped to `test/*.test.js`.
 - `npm run scan:fixtures`: pass.
 - `npm run benchmark`: pass; generated fixture benchmark report with 4 servers, 17 tools, 14 source-backed findings, 6 annotation drift findings, 7 unsafe-flow findings.
 - `node src/cli.js fixtures/tools-list --format features`: emits `hintlint.ml-feature.v1` JSONL.
@@ -40,18 +44,27 @@
 - `ruby -e 'require "yaml"; YAML.load_file("action.yml"); YAML.load_file(".github/workflows/ci.yml"); puts "yaml ok"'`: pass.
 - `git diff --check`: pass.
 - `node src/cli.js fixtures/tools-list/tools-list.json --format json`: emits two metadata-only tools and zero findings.
-- `semgrep --version`: command not found. Rule-pack shape and Semgrep JSON normalization are tested, but live Semgrep execution is not validated in this environment.
+- Docker Semgrep public pilot: pass; `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker` scanned 20 repositories, extracted 802 tools, resolved 794 handlers, produced 21 source-backed candidate findings, and had 0 runner failures.
+- M7 Docker/Semgrep smoke after coverage changes: pass; `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2` scanned 2 repositories, extracted 61 tools, resolved 58 handlers, produced 326 `L2` project evidence records, and had 0 runner failures.
+- M7 Docker/Semgrep smoke after TS/JS extractor breadth: pass; `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2` scanned 2 repositories, extracted 66 tools, resolved 58 handlers, produced 326 `L2` project evidence records, and had 0 runner failures. An over-broad intermediate static-array rule was tightened before final verification.
+- M7 Docker/Semgrep smoke after TS/JS reachability: pass; `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2` scanned 2 repositories, extracted 66 tools, resolved 58 handlers, produced 326 `L2` project evidence records, 0 findings, and had 0 runner failures.
+- M7 full Docker/Semgrep public rerun: pass; `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker` scanned 20 repositories, extracted 1,010 tools, resolved 815 handlers, produced 43 `L3` source evidence records, 4,568 `L2` project evidence records, 25 `L3` source-backed candidate findings, and had 0 failures.
 
 ## Residual Risks
 
 - Current extractors are MVP text/regex extractors, not full AST parsers.
 - Built-in evidence detector is still shallow and line/snippet based; it now emits M2-normalized evidence but is not a replacement for real Semgrep/dataflow execution.
-- Semgrep rule pack has not been live-executed here because Semgrep is not installed.
+- Full 20-repository Docker/Semgrep rerun completed on 2026-07-31, but findings remain unreviewed candidates and must not be published as vulnerabilities or prevalence claims until manually validated.
+- `L3` now includes direct handler-scoped source evidence and first-pass TypeScript/JavaScript local helper reachability, but not full arbitrary interprocedural proof.
+- TypeScript/JavaScript reachability covers local function declarations, const arrow/function helpers, named imports, namespace imports, and bounded call depth. It does not yet model object instance methods, dependency-injected services, aliases, class constructors, or dataflow through renamed parameters.
+- M7 deliberately does not add a Python parser; Python remains existing decorator extraction plus Semgrep evidence normalization.
 - M3 finding contracts are snapshot-tested, but report schema validation still needs a JSON Schema engine.
 - TypeScript overload support is still limited to the fixture-backed SDK patterns.
+- Static registry extraction is intentionally conservative: arrays must be tool-named or registered through `addTools` / simple `server.tool(tool.name, ...)` loops.
 - Copied TrainLens skills contain TrainLens/InferLens-specific wording and should be reviewed before treating them as project-native HintLint skills.
 - GitHub Action metadata is static-tested and YAML-parse-tested locally, but it has not run inside GitHub Actions yet.
 - M5 generated report is fixture-backed and explicitly not a public ecosystem prevalence claim.
+- Public Docker scan outputs are generated under ignored `benchmark/results-public/` and remain unreviewed candidates, not confirmed vulnerabilities or public prevalence claims.
 - No upstream maintainer PRs or partner conversations have been opened from this environment.
 - M6 Python sidecar is a local scaffold, not a published PyPI package.
 - M6 keyword baseline is not a validated ML model and must not be used for product claims.

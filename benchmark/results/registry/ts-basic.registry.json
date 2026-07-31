@@ -1,6 +1,6 @@
 {
   "artifact_version": "hintlint.registry-artifact.v1",
-  "generated_at": "2026-07-30T06:35:50.808Z",
+  "generated_at": "2026-07-30T16:36:01.656Z",
   "hintlint_version": "0.1.0",
   "server": {
     "id": "ts-basic",
@@ -17,11 +17,43 @@
   },
   "summary": {
     "tools_scanned": 5,
-    "source_evidence": 4,
+    "source_evidence": 3,
     "project_evidence": 0,
     "findings": 2,
+    "coverage_status": "supported",
+    "handler_mapping_rate": 0.8,
+    "evidence_records_by_tier": {
+      "L3": 3
+    },
+    "findings_by_tier": {
+      "L3": 2
+    },
     "source_backed_findings": 2,
     "highest_severity": "high"
+  },
+  "coverage": {
+    "extraction_status": "supported",
+    "extraction_reason": "Tool extraction produced at least one MCP tool.",
+    "mcp_markers_detected": true,
+    "tools_extracted": 5,
+    "metadata_only_tools": 0,
+    "handlers_resolved": 4,
+    "handler_mapping_rate": 0.8,
+    "annotation_coverage_rate": 0.8,
+    "unsupported_patterns": 1,
+    "unsupported_languages": [],
+    "supported_languages": [
+      "typescript"
+    ],
+    "file_language_counts": {
+      "typescript": 1
+    },
+    "evidence_records_by_tier": {
+      "L3": 3
+    },
+    "findings_by_tier": {
+      "L3": 2
+    }
   },
   "tools": [
     {
@@ -64,21 +96,20 @@
       "verified_behavior": {
         "readOnlyHint": false,
         "destructiveHint": true,
-        "openWorldHint": true,
+        "openWorldHint": false,
         "writes_internal_state": true,
-        "external_side_effect": true,
+        "external_side_effect": false,
         "destructive_action": true,
         "process_execution": false,
         "filesystem_mutation": false,
         "database_mutation": true,
         "http_mutation": false,
-        "cloud_mutation": true,
+        "cloud_mutation": false,
         "query_execution": false,
         "url_construction": false,
         "connection_string": false,
         "unsafe_flows": [],
         "evidence_categories": [
-          "cloud_mutation",
           "database_mutation"
         ],
         "confidence": "source-backed"
@@ -147,6 +178,7 @@
       "type": "false_readonly",
       "tool": "delete_customer",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "message": "Tool 'delete_customer' declares readOnlyHint=true but source evidence shows state mutation, external side effect, or process execution.",
       "declared_annotations": {
         "readOnlyHint": true,
@@ -155,21 +187,20 @@
       "verified_behavior": {
         "readOnlyHint": false,
         "destructiveHint": true,
-        "openWorldHint": true,
+        "openWorldHint": false,
         "writes_internal_state": true,
-        "external_side_effect": true,
+        "external_side_effect": false,
         "destructive_action": true,
         "process_execution": false,
         "filesystem_mutation": false,
         "database_mutation": true,
         "http_mutation": false,
-        "cloud_mutation": true,
+        "cloud_mutation": false,
         "query_execution": false,
         "url_construction": false,
         "connection_string": false,
         "unsafe_flows": [],
         "evidence_categories": [
-          "cloud_mutation",
           "database_mutation"
         ],
         "confidence": "source-backed"
@@ -183,31 +214,20 @@
           "line": 36,
           "rule_id": "hintlint.database.destructive",
           "confidence": "source-backed",
-          "sanitizer_status": "not_applicable"
-        },
-        {
-          "category": "cloud_mutation",
-          "sink_kind": "destructive",
-          "sink": "deleted",
-          "file": "src/server.ts",
-          "line": 37,
-          "rule_id": "hintlint.cloud.mutation",
-          "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer_status": "not_applicable"
         }
       ],
       "suggested_annotations": {
         "readOnlyHint": false,
-        "destructiveHint": true,
-        "openWorldHint": true
+        "destructiveHint": true
       },
       "repair": {
         "type": "annotation_patch",
         "summary": "Set readOnlyHint=false and align destructive/open-world hints with the verified behavior.",
         "suggested_annotations": {
           "readOnlyHint": false,
-          "destructiveHint": true,
-          "openWorldHint": true
+          "destructiveHint": true
         }
       }
     },
@@ -217,6 +237,7 @@
       "type": "false_open_world",
       "tool": "send_invoice_email",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "message": "Tool 'send_invoice_email' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -253,6 +274,7 @@
           "line": 76,
           "rule_id": "hintlint.external.send",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer_status": "not_applicable"
         }
       ],

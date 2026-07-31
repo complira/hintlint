@@ -1,6 +1,6 @@
 {
   "hintlint_version": "0.1.0",
-  "scan_started_at": "2026-07-30T06:35:50.824Z",
+  "scan_started_at": "2026-07-30T16:36:01.673Z",
   "scan_duration_ms": 2,
   "target": "fixtures/ts-evidence",
   "project": {
@@ -16,7 +16,41 @@
     "unsupported_patterns": 0,
     "source_evidence": 4,
     "project_evidence": 1,
-    "findings": 4
+    "findings": 4,
+    "coverage_status": "supported",
+    "handler_mapping_rate": 1,
+    "evidence_records_by_tier": {
+      "L2": 1,
+      "L3": 4
+    },
+    "findings_by_tier": {
+      "L3": 4
+    }
+  },
+  "coverage": {
+    "extraction_status": "supported",
+    "extraction_reason": "Tool extraction produced at least one MCP tool.",
+    "mcp_markers_detected": true,
+    "tools_extracted": 3,
+    "metadata_only_tools": 0,
+    "handlers_resolved": 3,
+    "handler_mapping_rate": 1,
+    "annotation_coverage_rate": 1,
+    "unsupported_patterns": 0,
+    "unsupported_languages": [],
+    "supported_languages": [
+      "typescript"
+    ],
+    "file_language_counts": {
+      "typescript": 1
+    },
+    "evidence_records_by_tier": {
+      "L2": 1,
+      "L3": 4
+    },
+    "findings_by_tier": {
+      "L3": 4
+    }
   },
   "tools": [
     {
@@ -130,13 +164,14 @@
       "scope": "tool",
       "category": "cloud_mutation",
       "sink_kind": "destructive",
-      "sink": "deleteRef",
+      "sink": "octokit.git.deleteRef(",
       "file": "src/server.ts",
       "line": 46,
       "source": "builtin-static-m2",
       "engine": "builtin",
       "rule_id": "hintlint.cloud.mutation",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_applicable",
         "expected": "not applicable"
@@ -154,6 +189,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.process.execution",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_found",
         "expected": "server-side command allowlist"
@@ -179,6 +215,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.http.mutation",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_applicable",
         "expected": "not applicable"
@@ -196,6 +233,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.url.user-controlled",
       "confidence": "source-backed",
+      "evidence_tier": "L3",
       "sanitizer": {
         "status": "not_found",
         "expected": "strict host or resource-name allowlist"
@@ -223,6 +261,7 @@
       "engine": "builtin",
       "rule_id": "hintlint.process.execution",
       "confidence": "needs-review",
+      "evidence_tier": "L2",
       "sanitizer": {
         "status": "not_found",
         "expected": "server-side command allowlist"
@@ -238,7 +277,8 @@
       "type": "missing_or_false_destructive_hint",
       "tool": "delete_branch",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'delete_branch' reaches destructive or process-execution evidence but does not declare destructiveHint=true.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -272,13 +312,14 @@
           "scope": "tool",
           "category": "cloud_mutation",
           "sink_kind": "destructive",
-          "sink": "deleteRef",
+          "sink": "octokit.git.deleteRef(",
           "file": "src/server.ts",
           "line": 46,
           "source": "builtin-static-m2",
           "engine": "builtin",
           "rule_id": "hintlint.cloud.mutation",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_applicable",
             "expected": "not applicable"
@@ -306,7 +347,8 @@
       "type": "tool_input_to_process_execution",
       "tool": "run_script",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'run_script' has command-like MCP parameters and reaches process execution. Enforce a server-side allowlist; tool descriptions or LLM confirmation are not security controls.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -349,6 +391,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.process.execution",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "server-side command allowlist"
@@ -394,7 +437,8 @@
       "type": "false_open_world",
       "tool": "update_issue",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'update_issue' declares openWorldHint=false but source evidence reaches an external side effect, network boundary, or process execution.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -438,6 +482,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.http.mutation",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_applicable",
             "expected": "not applicable"
@@ -455,6 +500,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.url.user-controlled",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "strict host or resource-name allowlist"
@@ -490,7 +536,8 @@
       "type": "tool_input_to_url_construction",
       "tool": "update_issue",
       "confidence": "source-backed",
-      "confidence_tier": "source-backed",
+      "confidence_tier": "L3",
+      "evidence_tier": "L3",
       "message": "Tool 'update_issue' has host or URL-like MCP parameters and constructs an external URL without recognized allowlist validation.",
       "declared_annotations": {
         "readOnlyHint": false,
@@ -534,6 +581,7 @@
           "engine": "builtin",
           "rule_id": "hintlint.url.user-controlled",
           "confidence": "source-backed",
+          "evidence_tier": "L3",
           "sanitizer": {
             "status": "not_found",
             "expected": "strict host or resource-name allowlist"

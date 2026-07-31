@@ -30,7 +30,8 @@ export function parseBooleanAnnotations(source) {
   for (const key of ["readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint"]) {
     const jsMatch = source.match(new RegExp(`${key}\\s*:\\s*(true|false)`));
     const pyMatch = source.match(new RegExp(`["']${key}["']\\s*:\\s*(True|False|true|false)`));
-    const match = jsMatch ?? pyMatch;
+    const kwargMatch = source.match(new RegExp(`${key}\\s*=\\s*(True|False|true|false)`));
+    const match = jsMatch ?? pyMatch ?? kwargMatch;
     if (match) {
       annotations[key] = ["true", "True"].includes(match[1]);
     }
@@ -87,6 +88,10 @@ export function findMatchingBrace(source, openIndex) {
   let depth = 0;
   let quote = null;
   let escaped = false;
+  // Stack tracks template literal nesting: each entry is the brace depth
+  // at which a `${` was entered, so when `}` brings us back to that depth
+  // we know to re-enter the backtick string.
+  const templateStack = [];
 
   for (let index = openIndex; index < source.length; index += 1) {
     const char = source[index];
@@ -95,6 +100,12 @@ export function findMatchingBrace(source, openIndex) {
         escaped = false;
       } else if (char === "\\") {
         escaped = true;
+      } else if (quote === "`" && char === "$" && source[index + 1] === "{") {
+        // Enter template expression — push current depth and resume brace tracking
+        templateStack.push(depth + 1);
+        quote = null;
+        index += 1; // skip the {
+        depth += 1;
       } else if (char === quote) {
         quote = null;
       }
@@ -111,6 +122,12 @@ export function findMatchingBrace(source, openIndex) {
     }
     if (char === "}") {
       depth -= 1;
+      // Check if this } closes a template expression
+      if (templateStack.length > 0 && depth < templateStack[templateStack.length - 1]) {
+        templateStack.pop();
+        quote = "`";
+        continue;
+      }
       if (depth === 0) {
         return index;
       }

@@ -1,7 +1,7 @@
 import { readSourceFile, parseBooleanAnnotations } from "./common.js";
 
 function startsToolDecorator(line) {
-  return /@(?:\w+\.)?tool\s*\(/.test(line);
+  return /@(?:\w+\.)?tool(?:\s*\(|\s*$)/.test(line.trim());
 }
 
 function collectDecorator(lines, startIndex) {
@@ -64,7 +64,7 @@ function collectFunctionText(lines, defIndex) {
   const collected = [lines[defIndex]];
   for (let index = defIndex + 1; index < lines.length; index += 1) {
     const line = lines[index];
-    if (/^\s*@(?:\w+\.)?tool\s*\(/.test(line) || /^\s*(async\s+)?def\s+\w+\s*\(/.test(line)) {
+    if (/^\s*@(?:\w+\.)?tool(?:\s*\(|\s*$)/.test(line.trim()) || /^\s*(async\s+)?def\s+\w+\s*\(/.test(line)) {
       break;
     }
     collected.push(line);

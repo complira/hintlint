@@ -45,12 +45,21 @@
 | ML cannot create source-backed or CI-failing findings | M6 HL-075 | Pass | Test downgrades malformed `source-backed` ML confidence to `needs_review`; metadata-only target with ML advice exits `0` under `--ci --fail-on info` |
 | Action opt-in ML path | M6 packaging | Pass with environment note | `action.yml` exposes `enable-ml`, setup-python, pip install, feature export, sidecar classify, and merge path; not run in live GitHub Actions |
 | Encoder/cross-encoder validation | M6 HL-073, HL-074 | Not executed | No labeled dataset or model dependencies are present; gate remains pass with constraints |
+| Coverage taxonomy | M7 HL-080, HL-085 | Pass | `npm test` verifies unsupported-language and MCP-like unsupported-pattern projects are classified instead of silent zero-tool success |
+| Evidence tiers | M7 HL-088 | Pass | `npm test` verifies built-in and Semgrep evidence records use `L2` for project evidence and `L3` for handler-scoped evidence |
+| Tier-based CI gate | M7 HL-088 | Pass | `test/policy.test.js` verifies CI fails only for configured severities at `L3`/`L4`; explicit `L2` findings do not fail |
+| Public scan coverage aggregation | M7 HL-085 | Pass | `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2` ran outside sandbox and generated coverage/tier counts for 2 repositories |
+| TypeScript static registry extraction | M7 HL-081 | Pass | `test/extractors.test.js` covers `export const tools = [...]`, named handler fields, `server.addTools(tools)`, and simple `server.tool(tool.name, ...)` loop duplicate suppression |
+| TypeScript wrapper factory extraction | M7 HL-082 | Pass | `test/extractors.test.js` covers `createTool`, `makeTool`, plain `tool`, const-string names, and `execute`/`run`/`callback` handlers |
+| TypeScript local helper reachability | M7 HL-086 | Pass | `test/evidence.test.js` verifies handler `delete_customer -> deleteCustomer -> db.customer.delete` promotes helper evidence from project-level to `L3` tool evidence |
+| Semgrep helper evidence promotion | M7 HL-086 | Pass | `test/evidence.test.js` verifies Semgrep project evidence inside a reachable TypeScript helper is promoted to `L3` and participates in annotation drift findings |
+| Full public MCP scan | M7 HL-089 prep | Pass with review constraint | `node scripts/scan-public-mcp.js --skip-fetch --semgrep docker` scanned 20 repos, 1,010 tools, 815 handlers, 25 `L3` candidate findings, 0 failures |
 
 ## Execution Results
 
 ```text
 npm test
-pass: 21
+pass: 35
 fail: 0
 ```
 
@@ -77,6 +86,19 @@ pass
 ```text
 npm run benchmark
 pass: 4 servers, 17 tools, 14 source-backed findings
+```
+
+```text
+node scripts/scan-public-mcp.js --skip-fetch --semgrep docker --limit 2
+pass after coverage slice: 2 servers, 61 tools, 58 handlers, 326 L2 project evidence records, 0 failures
+pass after TS/JS extractor breadth: 2 servers, 66 tools, 58 handlers, 326 L2 project evidence records, 0 failures
+pass after TS/JS reachability: 2 servers, 66 tools, 58 handlers, 326 L2 project evidence records, 0 findings, 0 failures
+```
+
+```text
+node scripts/scan-public-mcp.js --skip-fetch --semgrep docker
+pass: 20 servers, 1,010 tools, 815 handlers, 43 L3 source evidence records, 4,568 L2 project evidence records, 25 L3 candidate findings, 0 failures
+constraint: findings are unreviewed scanner candidates
 ```
 
 ## Waivers

@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-07-31T00:00:00Z",
+  "metrics": {},
+  "results": [
+    {
+      "code": "subprocess.run(command, shell=True)\n",
+      "col_offset": 4,
+      "end_col_offset": 40,
+      "filename": "server.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "subprocess call with shell=True identified, security issue.",
+      "line_number": 21,
+      "line_range": [21],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+      "test_id": "B602",
+      "test_name": "subprocess_popen_with_shell_equals_true"
+    },
+    {
+      "code": "conn.execute(query)\n",
+      "col_offset": 8,
+      "end_col_offset": 28,
+      "filename": "server.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 45,
+      "line_range": [45],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "open(user_path, 'w')\n",
+      "col_offset": 4,
+      "end_col_offset": 24,
+      "filename": "server.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 22,
+        "link": "https://cwe.mitre.org/data/definitions/22.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Insecure use of temporary file or directory.",
+      "line_number": 60,
+      "line_range": [60],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b306_mktemp_q.html",
+      "test_id": "B306",
+      "test_name": "mktemp_q"
+    },
+    {
+      "code": "requests.get(url)\n",
+      "col_offset": 4,
+      "end_col_offset": 22,
+      "filename": "utils.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 601,
+        "link": "https://cwe.mitre.org/data/definitions/601.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Audit url open for permitted schemes. Allowing use of file:// or custom schemes is often unexpected.",
+      "line_number": 10,
+      "line_range": [10],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b310_urllib_urlopen.html",
+      "test_id": "B310",
+      "test_name": "urllib_urlopen"
+    },
+    {
+      "code": "hashlib.md5(password.encode())\n",
+      "col_offset": 4,
+      "end_col_offset": 34,
+      "filename": "auth.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of insecure MD5 hash function.",
+      "line_number": 15,
+      "line_range": [15],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b303_md5.html",
+      "test_id": "B303",
+      "test_name": "md5"
+    }
+  ]
+}

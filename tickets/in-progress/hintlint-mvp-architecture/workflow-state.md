@@ -2,12 +2,11 @@
 
 ## Current Snapshot
 
-- Mode: Analysis-Only
 - Mode: Implementation
 - Current Stage: 10
 - Code Edit Permission: Locked
 - Gate Decision: Proceed with constraints
-- Last Updated: 2026-07-30
+- Last Updated: 2026-07-31
 - Git Repository: Initialized on branch `feat/hintlint-mvp-foundation`
 - GitHub Issue: Pending - no git remote/repository detected
 
@@ -21,11 +20,11 @@
 | 3 | Proposed design complete | Complete | `proposed-design.md` |
 | 4 | Future-state runtime/data-flow paths complete | Complete | `future-state-runtime-call-stack.md` |
 | 5 | Analysis review gate decision | Complete | `future-state-runtime-call-stack-review.md` |
-| 6 | Implementation | Not started | Source edits locked |
-| 7 | Acceptance/API/E2E validation | Not started | Pending implementation |
-| 8 | Code review | Not started | Pending implementation |
-| 9 | Docs sync | Not started | Pending implementation |
-| 10 | Handoff | Not started | Pending user decision |
+| 6 | Implementation | Complete | `implementation-progress.md` |
+| 7 | Acceptance/API/E2E validation | Complete | `api-e2e-testing.md` |
+| 8 | Code review | Complete | `code-review.md` |
+| 9 | Docs sync | Complete | `milestones.md`, `m7-80-20-coverage-plan.md` |
+| 10 | Handoff | Ready | Pending user decision |
 
 ## Transition Log
 
@@ -78,6 +77,26 @@
 | 2026-07-30 | Stage 7 | Stage 8 | M6 unit and Python sidecar bridge checks passed | `api-e2e-testing.md`, `test/ml-bridge.test.js` |
 | 2026-07-30 | Stage 8 | Stage 9 | M6 code review recorded with dataset/model/PyPI constraints | `code-review.md` |
 | 2026-07-30 | Stage 9 | Stage 10 | M6 gate recorded and next milestone identified | `m6-gate.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User asked to continue with the public Semgrep/HintLint scan plan | `benchmark/public-mcp-manifest.json`, `scripts/scan-public-mcp.js` |
+| 2026-07-30 | Stage 6 | Stage 10 | Public Docker scan pilot implemented, verified, and run against 20 curated repositories | `benchmark/results-public/summary.json`, `implementation-progress.md` |
+| 2026-07-30 | Stage 10 | Stage 10 | User requested an 80/20 plan for extractor coverage and reachability gaps | `m7-80-20-coverage-plan.md`, `milestones.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User asked to implement M7 using Semgrep and no new Python parser | `m7-80-20-coverage-plan.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | M7 coverage taxonomy, evidence tiers, tier-based CI policy, and public aggregation implemented | `src/coverage.js`, `src/policy.js`, `scripts/scan-public-mcp.js` |
+| 2026-07-30 | Stage 7 | Stage 8 | M7 unit, fixture, benchmark, diff, and limited Docker/Semgrep public-scan checks passed | `api-e2e-testing.md` |
+| 2026-07-30 | Stage 8 | Stage 9 | M7 self-review recorded with call-graph and full-public-rerun constraints | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | M7 docs synchronized to TS/JS-first and Semgrep-backed evidence scope | `milestones.md`, `m7-80-20-coverage-plan.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User asked to implement next M7 step: TS/JS extractor breadth | `m7-80-20-coverage-plan.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | HL-081/HL-082 TS/JS static registry, `addTools`, loop, wrapper, and handler-field extraction implemented | `src/extractors/typescript.js`, `test/extractors.test.js` |
+| 2026-07-30 | Stage 7 | Stage 8 | HL-081/HL-082 unit, fixture, benchmark, diff, and limited Docker/Semgrep public-scan checks passed | `api-e2e-testing.md` |
+| 2026-07-30 | Stage 8 | Stage 9 | Extractor breadth review recorded with text-parser and static-registry constraints | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | Handoff ready for next M7 step: TS/JS local call graph reachability | `implementation-progress.md` |
+| 2026-07-30 | Stage 10 | Stage 6 | User asked to move to the next M7 step: TS/JS local call graph reachability | `m7-80-20-coverage-plan.md` |
+| 2026-07-30 | Stage 6 | Stage 7 | HL-086 same-file and local-import TS/JS reachability implemented; helper project evidence can promote to `L3` | `src/evidence/typescript-reachability.js`, `src/evidence/static-detector.js` |
+| 2026-07-30 | Stage 7 | Stage 8 | HL-086 unit, fixture, benchmark, diff, and limited Docker/Semgrep public-scan checks passed | `api-e2e-testing.md` |
+| 2026-07-30 | Stage 8 | Stage 9 | Reachability review recorded with object/class/dataflow constraints | `code-review.md` |
+| 2026-07-30 | Stage 9 | Stage 10 | Handoff ready for next M7 step: full public rerun and gap taxonomy refresh | `implementation-progress.md` |
+| 2026-07-31 | Stage 10 | Stage 7 | User requested full 20-repository Docker/Semgrep public scan | `benchmark/public-mcp-manifest.json`, `scripts/scan-public-mcp.js` |
+| 2026-07-31 | Stage 7 | Stage 10 | Full public scan completed with 20/20 repositories scanned, 0 failures, and 25 unreviewed `L3` candidate findings | `benchmark/results-public/summary.json`, `benchmark/results-public/public-scan-report.md`, `api-e2e-testing.md` |
 
 ## Waivers / Violations
 

@@ -1,0 +1,233 @@
+{
+  "$schema": "../schemas/benchmark-manifest.schema.json",
+  "manifest_version": "hintlint.benchmark.v1",
+  "name": "hintlint-public-mcp-pilot",
+  "description": "Curated public MCP server scan pilot for source-available TypeScript, JavaScript, and Python servers.",
+  "methodology": {
+    "scope": "Top/high-signal source-available MCP server candidates selected from GitHub search results on 2026-07-30. This pilot excludes unsupported primary languages such as Go, C#, Rust, and Java until HintLint has language-specific extractors.",
+    "claim_level": "curated",
+    "evidence_policy": "Generated findings are unreviewed candidates. Public claims require manual review of every high-impact finding and exact commit pins."
+  },
+  "servers": [
+    {
+      "id": "upstash-context7",
+      "name": "Context7",
+      "description": "Context7 MCP server and documentation context platform.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/upstash/context7.git"
+      }
+    },
+    {
+      "id": "chromedevtools-chrome-devtools-mcp",
+      "name": "Chrome DevTools MCP",
+      "description": "Chrome DevTools MCP server for coding agents.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp.git"
+      }
+    },
+    {
+      "id": "microsoft-playwright-mcp",
+      "name": "Playwright MCP",
+      "description": "Microsoft Playwright MCP server.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/microsoft/playwright-mcp.git"
+      }
+    },
+    {
+      "id": "oraios-serena",
+      "name": "Serena",
+      "description": "Python MCP toolkit for semantic retrieval and editing.",
+      "enabled": true,
+      "tags": ["public", "python", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/oraios/serena.git"
+      }
+    },
+    {
+      "id": "czlonkowski-n8n-mcp",
+      "name": "n8n MCP",
+      "description": "MCP server for building n8n workflows.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/czlonkowski/n8n-mcp.git"
+      }
+    },
+    {
+      "id": "glips-figma-context-mcp",
+      "name": "Figma Context MCP",
+      "description": "MCP server that provides Figma layout information to coding agents.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/GLips/Figma-Context-MCP.git"
+      }
+    },
+    {
+      "id": "mrexodia-ida-pro-mcp",
+      "name": "IDA Pro MCP",
+      "description": "AI-powered reverse engineering assistant bridged through MCP.",
+      "enabled": true,
+      "tags": ["public", "python", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/mrexodia/ida-pro-mcp.git"
+      }
+    },
+    {
+      "id": "0x4m4-hexstrike-ai",
+      "name": "HexStrike AI",
+      "description": "MCP server exposing offensive security tools to AI agents.",
+      "enabled": true,
+      "tags": ["public", "python", "high-star", "security"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/0x4m4/hexstrike-ai.git"
+      }
+    },
+    {
+      "id": "awslabs-mcp",
+      "name": "AWS Labs MCP",
+      "description": "Open-source MCP servers for AWS.",
+      "enabled": true,
+      "tags": ["public", "python", "high-star", "cloud"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/awslabs/mcp.git"
+      }
+    },
+    {
+      "id": "desktopcommander-mcp",
+      "name": "Desktop Commander MCP",
+      "description": "MCP server for terminal control, filesystem search, and editing.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star", "local-system"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/wonderwhy-er/DesktopCommanderMCP.git"
+      }
+    },
+    {
+      "id": "browser-tools-mcp",
+      "name": "Browser Tools MCP",
+      "description": "MCP server for monitoring browser logs from agent IDEs.",
+      "enabled": true,
+      "tags": ["public", "javascript", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/AgentDeskAI/browser-tools-mcp.git"
+      }
+    },
+    {
+      "id": "firecrawl-mcp-server",
+      "name": "Firecrawl MCP Server",
+      "description": "Official Firecrawl web scraping and search MCP server.",
+      "enabled": true,
+      "tags": ["public", "javascript", "high-star", "web"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/firecrawl/firecrawl-mcp-server.git"
+      }
+    },
+    {
+      "id": "browsermcp-mcp",
+      "name": "Browser MCP",
+      "description": "MCP server for controlling a browser.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star", "browser"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/BrowserMCP/mcp.git"
+      }
+    },
+    {
+      "id": "cursortouch-windows-mcp",
+      "name": "Windows MCP",
+      "description": "MCP server for computer use on Windows.",
+      "enabled": true,
+      "tags": ["public", "python", "high-star", "local-system"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/CursorTouch/Windows-MCP.git"
+      }
+    },
+    {
+      "id": "getsentry-xcodebuildmcp",
+      "name": "XcodeBuildMCP",
+      "description": "MCP server and CLI for iOS and macOS project workflows.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/getsentry/XcodeBuildMCP.git"
+      }
+    },
+    {
+      "id": "epiral-bb-browser",
+      "name": "bb-browser",
+      "description": "Browser automation CLI and MCP server.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star", "browser"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/epiral/bb-browser.git"
+      }
+    },
+    {
+      "id": "gemini-notebook-mcp-cli",
+      "name": "Gemini Notebook MCP CLI",
+      "description": "CLI and MCP server for programmatic Gemini Notebook access.",
+      "enabled": true,
+      "tags": ["public", "python", "high-star"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/jacob-bd/gemini-notebook-mcp-cli.git"
+      }
+    },
+    {
+      "id": "mobile-next-mobile-mcp",
+      "name": "Mobile MCP",
+      "description": "MCP server for mobile automation and scraping.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star", "mobile"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/mobile-next/mobile-mcp.git"
+      }
+    },
+    {
+      "id": "sooperset-mcp-atlassian",
+      "name": "MCP Atlassian",
+      "description": "MCP server for Atlassian tools including Jira and Confluence.",
+      "enabled": true,
+      "tags": ["public", "python", "high-star", "enterprise-saas"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/sooperset/mcp-atlassian.git"
+      }
+    },
+    {
+      "id": "executeautomation-mcp-playwright",
+      "name": "MCP Playwright",
+      "description": "Playwright MCP server for browser and API automation.",
+      "enabled": true,
+      "tags": ["public", "typescript", "high-star", "browser"],
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/executeautomation/mcp-playwright.git"
+      }
+    }
+  ]
+}
