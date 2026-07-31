@@ -30,13 +30,13 @@
     "ai-safety",
     "supply-chain-security"
   ],
-  "homepage": "https://github.com/hintlint/hintlint",
+  "homepage": "https://github.com/complira/hintlint",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hintlint/hintlint.git"
+    "url": "https://github.com/complira/hintlint.git"
   },
   "bugs": {
-    "url": "https://github.com/hintlint/hintlint/issues"
+    "url": "https://github.com/complira/hintlint/issues"
   },
   "engines": {
     "node": ">=20"
