@@ -40,7 +40,7 @@ jobs:
         run: node src/cli.js fixtures/ts-basic --format sarif --output hintlint.sarif
       - name: Upload SARIF to GitHub Security
         if: github.event_name == 'push'
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.37.3
         with:
           sarif_file: hintlint.sarif
 
