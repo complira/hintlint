@@ -19,7 +19,7 @@ jobs:
         node-version: ["20", "22"]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm test
@@ -33,14 +33,14 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "20"
       - name: Generate SARIF report
         run: node src/cli.js fixtures/ts-basic --format sarif --output hintlint.sarif
       - name: Upload SARIF to GitHub Security
         if: github.event_name == 'push'
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: hintlint.sarif
 
