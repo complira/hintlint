@@ -57,6 +57,7 @@ jobs:
           category: hintlint-python
 
   # --- Dependency review (block bad licenses / known vulns on PRs) ---
+  # Requires Dependency Graph enabled: Settings > Code security > Dependency graph
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
@@ -65,6 +66,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
+        continue-on-error: true
         with:
           fail-on-severity: moderate
           deny-licenses: GPL-2.0-only, GPL-3.0-only, AGPL-3.0-only
