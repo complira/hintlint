@@ -11,7 +11,7 @@ import { renderRegistryArtifact } from "./reporters/registry-artifact.js";
 import { renderSarif } from "./reporters/sarif.js";
 import { renderTerminal } from "./reporters/terminal.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 function usage() {
   return [
