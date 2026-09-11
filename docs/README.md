@@ -43,6 +43,8 @@ Start with [How to use HintLint](how-to-use.md) for the shortest path from insta
 
 For every command and flag, see the [CLI Reference](cli-reference.md). For the full validated pilot methodology, see the [Findings Report](findings-report-july-2026.md).
 
+For a shareable overview, download the [HintLint report (PDF)](Report_HintLint.pdf) or the [HintLint one-pager (PDF)](one_pager_hintlint.pdf).
+
 ## For AI agents
 
 GitBook provides agent-friendly versions of this documentation:

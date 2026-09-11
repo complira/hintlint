@@ -40,7 +40,7 @@ GitHub Action: uses: complira/hintlint@v0
 - 82% precision (23 confirmed findings in 20-repo pilot)
 - Outputs SARIF 2.1.0 for GitHub Security, Defect Dojo, SIEM integration
 - Apache 2.0 license
-- Built by Complira (https://complira.co)
+- Built by HintLint (https://complira.co)
 
 ## Documentation
 
@@ -50,3 +50,5 @@ GitHub Action: uses: complira/hintlint@v0
 - Enterprise Usage: docs/enterprise-usage.md
 - Registry Artifact: docs/registry-artifact.md
 - Findings Report: docs/findings-report-july-2026.md
+- Report PDF: docs/Report_HintLint.pdf
+- One-pager PDF: docs/one_pager_hintlint.pdf
