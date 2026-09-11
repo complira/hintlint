@@ -46,6 +46,9 @@
     "schemas/",
     "rules/",
     "action.yml",
+    "docs/",
+    "llms.txt",
+    "llms-full.txt",
     "LICENSE",
     "README.md"
   ],
