@@ -20,6 +20,12 @@ In a [20-repo pilot](docs/findings-report-july-2026.md), HintLint confirmed **23
 
 ## Install and Run
 
+HintLint scans a local MCP server folder. If the server is on GitHub, download it first:
+
+```bash
+git clone https://github.com/org/my-mcp-server.git
+```
+
 ```bash
 npx hintlint ./my-mcp-server
 ```
