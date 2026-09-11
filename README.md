@@ -20,16 +20,26 @@ In a [20-repo pilot](https://complira.gitbook.io/complira-docs/findings-report-j
 
 ## Install and Run
 
-Read the complete documentation at [complira.gitbook.io/complira-docs](https://complira.gitbook.io/complira-docs).
+### Install the CLI
+
+Requires Node.js 20 or newer. Install globally with npm:
+
+```bash
+npm install --global hintlint
+hintlint --help
+```
+
+For a one-time run without installing, use `npx`:
+
+```bash
+npx hintlint ./my-mcp-server
+```
+>>>>>>> 54fc0ba (docs: clarify CLI installation)
 
 HintLint scans a local MCP server folder. If the server is on GitHub, download it first:
 
 ```bash
 git clone https://github.com/org/my-mcp-server.git
-```
-
-```bash
-npx hintlint ./my-mcp-server
 ```
 
 ```bash
@@ -111,7 +121,15 @@ Only findings with handler-scoped source evidence can fail your build. Metadata-
 
 ## Documentation
 
-Read the complete documentation at [complira.gitbook.io/complira-docs](https://complira.gitbook.io/complira-docs).
+Documentation site: [complira.gitbook.io/complira-docs](https://complira.gitbook.io/complira-docs)
+
+For AI agents and coding assistants:
+
+- [Documentation index](https://complira.gitbook.io/complira-docs/llms.txt)
+- [Full documentation context](https://complira.gitbook.io/complira-docs/llms-full.txt)
+- [GitBook MCP endpoint](https://complira.gitbook.io/complira-docs/~gitbook/mcp)
+
+The static website also exposes read-only WebMCP tools for installation and documentation discovery when the browser supports WebMCP.
 
 | | |
 |---|---|
