@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="HintLint verifies MCP tool annotations match actual behavior." />
+    <meta name="theme-color" content="#0a0d12" />
+    <title>HintLint — Verify MCP tool behavior</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="HintLint home">
+        <span class="brand-mark" aria-hidden="true">✓</span>
+        <span>HintLint</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#ci-cd">CI/CD</a>
+        <a href="#procurement">For teams</a>
+        <a href="#evidence">Evidence</a>
+        <a href="https://github.com/complira/hintlint">GitHub <span aria-hidden="true">↗</span></a>
+        <button class="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">☼</button>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="pulse"></span> MCP security</p>
+          <h1>Trust the tool.<br /><em>Verify the hint.</em></h1>
+          <p class="hero-lede">HintLint checks whether MCP tool annotations match what the code actually does—before an AI agent makes the call.</p>
+          <div class="hero-actions">
+            <div class="install-command">
+              <span class="prompt">$</span><code>npx hintlint ./my-mcp-server</code>
+              <button class="copy-button" type="button" data-copy="npx hintlint ./my-mcp-server" aria-label="Copy install command">Copy</button>
+            </div>
+            <p class="install-note">No install required. Prefer a global CLI? <code>npm install --global hintlint</code>. Currently distributed through npm, not PyPI.</p>
+            <a class="text-link" href="https://github.com/complira/hintlint#install-and-run">Read the docs <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Annotation verification illustration">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="terminal-card">
+            <div class="terminal-top"><span></span><span></span><span></span><b>hintlint scan</b></div>
+            <div class="terminal-body">
+              <p class="muted">Scanning <strong>my-mcp-server</strong>...</p>
+              <p><span class="green">✓</span> 12 tools analyzed</p>
+              <p><span class="yellow">!</span> <span class="yellow">2 annotation mismatches</span></p>
+              <div class="finding-line"><span class="red">HIGH</span><span>destructiveHint missing</span></div>
+              <div class="finding-line"><span class="red">HIGH</span><span>readOnlyHint is inaccurate</span></div>
+              <p class="muted done">Finished in 0.42s</p>
+            </div>
+          </div>
+          <div class="verified-badge"><span>✓</span> source-backed evidence</div>
+        </div>
+      </section>
+
+      <section class="proof-bar">
+        <div class="shell proof-grid">
+          <p><strong>20</strong><span>public MCP repos<br />scanned</span></p>
+          <p><strong>1,160</strong><span>tools analyzed<br />in the pilot</span></p>
+          <p><strong>23</strong><span>confirmed true<br />positives</span></p>
+          <p><strong>82%</strong><span>precision, with<br />zero scan failures</span></p>
+        </div>
+        <div class="evidence-note"><span class="evidence-kicker">FIELD EVIDENCE</span><span>Curated pilot</span><a href="https://github.com/complira/hintlint/blob/main/docs/findings-report-july-2026.md">Read the full report <span aria-hidden="true">↗</span></a></div>
+      </section>
+
+      <section class="section shell" id="how-it-works">
+        <div class="section-heading"><p class="eyebrow">From source to signal</p><h2>Make invisible risk<br />visible.</h2></div>
+        <div class="steps">
+          <article class="step"><span class="step-number">01</span><h3>Extract tools</h3><p>Finds MCP tool definitions across TypeScript, JavaScript, and Python.</p></article>
+          <article class="step"><span class="step-number">02</span><h3>Trace behavior</h3><p>Detects writes, external calls, process execution, and unsafe data flows.</p></article>
+          <article class="step"><span class="step-number">03</span><h3>Compare hints</h3><p>Reports where declared annotations drift from source-backed behavior.</p></article>
+        </div>
+      </section>
+
+      <section class="section shell ci-section" id="ci-cd">
+        <div class="ci-copy"><p class="eyebrow">GitHub Actions Marketplace</p><h2>Every MCP server.<br /><em>One security check.</em></h2><p>Add HintLint to any repository in a few lines. Scan the root, a monorepo package, or a saved <code>tools/list</code> response on every pull request.</p><a class="text-link" href="https://github.com/complira/hintlint/blob/main/docs/ci-integration.md">See CI/CD integrations <span aria-hidden="true">→</span></a></div>
+        <div class="workflow-card"><div class="workflow-label"><span class="yaml-dot"></span> .github/workflows/hintlint.yml</div><pre><code><span class="code-key">- uses:</span> actions/checkout@v4
+
+<span class="code-key">- uses:</span> complira/hintlint@v0
+  <span class="code-key">with:</span>
+    target: ./my-mcp-server
+    fail-on: high
+    upload-sarif: <span class="code-string">"true"</span></code></pre><div class="workflow-footer"><span><span class="green">●</span> runs on push &amp; pull request</span><span>source-backed only</span></div></div>
+      </section>
+
+      <section class="section shell findings-section" id="evidence">
+        <div class="finding-intro"><p class="eyebrow">Pilot report at a glance</p><h2>What the scan<br /><em>found.</em></h2><p>HintLint scanned 20 curated public MCP repositories. These are confirmed findings from the July 2026 pilot—not ecosystem-wide prevalence claims.</p><a class="text-link" href="https://github.com/complira/hintlint/blob/main/docs/findings-report-july-2026.md">View methodology and details <span aria-hidden="true">→</span></a></div>
+        <div class="finding-list">
+          <div><span class="severity high">20 FINDINGS</span><p>Destructive AWS APIs—IAM, ElastiCache, HealthImaging, and Timestream—without <code>destructiveHint=true</code></p><span class="finding-id">2 SERVERS · HIGH</span></div>
+          <div><span class="severity high">1 FINDING</span><p>User-controlled input reached an outbound URL without a recognized allowlist</p><span class="finding-id">1 SERVER · HIGH</span></div>
+          <div><span class="severity medium">5 REVIEWED</span><p>False positives were traced to handler-scope and annotation parsing gaps</p><span class="finding-id">3 FIXED · 2 PLANNED</span></div>
+        </div>
+      </section>
+
+      <section class="section shell procurement-section" id="procurement">
+        <div class="procurement-panel">
+          <div class="procurement-copy"><p class="eyebrow">Tool procurement risk</p><h2>Scan before<br /><em>you connect.</em></h2><p>For organizations, make MCP security part of approval—not an afterthought. Review the server code before adopting a tool, then keep the result with your Tool BOM and registry record.</p><a class="text-link" href="https://github.com/complira/hintlint/blob/main/docs/enterprise-usage.md">Explore enterprise usage <span aria-hidden="true">→</span></a></div>
+          <div class="risk-flow"><div class="flow-node"><span class="flow-number">01</span><span class="flow-icon">⌘</span><strong>MCP server code</strong><small>Source submitted for scanning</small></div><span class="flow-arrow">→</span><div class="flow-node"><span class="flow-number">02</span><span class="flow-icon">✓</span><strong>Review risk</strong><small>Evidence-backed findings</small></div><span class="flow-arrow">→</span><div class="flow-node"><span class="flow-number">03</span><span class="flow-icon">▣</span><strong>Update Tool BOM</strong><small>Keep the result with the tool</small></div></div>
+        </div>
+      </section>
+
+      <section class="cta shell">
+        <div><p class="eyebrow">Ship with confidence</p><h2>Put your MCP server<br /><em>under the microscope.</em></h2></div>
+        <div class="cta-actions"><a class="button primary" href="https://github.com/complira/hintlint">View on GitHub <span aria-hidden="true">↗</span></a><a class="button secondary" href="https://www.npmjs.com/package/hintlint">npm package <span aria-hidden="true">↗</span></a></div>
+      </section>
+    </main>
+
+    <footer class="site-footer shell"><span>© 2026 Complira</span><span>Apache 2.0 · Built for safer agents</span></footer>
+    <script>
+      const themeToggle = document.querySelector('.theme-toggle');
+      const storedTheme = localStorage.getItem('hintlint-theme');
+      if (storedTheme === 'light') document.documentElement.dataset.theme = 'light';
+      const updateThemeButton = () => {
+        const light = document.documentElement.dataset.theme === 'light';
+        themeToggle.textContent = light ? '☾' : '☼';
+        themeToggle.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
+        themeToggle.setAttribute('aria-pressed', String(light));
+      };
+      updateThemeButton();
+      themeToggle.addEventListener('click', () => {
+        const light = document.documentElement.dataset.theme !== 'light';
+        document.documentElement.dataset.theme = light ? 'light' : 'dark';
+        localStorage.setItem('hintlint-theme', light ? 'light' : 'dark');
+        updateThemeButton();
+      });
+      document.querySelector('.copy-button').addEventListener('click', async (event) => {
+        const button = event.currentTarget;
+        try { await navigator.clipboard.writeText(button.dataset.copy); button.textContent = 'Copied'; }
+        catch { button.textContent = 'Select & copy'; }
+        setTimeout(() => { button.textContent = 'Copy'; }, 1800);
+      });
+    </script>
+  </body>
+</html>

@@ -17,6 +17,15 @@ git clone https://github.com/org/my-mcp-server.git
 npx hintlint ./my-mcp-server
 ```
 
+For a persistent global installation, use npm:
+
+```bash
+npm install --global hintlint
+hintlint ./my-mcp-server
+```
+
+The HintLint CLI is distributed through npm; it is not currently available on PyPI.
+
 The terminal report shows the tool, declared annotations, observed behavior, severity, and repair guidance.
 
 ## Use a saved tool manifest

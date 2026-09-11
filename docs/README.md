@@ -14,6 +14,15 @@ An MCP tool can look read-only while writing to a database, or omit `destructive
 npx hintlint ./my-mcp-server
 ```
 
+To install the CLI globally instead:
+
+```bash
+npm install --global hintlint
+hintlint ./my-mcp-server
+```
+
+HintLint is currently distributed through npm. A PyPI package for the CLI is not available.
+
 For CI:
 
 ```bash
