@@ -26,10 +26,11 @@ MCP clients use tool annotations to decide which tool invocations need human app
 
 ## How to use it
 
-Install: npx hintlint ./my-mcp-server
+Install globally: npm install --global hintlint, then run hintlint ./my-mcp-server
+One-time run: npx hintlint ./my-mcp-server
 CI mode: npx hintlint ./my-mcp-server --ci --fail-on high
 SARIF output: npx hintlint ./my-mcp-server --format sarif --output hintlint.sarif
-GitHub Action: uses: hintlint/hintlint@v0
+GitHub Action: uses: complira/hintlint@v0
 
 ## Key facts
 
