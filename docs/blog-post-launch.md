@@ -6,7 +6,7 @@ MCP tool annotations — `readOnlyHint`, `destructiveHint`, `openWorldHint` — 
 
 But two problems remain. First, most MCP servers ship without any annotations at all, forcing clients to fall back on defaults rather than informed decisions. Second — and this is the real risk — some tools declare annotations that are *wrong*. A tool that says `readOnlyHint: true` but actually deletes data bypasses confirmation even in spec-compliant clients.
 
-We built [HintLint](https://github.com/complira/hintlint) to catch both cases. It reads MCP server source code, detects what each tool actually does, and reports where annotations are missing or inaccurate.
+We built [HintLint](https://github.com/complira/hintlint) to catch both cases. It reads MCP server source code, detects what each tool actually does, and reports where annotations are missing or inaccurate. That distinction matters: an omitted hint is different from a hint that confidently says the opposite of what the code does.
 
 ## What We Found
 
@@ -47,13 +47,17 @@ The same pattern appeared across IAM, ElastiCache, HealthImaging, Timestream, an
 
 The developers even added their own confirmation guards and read-only mode checks — they knew the operations were destructive. They just didn't express that knowledge through MCP annotations.
 
-### Incorrect Annotations (3 findings)
+### Wrong-annotation candidates (2 findings, both false positives)
 
-This is the category that's genuinely dangerous. A tool that declares `readOnlyHint: true` but performs mutations will bypass confirmation in *every* client, including spec-compliant ones.
+This is the category we were especially interested in. A tool that declares `readOnlyHint: true` but performs mutations could bypass confirmation in *every* client, including spec-compliant ones.
 
-**firecrawl-mcp-server**: 1 finding where tool input flows to an outbound `fetch()` call without URL allowlist validation — an SSRF risk where the tool's parameters control the destination of an external HTTP request.
+The pilot produced two candidates where a tool appeared to declare `readOnlyHint: true` while making an HTTP POST request. We reviewed both and found that HintLint had attributed evidence to the wrong tool in the same file. They were false positives, not confirmed wrong annotations.
 
-The remaining 2 incorrect-annotation candidates turned out to be false positives (handler scope resolution error — HintLint attributed evidence to the wrong tool in the same file).
+We are keeping these candidates in the report because wrong hints deserve their own category. Future scans will list confirmed wrong values separately, with the declared hint, observed behavior, source location, server version, and review status.
+
+### Unsafe URL construction from tool input (1 finding)
+
+**firecrawl-mcp-server**: Tool input flows to an outbound `fetch()` call without URL allowlist validation — an SSRF risk where the tool's parameters control the destination of an external HTTP request.
 
 ### The Risk Hierarchy
 
