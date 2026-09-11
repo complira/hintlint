@@ -1,7 +1,7 @@
 $schema: https://api.gitbook.com/gitbook-docs.yaml
 
 site:
-  title: HintLint Documentation
+  title: Complira Documentation
   structure:
     - type: space
       key: hintlint-docs
