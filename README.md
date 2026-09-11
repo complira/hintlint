@@ -16,9 +16,11 @@ MCP servers declare tool annotations — `readOnlyHint`, `destructiveHint`, `ope
 
 It reads the source code, detects what each tool actually does, and reports where annotations don't match behavior. A tool that calls `iam.delete_access_key()` but omits `destructiveHint` means the agent skips confirmation on an irreversible action.
 
-In a [20-repo pilot](docs/findings-report-july-2026.md), HintLint confirmed **23 annotation mismatches at 82% precision**, including 19 AWS tools performing destructive cloud operations without `destructiveHint`.
+In a [20-repo pilot](https://complira.gitbook.io/complira-docs/findings-report-july-2026), HintLint confirmed **23 annotation mismatches at 82% precision**, including 19 AWS tools performing destructive cloud operations without `destructiveHint`.
 
 ## Install and Run
+
+Read the complete documentation at [complira.gitbook.io/complira-docs](https://complira.gitbook.io/complira-docs).
 
 HintLint scans a local MCP server folder. If the server is on GitHub, download it first:
 
@@ -51,7 +53,7 @@ Zero dependencies. Node.js 20+.
     pr-comment: "true"
 ```
 
-Also works with [GitLab CI, Jenkins, Azure DevOps, CircleCI](docs/ci-integration.md).
+Also works with [GitLab CI, Jenkins, Azure DevOps, CircleCI](https://complira.gitbook.io/complira-docs/ci-integration).
 
 ## What It Finds
 
@@ -66,7 +68,7 @@ Also works with [GitLab CI, Jenkins, Azure DevOps, CircleCI](docs/ci-integration
 | `FLOW-FILESYSTEM-001` | User input reaches file write without path check | High |
 | `FLOW-CONNECTION-001` | User input in connection string without sanitizer | High |
 
-Full details with CWE IDs and repair guidance: [Finding Reference](docs/finding-reference.md)
+Full details with CWE IDs and repair guidance: [Finding Reference](https://complira.gitbook.io/complira-docs/finding-reference)
 
 ## How It Works
 
@@ -109,15 +111,17 @@ Only findings with handler-scoped source evidence can fail your build. Metadata-
 
 ## Documentation
 
+Read the complete documentation at [complira.gitbook.io/complira-docs](https://complira.gitbook.io/complira-docs).
+
 | | |
 |---|---|
-| [FAQ](docs/faq.md) | Common questions, comparisons |
-| [CLI Reference](docs/cli-reference.md) | Flags, config, exit codes |
-| [Finding Reference](docs/finding-reference.md) | Every finding, CWE, repair guidance |
-| [CI Integration](docs/ci-integration.md) | GitHub, GitLab, Jenkins, Azure DevOps, CircleCI |
-| [Enterprise Usage](docs/enterprise-usage.md) | Pre-registry scanning, catalog management, continuous monitoring |
-| [Registry Artifact](docs/registry-artifact.md) | Gateway integration format |
-| [Findings Report](docs/findings-report-july-2026.md) | Validated pilot results with methodology |
+| [FAQ](https://complira.gitbook.io/complira-docs/faq) | Common questions, comparisons |
+| [CLI Reference](https://complira.gitbook.io/complira-docs/cli-reference) | Flags, config, exit codes |
+| [Finding Reference](https://complira.gitbook.io/complira-docs/finding-reference) | Every finding, CWE, repair guidance |
+| [CI Integration](https://complira.gitbook.io/complira-docs/ci-integration) | GitHub, GitLab, Jenkins, Azure DevOps, CircleCI |
+| [Enterprise Usage](https://complira.gitbook.io/complira-docs/enterprise-usage) | Pre-registry scanning, catalog management, continuous monitoring |
+| [Registry Artifact](https://complira.gitbook.io/complira-docs/registry-artifact) | Gateway integration format |
+| [Findings Report](https://complira.gitbook.io/complira-docs/findings-report-july-2026) | Validated pilot results with methodology |
 
 ## Contributing
 
