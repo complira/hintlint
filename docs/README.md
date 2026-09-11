@@ -42,3 +42,15 @@ HintLint does not need a running server or production credentials. To verify beh
 Start with [How to use HintLint](how-to-use.md) for the shortest path from installation to your first scan. Then use the navigation to add HintLint to CI/CD, understand findings, or use scan results in organizational tool procurement and Tool BOM processes.
 
 For every command and flag, see the [CLI Reference](cli-reference.md). For the full validated pilot methodology, see the [Findings Report](findings-report-july-2026.md).
+
+## For AI agents
+
+GitBook provides agent-friendly versions of this documentation:
+
+- [Documentation index](https://complira.gitbook.io/complira-docs/llms.txt)
+- [Full documentation context](https://complira.gitbook.io/complira-docs/llms-full.txt)
+- [GitBook MCP endpoint](https://complira.gitbook.io/complira-docs/~gitbook/mcp)
+
+Individual pages are also available by adding `.md` to their GitBook URL.
+
+The static HintLint website exposes read-only WebMCP tools for installation and documentation discovery in browsers that support the proposed WebMCP API.
