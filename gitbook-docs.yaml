@@ -1,0 +1,14 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+
+site:
+  title: HintLint Documentation
+
+structure:
+  - type: space
+    key: hintlint-docs
+    title: HintLint
+    path: docs
+    default: true
+
+content:
+  directory: ./
