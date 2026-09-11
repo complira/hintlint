@@ -47,6 +47,7 @@
     "rules/",
     "action.yml",
     "docs/",
+    "AGENTS.md",
     "llms.txt",
     "llms-full.txt",
     "LICENSE",
