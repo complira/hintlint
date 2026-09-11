@@ -3,6 +3,7 @@
 * [HintLint](README.md)
 * [How to use HintLint](how-to-use.md)
 * [Getting started](getting-started.md)
+* [Launch announcement](blog-post-launch.md)
 * [GitHub Actions and CI/CD](github-actions.md)
 * [Understanding findings](understanding-findings.md)
 * [MCP tool procurement](enterprise.md)
