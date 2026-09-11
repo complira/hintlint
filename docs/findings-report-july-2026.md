@@ -8,6 +8,8 @@
 
 HintLint scanned 20 curated public MCP server repositories and found 23 confirmed annotation mismatches with 82% precision. The most common issue: tools that perform destructive cloud operations (deleting IAM keys, cache clusters, database instances) without declaring `destructiveHint=true`. MCP clients relying on these annotations to gate destructive actions would skip human confirmation.
 
+The report separates two different annotation problems: **missing hints**, where a tool does not declare the risk explicitly, and **wrong hints**, where the declared value contradicts the behavior in the source. The pilot confirmed missing destructive hints, but the two wrong-`readOnlyHint` candidates were reviewed as false positives caused by handler-scope resolution. They remain listed because identifying and validating wrong hints is a core purpose of HintLint.
+
 ## Methodology
 
 - **Sample**: 20 source-available MCP server repositories selected from GitHub on 2026-07-30 by star count and MCP registry presence. TypeScript, JavaScript, and Python servers only (Go, C#, Rust, Java excluded — no extractor support yet).
@@ -63,9 +65,11 @@ A tool constructs an outbound URL using user-supplied input without a recognized
 
 **Impact**: If the tool input is influenced by an LLM prompt injection, the outbound request could be directed to an attacker-controlled endpoint (SSRF).
 
-### False Readonl Hint on Mutating Tool (2 findings — both false positive)
+### Wrong `readOnlyHint` Candidates (2 findings — both false positives)
 
-Two findings flagged tools declaring `readOnlyHint=true` while performing HTTP POST requests. Manual review determined these were false positives caused by handler scope resolution errors — the evidence was attributed to the wrong tool in the same source file.
+Two findings flagged tools declaring `readOnlyHint=true` while performing HTTP POST requests. Manual review determined these were false positives caused by handler-scope resolution errors—the evidence was attributed to the wrong tool in the same source file.
+
+No confirmed wrong-annotation value appears in this validated pilot after manual review. Future reports will list confirmed wrong hints separately from missing hints, with the declared value, observed behavior, affected server version, source location, and review status.
 
 ## False Positive Analysis
 
