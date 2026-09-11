@@ -1,6 +1,6 @@
 # We Scanned 20 MCP Servers. Here's What We Found About Tool Annotations.
 
-*July 31, 2026 — Complira*
+*July 31, 2026 — HintLint*
 
 MCP tool annotations — `readOnlyHint`, `destructiveHint`, `openWorldHint` — are how servers tell agent runtimes which tools need human approval. The MCP spec defaults are conservative: a tool with no annotations is assumed destructive and open-world. Clients that follow the spec will gate unannotated tools behind confirmation.
 
@@ -10,7 +10,7 @@ We built [HintLint](https://github.com/complira/hintlint) to catch both cases. I
 
 ## What We Found
 
-We scanned 20 curated public MCP server repositories — TypeScript, JavaScript, and Python — selected from GitHub by star count and MCP registry presence. HintLint extracted 1,160 tool definitions, resolved handlers for 1,021 of them (88%), and produced 28 source-backed candidate findings.
+We looked at 20 curated public MCP server repositories — TypeScript, JavaScript, and Python — selected from GitHub by star count and MCP registry presence. HintLint extracted 1,160 tool definitions, resolved handlers for 1,021 of them (88%), and produced 28 source-backed candidate findings.
 
 After automated source verification, **23 were confirmed issues** at **82% precision**.
 

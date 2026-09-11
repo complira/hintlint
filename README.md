@@ -12,11 +12,11 @@
 
 ---
 
-MCP servers declare tool annotations — `readOnlyHint`, `destructiveHint`, `openWorldHint` — that tell agent runtimes which tools need human approval. Nothing verifies these annotations are accurate. HintLint does.
+MCP servers use tool annotations — `readOnlyHint`, `destructiveHint`, and `openWorldHint` — to help agents decide when a person should approve an action. HintLint checks whether those hints match the code behind each tool.
 
 It reads the source code, detects what each tool actually does, and reports where annotations don't match behavior. A tool that calls `iam.delete_access_key()` but omits `destructiveHint` means the agent skips confirmation on an irreversible action.
 
-In a [20-repo pilot](https://complira.gitbook.io/complira-docs/findings-report-july-2026), HintLint confirmed **23 annotation mismatches at 82% precision**, including 19 AWS tools performing destructive cloud operations without `destructiveHint`.
+In a [20-repository pilot](https://complira.gitbook.io/complira-docs/findings-report-july-2026), HintLint analyzed 1,160 tools and confirmed **23 annotation issues at 82% precision**. Twenty involved destructive cloud operations without an explicit `destructiveHint`; one involved user-controlled input reaching an outbound URL without a recognized allowlist. The report also documents the five candidates that were reviewed as false positives.
 
 ## Install and Run
 
@@ -34,7 +34,6 @@ For a one-time run without installing, use `npx`:
 ```bash
 npx hintlint ./my-mcp-server
 ```
->>>>>>> 54fc0ba (docs: clarify CLI installation)
 
 HintLint scans a local MCP server folder. If the server is on GitHub, download it first:
 
@@ -151,4 +150,4 @@ Apache 2.0 — [LICENSE](LICENSE) | Security issues — [SECURITY.md](SECURITY.m
 
 ---
 
-<p align="center">Built by <a href="https://complira.co">Complira</a></p>
+<p align="center">Built by <a href="https://complira.co">HintLint</a></p>

@@ -29,7 +29,7 @@
         <div class="hero-copy">
           <p class="eyebrow"><span class="pulse"></span> MCP security</p>
           <h1>Trust the tool.<br /><em>Verify the hint.</em></h1>
-          <p class="hero-lede">HintLint checks whether MCP tool annotations match what the code actually does—before an AI agent makes the call.</p>
+          <p class="hero-lede">Before an AI agent calls a tool, HintLint checks that its safety hints match what the code really does.</p>
           <div class="hero-actions">
             <div class="install-card">
               <div class="install-card-header"><span>QUICK START</span><span>Node.js 20+</span></div>
@@ -39,7 +39,7 @@
               </div>
               <div class="install-option"><span class="option-label">GLOBAL INSTALL</span><code>npm install -g hintlint</code></div>
             </div>
-            <a class="text-link" href="https://github.com/complira/hintlint#install-and-run">Read the docs <span aria-hidden="true">→</span></a>
+            <a class="text-link" href="https://complira.gitbook.io/complira-docs">Read the docs <span aria-hidden="true">→</span></a>
           </div>
         </div>
         <div class="hero-visual" aria-label="Annotation verification illustration">
@@ -67,20 +67,20 @@
           <p><strong>23</strong><span>confirmed true<br />positives</span></p>
           <p><strong>82%</strong><span>precision, with<br />zero scan failures</span></p>
         </div>
-        <div class="evidence-note"><span class="evidence-kicker">FIELD EVIDENCE</span><span>Curated pilot</span><a href="https://github.com/complira/hintlint/blob/main/docs/findings-report-july-2026.md">Read the full report <span aria-hidden="true">↗</span></a></div>
+        <div class="evidence-note"><span class="evidence-kicker">FIELD EVIDENCE</span><span>Curated pilot</span><a href="https://complira.gitbook.io/complira-docs/findings-report-july-2026">Read the full report <span aria-hidden="true">↗</span></a></div>
       </section>
 
       <section class="section shell" id="how-it-works">
-        <div class="section-heading"><p class="eyebrow">From source to signal</p><h2>Make invisible risk<br />visible.</h2></div>
+        <div class="section-heading"><p class="eyebrow">From source to signal</p><h2>See what your tools<br />really do.</h2></div>
         <div class="steps">
-          <article class="step"><span class="step-number">01</span><h3>Extract tools</h3><p>Finds MCP tool definitions across TypeScript, JavaScript, and Python.</p></article>
-          <article class="step"><span class="step-number">02</span><h3>Trace behavior</h3><p>Detects writes, external calls, process execution, and unsafe data flows.</p></article>
-          <article class="step"><span class="step-number">03</span><h3>Compare hints</h3><p>Reports where declared annotations drift from source-backed behavior.</p></article>
+          <article class="step"><span class="step-number">01</span><h3>Find the tools</h3><p>Looks across TypeScript, JavaScript, and Python for MCP tool definitions.</p></article>
+          <article class="step"><span class="step-number">02</span><h3>Follow the behavior</h3><p>Checks for writes, external calls, process execution, and unsafe data flows.</p></article>
+          <article class="step"><span class="step-number">03</span><h3>Explain the gap</h3><p>Shows where a tool’s safety hints differ from evidence in its source.</p></article>
         </div>
       </section>
 
       <section class="section shell ci-section" id="ci-cd">
-        <div class="ci-copy"><p class="eyebrow">GitHub Actions Marketplace</p><h2>Every MCP server.<br /><em>One security check.</em></h2><p>Add HintLint to any repository in a few lines. Scan the root, a monorepo package, or a saved <code>tools/list</code> response on every pull request.</p><a class="text-link" href="https://github.com/complira/hintlint/blob/main/docs/ci-integration.md">See CI/CD integrations <span aria-hidden="true">→</span></a></div>
+        <div class="ci-copy"><p class="eyebrow">GitHub Actions Marketplace</p><h2>Every MCP server.<br /><em>One security check.</em></h2><p>Add HintLint to any repository in a few lines. Scan the root, a monorepo package, or a saved <code>tools/list</code> response on every pull request.</p><a class="text-link" href="https://complira.gitbook.io/complira-docs/ci-integration">See CI/CD integrations <span aria-hidden="true">→</span></a></div>
         <div class="workflow-card"><div class="workflow-label"><span class="yaml-dot"></span> .github/workflows/hintlint.yml</div><pre><code><span class="code-key">- uses:</span> actions/checkout@v4
 
 <span class="code-key">- uses:</span> complira/hintlint@v0
@@ -91,7 +91,7 @@
       </section>
 
       <section class="section shell findings-section" id="evidence">
-        <div class="finding-intro"><p class="eyebrow">Pilot report at a glance</p><h2>What the scan<br /><em>found.</em></h2><p>HintLint scanned 20 curated public MCP repositories. These are confirmed findings from the July 2026 pilot—not ecosystem-wide prevalence claims.</p><a class="text-link" href="https://github.com/complira/hintlint/blob/main/docs/findings-report-july-2026.md">View methodology and details <span aria-hidden="true">→</span></a></div>
+        <div class="finding-intro"><p class="eyebrow">Pilot report at a glance</p><h2>What we<br /><em>found.</em></h2><p>We looked at 20 curated public MCP repositories and confirmed 23 issues across 1,160 tools. This is a focused July 2026 pilot—not a claim about every MCP server.</p><a class="text-link" href="https://complira.gitbook.io/complira-docs/findings-report-july-2026">Read the findings <span aria-hidden="true">→</span></a></div>
         <div class="finding-list">
           <div><span class="severity high">20 FINDINGS</span><p>Destructive AWS APIs—IAM, ElastiCache, HealthImaging, and Timestream—without <code>destructiveHint=true</code></p><span class="finding-id">2 SERVERS · HIGH</span></div>
           <div><span class="severity high">1 FINDING</span><p>User-controlled input reached an outbound URL without a recognized allowlist</p><span class="finding-id">1 SERVER · HIGH</span></div>
@@ -101,7 +101,7 @@
 
       <section class="section shell procurement-section" id="procurement">
         <div class="procurement-panel">
-          <div class="procurement-copy"><p class="eyebrow">Tool procurement risk</p><h2>Scan before<br /><em>you connect.</em></h2><p>For organizations, make MCP security part of approval—not an afterthought. Review the server code before adopting a tool, then keep the result with your Tool BOM and registry record.</p><a class="text-link" href="https://github.com/complira/hintlint/blob/main/docs/enterprise-usage.md">Explore enterprise usage <span aria-hidden="true">→</span></a></div>
+          <div class="procurement-copy"><p class="eyebrow">Tool procurement risk</p><h2>Scan before<br /><em>you connect.</em></h2><p>For organizations, make MCP security part of approval—not an afterthought. Review the server code before adopting a tool, then keep the result with your Tool BOM and registry record.</p><a class="text-link" href="https://complira.gitbook.io/complira-docs/enterprise-usage">Explore enterprise usage <span aria-hidden="true">→</span></a></div>
           <div class="risk-flow"><div class="flow-node"><span class="flow-number">01</span><span class="flow-icon">⌘</span><strong>MCP server code</strong><small>Source submitted for scanning</small></div><span class="flow-arrow">→</span><div class="flow-node"><span class="flow-number">02</span><span class="flow-icon">✓</span><strong>Review risk</strong><small>Evidence-backed findings</small></div><span class="flow-arrow">→</span><div class="flow-node"><span class="flow-number">03</span><span class="flow-icon">▣</span><strong>Update Tool BOM</strong><small>Keep the result with the tool</small></div></div>
         </div>
       </section>
@@ -112,7 +112,7 @@
       </section>
     </main>
 
-    <footer class="site-footer shell"><span>© 2026 Complira</span><span>Apache 2.0 · Built for safer agents</span></footer>
+    <footer class="site-footer shell"><span>© 2026 HintLint</span><span>Apache 2.0 · Built for safer agents</span></footer>
     <script>
       const themeToggle = document.querySelector('.theme-toggle');
       const storedTheme = localStorage.getItem('hintlint-theme');

@@ -1,6 +1,6 @@
 # HintLint — Full Context for AI Assistants
 
-> Static analysis tool that verifies MCP (Model Context Protocol) server tool annotations match actual source code behavior. Built by Complira (https://complira.co). Apache 2.0 license.
+> Static analysis tool that verifies MCP (Model Context Protocol) server tool annotations match actual source code behavior. Built by HintLint (https://complira.co). Apache 2.0 license.
 
 ## Problem
 
