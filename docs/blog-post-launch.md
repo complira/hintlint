@@ -1,6 +1,6 @@
 # We Scanned 20 MCP Servers. Here's What We Found About Tool Annotations.
 
-*July 31, 2026 — Complira*
+*July 31, 2026 — HintLint*
 
 MCP tool annotations — `readOnlyHint`, `destructiveHint`, `openWorldHint` — are how servers tell agent runtimes which tools need human approval. The MCP spec defaults are conservative: a tool with no annotations is assumed destructive and open-world. Clients that follow the spec will gate unannotated tools behind confirmation.
 
