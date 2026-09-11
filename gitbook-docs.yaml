@@ -8,6 +8,5 @@ site:
       title: HintLint
       path: docs
       default: true
-
-content:
-  directory: ./
+      content:
+        directory: ./docs
